@@ -1,0 +1,22 @@
+.ant-table-thead th {
+  background-color: #184f9d !important;
+  color: #fff !important;
+  font-weight: bold !important;
+}
+
+.ant-list-header {
+  background-color: #184f9d !important;
+}
+
+.ant-modal-header {
+  background-color: #223666 !important;
+}
+
+.ant-modal-title {
+  color: #fff !important;
+  font-weight: bold !important;
+}
+
+.ant-modal-close {
+  color: #fff !important;
+}
