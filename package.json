@@ -4,11 +4,11 @@
   "private": true,
   "homepage": "https://www.impeltechnology.com/sies",
   "dependencies": {
+    "@azure/msal-browser": "^2.30.0",
+    "@azure/msal-react": "^1.4.9",
     "@amcharts/amcharts3-react": "^3.1.0",
     "@ant-design/compatible": "^1.0.8",
     "@ant-design/icons": "^4.3.0",
-    "@azure/msal-browser": "^2.30.0",
-    "@azure/msal-react": "^1.4.9",
     "@babel/compat-data": "^7.12.7",
     "@testing-library/jest-dom": "^5.11.9",
     "@testing-library/react": "^11.2.3",
@@ -70,8 +70,7 @@
     "slick-carousel": "^1.8.1",
     "sweetalert2": "^11.7.3",
     "url-search-params": "^1.1.0",
-    "victory": "^35.4.6",
-    "webpack": "4.44.2"
+    "victory": "^35.4.6"
   },
   "scripts": {
     "start": "react-app-rewired start",
@@ -97,6 +96,6 @@
   "devDependencies": {
     "babel-plugin-import": "^1.13.0",
     "customize-cra": "^0.9.1",
-    "react-app-rewired": "^2.2.1"
+    "react-app-rewired": "^2.1.5"
   }
 }
