@@ -1330,6 +1330,69 @@ export const getListSubProgramas = async (id_Programa) => {
   }
 };
 
+export const getListBomba = async () => {
+  const token = localStorage.getItem("token");
+  try {
+    let query = encodeURI(`SELECT id,name FROM Clasificacion_Bomba`);
+    const { data } = await httpClient.get(
+      `/selectQuery?maxRows=3&query=${query}&sessionId=${token}&output=json`
+    );
+    if (data.length > 0) {
+      const final_data = data.map((value) => {
+        return { value: value[0], label: value[1] };
+      });
+      return final_data;
+    } else {
+      return [];
+    }
+  } catch (error) {
+    httpClient.defaults.headers.common["Authorization"] = "";
+    return Promise.reject(error);
+  }
+};
+
+export const getListBimTrim = async () => {
+  const token = localStorage.getItem("token");
+  try {
+    let query = encodeURI(`SELECT id,name FROM Clasificacion_Bim_Trim`);
+    const { data } = await httpClient.get(
+      `/selectQuery?maxRows=3&query=${query}&sessionId=${token}&output=json`
+    );
+    if (data.length > 0) {
+      const final_data = data.map((value) => {
+        return { value: value[0], label: value[1] };
+      });
+      return final_data;
+    } else {
+      return [];
+    }
+  } catch (error) {
+    httpClient.defaults.headers.common["Authorization"] = "";
+    return Promise.reject(error);
+  }
+};
+
+export const getListTipoIngreso = async () => {
+  const token = localStorage.getItem("token");
+  try {
+    let query = encodeURI(`SELECT id,name FROM Tipo_Ingreso`);
+    const { data } = await httpClient.get(
+      `/selectQuery?maxRows=10&query=${query}&sessionId=${token}&output=json`
+    );
+    if (data.length > 0) {
+      const final_data = data.map((value) => {
+        return { value: value[0], label: value[1] };
+      });
+      return final_data;
+    } else {
+      return [];
+    }
+  } catch (error) {
+    httpClient.defaults.headers.common["Authorization"] = "";
+    return Promise.reject(error);
+  }
+};
+
 export const getListEtiquetasAdmin = async (idPrograma) => {
   const token = localStorage.getItem("token");
   try {
@@ -2517,7 +2580,7 @@ export const createPlanContract = async (values) => {
   const token = localStorage.getItem("token");
   console.log('llega al servicio');
   try {
-    const { data } = await httpClient.get(`/create2?output=json&useIds=true&objName=Contrato_Plan&R18147928=${values?.contrato}&R18147953=${values?.especialidad}&R42695674=${values?.claseExamen || 0}&R19917234=${values?.estadio}&R42695687=${values?.canalAtencion?.join("|")}&Meses=${values?.meses}&Renovacion=${values?.meses}&Duracion_1era_Visita=${values?.firstDuracion}&Duracion_Seguimiento=${values?.duracionSeg}&Mayor_de=${values?.mayor}&Menor_de=${values?.menor}&R44803067=${values?.etiquetaAdmin?.join("|") || 0}&R45397437=${values?.etAsitenciales}&R45397404=${values?.subPrograma || 0}&Sexo_al_Nacer=${values?.sexoNacer}&Primera_Vez=${values?.primeraVez || false}&Bomba=${values?.bomba || false}`)
+    const { data } = await httpClient.get(`/create2?output=json&useIds=true&objName=Contrato_Plan&R18147928=${values?.contrato}&R18147953=${values?.especialidad}&R42695674=${values?.claseExamen || 0}&R19917234=${values?.estadio}&R42695687=${values?.canalAtencion?.join("|")}&Meses=${values?.meses}&Renovacion=${values?.meses}&Duracion_1era_Visita=${values?.firstDuracion}&Duracion_Seguimiento=${values?.duracionSeg}&Mayor_de=${values?.mayor}&Menor_de=${values?.menor}&R44803067=${values?.etiquetaAdmin?.join("|") || 0}&R45397437=${values?.etAsitenciales}&R45397404=${values?.subPrograma || 0}&Sexo_al_Nacer=${values?.sexoNacer}&Primera_Vez=${values?.primeraVez || false}&Prerrequisito=${values?.Prerrq || false}&R47939456=${values?.cBomba}&R47939308=${values?.cBimTrim}&R47918753=${values?.tIngreso}`)
     return data;
   } catch (error) {
     httpClient.defaults.headers.common["Authorization"] = "";

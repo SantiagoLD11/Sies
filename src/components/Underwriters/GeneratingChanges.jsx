@@ -36,12 +36,12 @@ export const GeneratingChanges = ({ modalVisible, SetModalVisible }) => {
   const [listCanalAtencion, setListCanalAtencion] = useState(null);
   const [listEstadio, setListEstadio] = useState(null);
   const [lisTipoAccion, setLisTipoAccion] = useState(null);
-  const [type, setType] = useState(41381695);
+  const [type, setType] = useState(null);
   const [listAsegurador, setListAsegurador] = useState(null);
   const [listProgramas, setListProgramas] = useState(null);
   const [listSedes, setListSedes] = useState(null);
 
-  console.log('gdggd', itemsGeneratingChanges[type]?.estadio);
+  console.log('Estadio', itemsGeneratingChanges[type]?.estadio);
 
   
 
@@ -58,7 +58,7 @@ export const GeneratingChanges = ({ modalVisible, SetModalVisible }) => {
 
   const onChangeTypeAction = async (value) => {
     console.log('tipo de form', value);
-    // setType(value);
+    setType(value);
     let one;
     let two;
     let three;

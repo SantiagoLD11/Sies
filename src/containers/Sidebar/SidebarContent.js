@@ -74,7 +74,7 @@ const SidebarContent = ({ sidebarCollapsed, setSidebarCollapsed }) => {
                       className="icon icon-profile2"
                     />
                     <span style={{ color: "#FFF" }}>
-                      <IntlMessages id="Consultar profesional" />
+                      <IntlMessages id="Consultar Profesional" />
                     </span>
                   </Link>
                 </Menu.Item>
@@ -127,7 +127,7 @@ const SidebarContent = ({ sidebarCollapsed, setSidebarCollapsed }) => {
                       className="icon icon-profile2"
                     />
                     <span style={{ color: "#FFF" }}>
-                      <IntlMessages id="Administración Rutas de Atención" />
+                      <IntlMessages id="Administración Rutas" />
                     </span>
                   </Link>
                 </Menu.Item>
@@ -141,3 +141,4 @@ const SidebarContent = ({ sidebarCollapsed, setSidebarCollapsed }) => {
 };
 
 export default React.memo(SidebarContent);
+

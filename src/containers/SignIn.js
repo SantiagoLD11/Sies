@@ -120,7 +120,7 @@ const SignIn = () => {
           <div className="gx-app-login-content">
           {/* <AdminRoutes /> */}
           {/* <BlockDisposition id={1} setDataImported={false} /> */}
-          <GeneratingChanges modalVisible={true}  />
+          <GeneratingChanges modalVisible={false}  />
             <Form
               initialValues={{ remember: true }}
               name="basic"

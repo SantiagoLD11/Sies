@@ -5,6 +5,7 @@ import {
   Button,
   Tabs,
   Modal,
+  Steps,
   Form,
   Row,
   Input,
@@ -21,6 +22,9 @@ import {
   getListClaseExamen,
   getListCanalAtencion,
   getListEstadio,
+  getListBomba,
+  getListBimTrim,
+  getListTipoIngreso,
   createPlanContract,
   triggerUpdateDates,
   getListSubProgramas,
@@ -38,14 +42,19 @@ const AdminRoutes = () => {
   const [loading, setLoading] = useState(false);
   const [messageApi, contextHolder] = message.useMessage();
   const [activeK, setActiveKey] = useState(0);
+  const [current, setCurrent] = useState(0);
   const [listContrato, setListContrato] = useState(null);
   const [contrato, setContrato] = useState(false);
+  const [_idProgram, setProgram] = useState(false);
   const [listSubprograma, setSubprograma] = useState(null);
   const [listEspecialidad, setListEspecialidad] = useState(null);
   const [listClaseExamen, setListClaseExamen] = useState(null);
   const [listCanalAtencion, setListCanalAtencion] = useState(null);
   const [listEstadio, setListEstadio] = useState(null);
   const [listEtiquetasAdim, setListEtiquetasAdim] = useState(null);
+  const [listClasBimTrim, setlistClasBimTrim] = useState(null);
+  const [listTipoIngreso, setlistTipoIngreso] = useState(null);
+  const [listClasBomba, setlistClasBomba] = useState(null);
   const [listEtAsistencial, setListEtAsistencial] = useState(null);
   const [listSexo, setListSexo] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
@@ -61,10 +70,26 @@ const AdminRoutes = () => {
     },
     {
       key: 2,
-      label: `Historial Cambios Ruta`,
+      label: `Historial Cambios Rutas`,
       children: <RouteChangeHistory activeKey={activeK} />,
     },
   ];
+
+  const steps = [
+    {
+      title: "1",
+      content: "1",
+    },
+    {
+      title: "2",
+      content: "2",
+    }
+  ];
+
+  const itemsSteps = steps.map((item) => ({
+    key: item.title,
+    //title: item.title,
+  }));
 
   useEffect(() => {
     setActiveKey(1);
@@ -83,6 +108,8 @@ const AdminRoutes = () => {
       setListEstadio(respuest);
       const resListAsistencial = await getListEtAsistencial();
       setListEtAsistencial(resListAsistencial);
+      const resListTpIngreso = await getListTipoIngreso();
+      setlistTipoIngreso(resListTpIngreso);
       const resListSexo = await getlistSexoNacer();
       setListSexo(resListSexo);
     }
@@ -103,6 +130,20 @@ const AdminRoutes = () => {
 
   const closeModalCreate = () => {
     setModalVisible(false);
+  };
+
+  const next = async () => {
+    const isValid = await validateForm();
+    if (current < 1 && isValid)
+      setCurrent(current + 1);
+      else if(current == 1){
+      await onSubmit(form.getFieldsValue());
+      form.resetFields();
+    }
+  };
+  const prev = () => {
+    if (current > 0)
+      setCurrent(current - 1);
   };
 
   console.log('valores form', form.getFieldsValue());
@@ -126,7 +167,31 @@ const AdminRoutes = () => {
     }
     setLoading(false);
     closeModalCreate();
-    form.resetFields();
+  };
+
+  const validateForm = async () => {
+    try {
+      // Use Ant Design Form's validateFields to validate the form fields
+      await form.validateFields();
+      return true; // Form is valid
+    } catch (errorInfo) {
+      // Handle validation errors and show error messages
+      const errorMessages = [];
+  
+      // Iterate through the errorInfo object and collect error messages
+      Object.keys(errorInfo).forEach((fieldName) => {
+        const errors = errorInfo[fieldName];
+        console.log('Hola Mundo : '+ errors);
+        errors.forEach((error) => {
+          errorMessages.push(error.message);
+        });
+      });
+  
+      // Show error messages to the user (you can customize this part)
+      message.alert(`Form validation failed: ${errorMessages.join(", ")}`);
+  
+      return false; // Form is not valid
+    }
   };
 
   return (
@@ -182,7 +247,12 @@ const AdminRoutes = () => {
         open={modalVisible}
         onCancel={closeModalCreate}
         footer={[
-          <Button onClick={closeModalCreate} key="back">
+          <Button
+            key="back"
+            onClick={() => {
+              prev();
+            }}
+          >
             Cerrar
           </Button>,
           <Button
@@ -191,6 +261,9 @@ const AdminRoutes = () => {
             loading={loading}
             key="submit-form-plan"
             type="primary"
+            onClick={() => {
+              next();
+            }}
           >
             Guardar
           </Button>,
@@ -200,178 +273,233 @@ const AdminRoutes = () => {
           name="crear_plan_contrato"
           id="crear_plan_contrato"
           colon={false}
-          onFinish={onSubmit}
           form={form}
           autoComplete="off"
           layout="vertical"
           initialValues={{ checkboxField: false }}
         >
-          <div className="row"
-          >
-            <div className="col-12 col-md-6">
-              <Form.Item label="Contrato" name="contrato" rules={[{ required: true, message: 'Campo obligatorio' }]}>
-                <Select
-                  placeholder="Seleccione un contrato"
-                  style={{ width: "100%" }}
-                  options={listContrato}
-                  onChange={async (value, options) => {
-                    if (options?.idPrograma) {
-                      const subProgramas = await getListSubProgramas(options?.idPrograma);
-                      setSubprograma(subProgramas);
-                      const etiquetasAdmin = await getListEtiquetasAdmin(options?.idPrograma);
-                      setListEtiquetasAdim(etiquetasAdmin);
-                      setContrato(true);
-                    }
-                  }}
-                />
-              </Form.Item>
+          <Steps
+            current={current}
+            items={itemsSteps}
+            style={{ marginBottom: "20px" }}
+          />
+          {current === 0 ? (
 
-              <Form.Item label="Especialidad" name="especialidad" rules={[{ required: true, message: 'Campo obligatorio' }]}>
-                <Select
-                  placeholder="Seleccione una especialidad"
-                  style={{ width: "100%" }}
-                  options={listEspecialidad}
-                  onChange={(value) => onChangeEspecialidad(value)}
-                />
-              </Form.Item>
+            <div className="row"
+            >
+              <div className="col-12 col-md-6">
+                <Form.Item label="Contrato" name="contrato" rules={[{ required: true, message: 'Campo obligatorio' }]}>
+                  <Select
+                    placeholder="Seleccione un contrato"
+                    style={{ width: "100%" }}
+                    options={listContrato}
+                    onChange={async (value, options) => {
+                      if (options?.idPrograma) {
+                        const subProgramas = await getListSubProgramas(options?.idPrograma);
+                        setSubprograma(subProgramas);
+                        const etiquetasAdmin = await getListEtiquetasAdmin(options?.idPrograma);
+                        setListEtiquetasAdim(etiquetasAdmin);
+                        const resListBimTrim = await getListBimTrim();
+                        setlistClasBimTrim(resListBimTrim);
+                        const resListBomba = await getListBomba();
+                        setlistClasBomba(resListBomba);
+                        setContrato(true);
+                        setProgram(parseInt(options?.idPrograma));
+                        console.log("id Programa" + _idProgram);
+                      }
+                    }}
+                  />
+                </Form.Item>
 
-              <Form.Item label="Clase examen" name="claseExamen" rules={[{ required: form.getFieldValue('especialidad') && listClaseExamen?.length !== 0, message: 'Campo obligatorio' }]}>
-                <Select
-                  placeholder="Seleccione una clase de examen"
-                  style={{ width: "100%" }}
-                  options={listClaseExamen}
-                  disabled={listClaseExamen?.length === 0 || !form.getFieldValue('especialidad')}
-                />
-              </Form.Item>
+                <Form.Item label="Profesion" name="especialidad" rules={[{ required: true, message: 'Campo obligatorio' }]}>
+                  <Select
+                    placeholder="Seleccione una Profesion"
+                    style={{ width: "100%" }}
+                    options={listEspecialidad}
+                    onChange={(value) => onChangeEspecialidad(value)}
+                  />
+                </Form.Item>
 
-              <Form.Item label="Estadio" name="estadio" rules={[{ required: true, message: 'Campo obligatorio' }]}>
-                <Select
-                  placeholder="Seleccione un estadio"
-                  style={{ width: "100%" }}
-                  options={listEstadio}
-                />
-              </Form.Item>
+                <Form.Item label="Clase examen" name="claseExamen" rules={[{ required: form.getFieldValue('especialidad') && listClaseExamen?.length !== 0, message: 'Campo obligatorio' }]}>
+                  <Select
+                    placeholder="Seleccione una clase de examen"
+                    style={{ width: "100%" }}
+                    options={listClaseExamen}
+                    disabled={listClaseExamen?.length === 0 || !form.getFieldValue('especialidad')}
+                  />
+                </Form.Item>
 
-              <Form.Item label="Canal atención" name="canalAtencion" rules={[{ required: true, message: 'Campo obligatorio' }]}>
-                <Select
-                  mode="multiple"
-                  placeholder="Seleccione un canal"
-                  style={{ width: "100%" }}
-                  options={listCanalAtencion}
-                />
-              </Form.Item>
-            </div>
-            <div className="col-12 col-md-6">
-              <Form.Item label="Meses" name="meses" rules={[{ required: true, message: 'Campo obligatorio' }]}>
-                <Input
-                  placeholder="Digite los meses separados por comas"
-                  style={{ width: "100%" }}
-                  onChange={(e) => {
-                    form.setFieldsValue({
-                      meses: inputDate,
-                    });
-                    const value = e.target.value;
-                    const regex = /^[0-9,]*$/;
-                    if (regex.test(value)) {
+                <Form.Item label="Estadio" name="estadio" rules={[{ required: true, message: 'Campo obligatorio' }]}>
+                  <Select
+                    placeholder="Seleccione un estadio"
+                    style={{ width: "100%" }}
+                    options={listEstadio}
+                  />
+                </Form.Item>
+
+                <Form.Item label="Canal atención" name="canalAtencion" rules={[{ required: true, message: 'Campo obligatorio' }]}>
+                  <Select
+                    mode="multiple"
+                    placeholder="Seleccione un canal"
+                    style={{ width: "100%" }}
+                    options={listCanalAtencion}
+                  />
+                </Form.Item>
+              </div>
+              <div className="col-12 col-md-6">
+                <Form.Item label="Meses" name="meses" rules={[{ required: true, message: 'Campo obligatorio' }]}>
+                  <Input
+                    placeholder="Digite los meses separados por comas"
+                    style={{ width: "100%" }}
+                    onChange={(e) => {
                       form.setFieldsValue({
-                        meses: value,
+                        meses: inputDate,
                       });
-                      setInputDate(value);
-                    }
-                  }}
-                />
-              </Form.Item>
-              <Form.Item label="Duración (1era vez)" name="firstDuracion" rules={[{ required: true, message: 'Campo obligatorio' }]}>
-                <Input
-                  placeholder="Digite la duración en minutos"
-                  style={{ width: "100%" }}
-                  type="Number"
-                />
-              </Form.Item>
-              <Form.Item label="Duración (Seguimiento)" name="duracionSeg" rules={[{ required: true, message: 'Campo obligatorio' }]}>
-                <Input
-                  placeholder="Digite la duración en minutos"
-                  style={{ width: "100%" }}
-                  type="Number"
-                />
-              </Form.Item>
-              <Form.Item label="SubPrograma" name="subPrograma" rules={[{ required: form.getFieldValue('contrato') && listSubprograma?.length !== 0, message: 'Campo obligatorio' }]}>
-                <Select
-                  placeholder="Seleccione un subprograma"
-                  style={{ width: "100%" }}
-                  options={listSubprograma}
-                  disabled={listSubprograma?.length === 0 || !contrato}
-                />
-              </Form.Item>
+                      const value = e.target.value;
+                      const regex = /^[0-9,]*$/;
+                      if (regex.test(value)) {
+                        form.setFieldsValue({
+                          meses: value,
+                        });
+                        setInputDate(value);
+                      }
+                    }}
+                  />
+                </Form.Item>
+                <Form.Item label="Duración (1era vez)" name="firstDuracion" rules={[{ required: true, message: 'Campo obligatorio' }]}>
+                  <Input
+                    placeholder="Digite la duración en minutos"
+                    style={{ width: "100%" }}
+                    type="Number"
+                  />
+                </Form.Item>
+                <Form.Item label="Duración (Seguimiento)" name="duracionSeg" rules={[{ required: true, message: 'Campo obligatorio' }]}>
+                  <Input
+                    placeholder="Digite la duración en minutos"
+                    style={{ width: "100%" }}
+                    type="Number"
+                  />
+                </Form.Item>
+                <Form.Item label="SubPrograma" name="subPrograma" rules={[{ required: form.getFieldValue('contrato') && listSubprograma?.length !== 0, message: 'Campo obligatorio' }]}>
+                  <Select
+                    placeholder="Seleccione un subprograma"
+                    style={{ width: "100%" }}
+                    options={listSubprograma}
+                    disabled={listSubprograma?.length === 0 || !contrato}
+                  />
+                </Form.Item>
+                <Form.Item label="Etiquetas Asistenciales" name="etAsitenciales" rules={[{ required: true, message: 'Campo obligatorio' }]}>
+                  <Select
+                    placeholder="Seleccione"
+                    style={{ width: "100%" }}
+                    options={listEtAsistencial}
+                  />
+                </Form.Item>
+              </div>
             </div>
-          </div>
-          <div className="col-12 col-md-12">
-            <h4 style={{ fontWeight: "bold", textAlign: "left" }}>
-              Clasificación pacientes
-            </h4>
-          </div>
-          <div className="row"
-          >
-            <div className="col-12 col-md-6">
-              <Form.Item valuePropName="checked" name="primeraVez">
-                <Checkbox
-                  style={{ display: "flex", flexDirection: "row-reverse", justifyContent: 'flex-end' }}
-                >
-                  1era Vez:
-                </Checkbox>
-              </Form.Item>
+          ) : null}
+          {current === 1 ? (
+            <div className="row"
+            >
+              <div className="col-12 col-md-12">
+                <h4 style={{ fontWeight: "bold", textAlign: "left" }}>
+                  Clasificación pacientes
+                </h4>
+              </div>
+              <div className="row"
+              >
+                <div className="col-12 col-md-6">
+                  <div>
+                    <Form.Item valuePropName="checked" name="primeraVez">
+                      <Checkbox
+                        style={{ display: "flex", flexDirection: "row-reverse", justifyContent: 'flex-end' }}
+                      >
+                        1era Vez:
+                      </Checkbox>
+                    </Form.Item>
+                  </div>
+                  <div>
+                    <Form.Item valuePropName="checked" name="Prerrq">
+                      <Checkbox
+                        style={{ display: "flex", flexDirection: "row-reverse", justifyContent: 'flex-end' }}
+                      >
+                        Prerrequisito:
+                      </Checkbox>
+                    </Form.Item>
+                  </div>
+
+                </div>
+                <div className="col-12 col-md-6">
+                  <Form.Item label="Mayor de (Años):" name="mayor" rules={[{ required: true, message: 'Campo obligatorio' }]}>
+                    <Input type="number" />
+                  </Form.Item>
+                </div>
+              </div>
+              <div className="row">
+                <div className="col-12 col-md-6">
+                  <Form.Item label="Etiquetas Administrativas" name="etAdmin" rules={[{ required: form.getFieldValue('contrato') && listEtiquetasAdim?.length !== 0, message: 'Campo obligatorio' }]}>
+                    <Select
+                      mode="multiple"
+                      placeholder="Seleccione"
+                      style={{ width: "100%" }}
+                      options={listEtiquetasAdim}
+                      disabled={listEtiquetasAdim?.length === 0 || !contrato}
+                    />
+                  </Form.Item>
+                </div>
+                <div className="col-12 col-md-6">
+                  <Form.Item label="Menor de (Años):" name="menor" rules={[{ required: true, message: 'Campo obligatorio' }]}>
+                    <Input type="number" />
+                  </Form.Item>
+                </div>
+              </div>
+              <div className="row">
+                <div className="col-12 col-md-6">
+                  <Form.Item label="Clasificacion Bim/Trim" name="cBimTrim" rules={[{ required: listClasBimTrim?.length !== 0, message: 'Campo obligatorio' }]}>
+                    <Select
+                      placeholder="Seleccione"
+                      style={{ width: "100%" }}
+                      options={listClasBimTrim}
+                      defaultValue={47939326} // Establece el valor Preterminado
+                      disabled={listClasBimTrim?.length === 0}
+                    />
+                  </Form.Item>
+                </div>
+                <div className="col-12 col-md-6">
+                  <Form.Item label="Tipo Ingreso" name="tIngreso" rules={[{ required: true, message: 'Campo obligatorio' }]}>
+                    <Select
+                      placeholder="Seleccione"
+                      style={{ width: "100%" }}
+                      defaultValue={47918782} // Establece el valor Preterminado
+                      options={listTipoIngreso}
+                    />
+                  </Form.Item>
+                </div>
+              </div>
+              <div className="row">
+                <div className="col-12 col-md-6">
+                  <Form.Item label="Clasificacion Bomba" name="cBomba" rules={[{ required: listClasBomba?.length !== 0, message: 'Campo obligatorio' }]}>
+                    <Select
+                      placeholder="Seleccione"
+                      style={{ width: "100%" }}
+                      options={listClasBomba}
+                      defaultValue={47939476} // Establece el valor Preterminado
+                      disabled={listClasBomba?.length === 0}
+                    />
+                  </Form.Item>
+                </div>
+                <div className="col-12 col-md-6">
+                  <Form.Item label="Sexo al nacer" name="sexoNacer" rules={[{ required: true, message: 'Campo obligatorio' }]}>
+                    <Select
+                      placeholder="Seleccione"
+                      style={{ width: "100%" }}
+                      options={listSexo}
+                    />
+                  </Form.Item>
+                </div>
+              </div>
             </div>
-            <div className="col-12 col-md-6">
-              <Form.Item valuePropName="checked" name="bomba">
-                <Checkbox
-                  style={{ display: "flex", flexDirection: "row-reverse", justifyContent: 'flex-end' }}
-                >
-                  Bomba:
-                </Checkbox>
-              </Form.Item>
-            </div>
-            <div className="col-12 col-md-6">
-              <Form.Item label="Etiquetas Asistenciales" name="etAsitenciales" rules={[{ required: true, message: 'Campo obligatorio' }]}>
-                <Select
-                  placeholder="Seleccione"
-                  style={{ width: "100%" }}
-                  options={listEtAsistencial}
-                />
-              </Form.Item>
-            </div>
-            <div className="col-12 col-md-6">
-              <Form.Item label="Mayor de (Años):" name="mayor" rules={[{ required: true, message: 'Campo obligatorio' }]}>
-                <Input type="number" />
-              </Form.Item>
-            </div>
-            <div className="col-12 col-md-6">
-              <Form.Item label="Menor de (Años):" name="menor" rules={[{ required: true, message: 'Campo obligatorio' }]}>
-                <Input type="number" />
-              </Form.Item>
-            </div>
-          </div>
-          <div className="row">
-            <div className="col-12 col-md-6">
-              <Form.Item label="Etiquetas Administrativas" name="etAdmin" rules={[{ required: form.getFieldValue('contrato') && listEtiquetasAdim?.length !== 0, message: 'Campo obligatorio' }]}>
-                <Select
-                  mode="multiple"
-                  placeholder="Seleccione"
-                  style={{ width: "100%" }}
-                  options={listEtiquetasAdim}
-                  disabled={listEtiquetasAdim?.length === 0 || !contrato}
-                />
-              </Form.Item>
-            </div>
-            <div className="col-12 col-md-6">
-              <Form.Item label="Sexo al nacer" name="sexoNacer" rules={[{ required: true, message: 'Campo obligatorio' }]}>
-                <Select
-                  placeholder="Seleccione"
-                  style={{ width: "100%" }}
-                  options={listSexo}
-                />
-              </Form.Item>
-            </div>
-          </div>
+          ) : null}
         </Form>
       </Modal>
       <Card>
