@@ -81,7 +81,7 @@ export const ViewDetailPlans = ({
   }, [detailPlans]);
 
   const program = async () => {
-    const resp = await validateQuotes(idPaciente);
+    const resp = await validateQuotes();
     if (resp > 0) {
       const detailsPlans = await triggerProgram(detailPlan);
       const resp = await countProgram();

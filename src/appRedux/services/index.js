@@ -750,7 +750,7 @@ export const getListContractsPlans = async () => {
   console.log("token guardado", token);
   try {
     let query = encodeURI(
-      `SELECT name,Primera_Vez,Estadio_txt,Sub_Programa,Meses,Profesion_txt,Clase_Examen_txt,Canales,Etiquetas_Asistenciales_txt,Etiquetas_Administrativas_txt,Sexo_al_Nacer_txt,Menor_de,Mayor_de,Duracion_1era_Visita,Duracion_Seguimiento,Estado_txt,id FROM Contrato_Plan`
+      `SELECT name,Primera_Vez,Estadio_txt,Sub_Programa,Meses,Profesion_txt,Clase_Examen_txt,Canales,Etiquetas_Asistenciales_txt,Etiquetas_Administrativas_txt,Sexo_al_Nacer_txt,Menor_de,Mayor_de,Duracion_1era_Visita,Duracion_Seguimiento,Estado_txt,id FROM Contrato_Plan ORDER BY createdAt DESC`
     );
     const { data } = await httpClient.get(
       `/selectQuery?maxRows=1000000&query=${query}&sessionId=${token}&output=json`
@@ -2580,7 +2580,27 @@ export const createPlanContract = async (values) => {
   const token = localStorage.getItem("token");
   console.log('llega al servicio');
   try {
-    const { data } = await httpClient.get(`/create2?output=json&useIds=true&objName=Contrato_Plan&R18147928=${values?.contrato}&R18147953=${values?.especialidad}&R42695674=${values?.claseExamen || 0}&R19917234=${values?.estadio}&R42695687=${values?.canalAtencion?.join("|")}&Meses=${values?.meses}&Renovacion=${values?.meses}&Duracion_1era_Visita=${values?.firstDuracion}&Duracion_Seguimiento=${values?.duracionSeg}&Mayor_de=${values?.mayor}&Menor_de=${values?.menor}&R44803067=${values?.etiquetaAdmin?.join("|") || 0}&R45397437=${values?.etAsitenciales}&R45397404=${values?.subPrograma || 0}&Sexo_al_Nacer=${values?.sexoNacer}&Primera_Vez=${values?.primeraVez || false}&Prerrequisito=${values?.Prerrq || false}&R47939456=${values?.cBomba}&R47939308=${values?.cBimTrim}&R47918753=${values?.tIngreso}`)
+    const { data } = await httpClient.get(`/create2?output=json&useIds=true&objName=Contrato_Plan&R18147928=${values?.contrato
+    }&R18147953=${values?.especialidad
+    }&R42695674=${values?.claseExamen || 0
+    }&R19917234=${values?.estadio
+    }&R42695687=${values?.canalAtencion?.join("|")
+    }&Meses=${values?.meses
+    }&Renovacion=${values?.meses
+    }&Duracion_1era_Visita=${values?.firstDuracion
+    }&Duracion_Seguimiento=${values?.duracionSeg
+    }&Mayor_de=${values?.mayor
+    }&Menor_de=${values?.menor
+    }&R44803067=${values?.etAdmin?.join("|")
+    }&R45397437=${values?.etAsitenciales
+    }&R45397404=${values?.subPrograma || 0
+    }&Sexo_al_Nacer=${values?.sexoNacer
+    }&Primera_Vez=${values?.primeraVez || false
+    }&Prerrequisito=${values?.Prerrq || false
+    }&R47939456=${values?.cBomba
+    }&R47939308=${values?.cBimTrim
+    }&R47918753=${values?.tIngreso
+    }&sessionId=${token}&output=json`)
     return data;
   } catch (error) {
     httpClient.defaults.headers.common["Authorization"] = "";
@@ -2764,7 +2784,7 @@ export const getInfoQuote = async (id) => {
   const token = localStorage.getItem("token");
   try {
     let query = encodeURI(
-      `SELECT name,Secuencia,Fecha_Cita,Canal_Atencion_txt,Ciudad_Txt,Sedetxt,codeOffice,Codigo_Tipo,Paciente_txt,Plan_Mensual_txt,Especialidad_txt,Profesional_txt,Importado,nameExam,Estado_Txt,Motivo_Cancelacin_txt,Observacin_Cancelacin FROM Consulta WHERE id = ${id}`
+      `SELECT name,Secuencia,Fecha_Cita,Canal_Atencion_txt,Ciudad_Txt,Sedetxt,codeOffice,Codigo_Tipo,Paciente_txt,Plan_Mensual_txt,Especialidad_txt,Profesional_txt,Importado,nameExam,Estado_Txt,Motivo_Cancelacin_txt,Observacin_Cancelacin FROM Consulta WHERE id = ${id} ORDER BY Fecha_Cita DESC`
     );
     const { data } = await httpClient.get(
       `/selectQuery?maxRows=1&query=${query}&sessionId=${token}&output=json`
@@ -3528,13 +3548,12 @@ export const countProgram = async (id) => {
   }
 };
 
-export const validateQuotes = async (id) => {
+export const validateQuotes = async () => {
   const token = localStorage.getItem("token");
   const idPac = localStorage.getItem("idPaciente");
   console.log("token guardado", token);
   let query = encodeURI(
-    `SELECT COUNT(*) FROM Consulta WHERE R15590447=${id == undefined ? idPac : id
-    }`
+    `SELECT COUNT(*) FROM Consulta WHERE R15590447=${idPac}`
   );
   try {
     const { data } = await httpClient.get(
@@ -3556,7 +3575,7 @@ export const getQuotes = async (id) => {
   console.log("token guardado", token);
   try {
     let query = encodeURI(
-      `SELECT id,name,Fecha_Cita,Fecha_Cita_Fin,Profesional_txt, Estado_Txt,Sedetxt,Ciudad_Txt,Canal_Atencion_txt,Plan_Mensual_txt,Codigo_Tipo,nameExam,Duracion FROM Consulta WHERE R15590447 = ${id}`
+      `SELECT id,name,Fecha_Cita,Fecha_Cita_Fin,Profesional_txt, Estado_Txt,Sedetxt,Ciudad_Txt,Canal_Atencion_txt,Plan_Mensual_txt,Codigo_Tipo,nameExam,Duracion FROM Consulta WHERE R15590447 = ${id} ORDER BY Fecha_Cita DESC`
     );
     const { data } = await httpClient.get(
       `/selectQuery?maxRows=1000000&query=${query}&sessionId=${token}&output=json`
@@ -3595,7 +3614,7 @@ export const getQuotesProfessional = async (id) => {
   console.log("token guardado", token);
   try {
     let query = encodeURI(
-      `SELECT id,name,Fecha_Cita,Fecha_Cita_Fin,Profesional_txt, Estado_Txt,Sedetxt,Ciudad_Txt,Canal_Atencion_txt,Plan_Mensual_txt,Codigo_Tipo,nameExam FROM Consulta WHERE R20066472 = ${id}`
+      `SELECT id,name,Fecha_Cita,Fecha_Cita_Fin,Profesional_txt, Estado_Txt,Sedetxt,Ciudad_Txt,Canal_Atencion_txt,Plan_Mensual_txt,Codigo_Tipo,nameExam FROM Consulta WHERE R20066472 = ${id} ORDER BY Fecha_Cita DESC`
     );
     const { data } = await httpClient.get(
       `/selectQuery?maxRows=1000000&query=${query}&sessionId=${token}&output=json`

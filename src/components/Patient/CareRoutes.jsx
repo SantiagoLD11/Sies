@@ -79,7 +79,7 @@ export const CareRoutes = ({ id, getInfo }) => {
 
   const columns = [
     {
-      title: "Contrato sede",
+      title: "Plan",
       dataIndex: "contrato_sede",
       key: "contrato_sede",
       render: (text) => <>{text}</>,

@@ -36,6 +36,9 @@ import { SelectMeses } from "../constants/Months";
 import "../styles/global/customGlobal.css";
 import { GeneratingChanges } from "../components/Underwriters/GeneratingChanges";
 
+var objForm = null;
+var objForm2 = null;
+
 const AdminRoutes = () => {
   const [form] = Form.useForm();
   const [inputDate, setInputDate] = useState('');
@@ -47,6 +50,9 @@ const AdminRoutes = () => {
   const [contrato, setContrato] = useState(false);
   const [_idProgram, setProgram] = useState(false);
   const [listSubprograma, setSubprograma] = useState(null);
+  const [tipoIngresoDefault, setTipoIngresoDefault] = useState(null); 
+  const [clBimTrimDefault, setClBimTrimDefault] = useState(null);
+  const [clBombaDefault, setClBombaDefault] = useState(null);
   const [listEspecialidad, setListEspecialidad] = useState(null);
   const [listClaseExamen, setListClaseExamen] = useState(null);
   const [listCanalAtencion, setListCanalAtencion] = useState(null);
@@ -135,9 +141,20 @@ const AdminRoutes = () => {
   const next = async () => {
     const isValid = await validateForm();
     if (current < 1 && isValid)
+    {
+      console.log('valores form Paso 1', form.getFieldsValue());
+      objForm = null;
+      objForm = {...form.getFieldsValue()};
+      console.log('obj form Paso 1', objForm);
       setCurrent(current + 1);
-      else if(current == 1){
-      await onSubmit(form.getFieldsValue());
+    }
+    else if(current == 1 && isValid){
+      console.log('valores form Paso 2', form.getFieldsValue());
+      objForm2 = null;
+      objForm2 = form.getFieldsValue();
+      console.log('obj form Final', {...objForm,...objForm2});
+      //setCurrent(current + 1);
+      await onSubmit({...objForm,...objForm2});
       form.resetFields();
     }
   };
@@ -146,7 +163,6 @@ const AdminRoutes = () => {
       setCurrent(current - 1);
   };
 
-  console.log('valores form', form.getFieldsValue());
 
   const onSubmit = async (values) => {
     console.log(values);
@@ -167,6 +183,9 @@ const AdminRoutes = () => {
     }
     setLoading(false);
     closeModalCreate();
+    setCurrent(current - 1);
+    setActiveKey(0);
+    setActiveKey(1);
   };
 
   const validateForm = async () => {
@@ -176,19 +195,9 @@ const AdminRoutes = () => {
       return true; // Form is valid
     } catch (errorInfo) {
       // Handle validation errors and show error messages
-      const errorMessages = [];
-  
-      // Iterate through the errorInfo object and collect error messages
-      Object.keys(errorInfo).forEach((fieldName) => {
-        const errors = errorInfo[fieldName];
-        console.log('Hola Mundo : '+ errors);
-        errors.forEach((error) => {
-          errorMessages.push(error.message);
-        });
-      });
   
       // Show error messages to the user (you can customize this part)
-      message.alert(`Form validation failed: ${errorMessages.join(", ")}`);
+      console.log(`Form validation failed: ${errorInfo}`);
   
       return false; // Form is not valid
     }
@@ -257,7 +266,7 @@ const AdminRoutes = () => {
           </Button>,
           <Button
             form="crear_plan_contrato"
-            htmlType="submit"
+            htmlType="button"
             loading={loading}
             key="submit-form-plan"
             type="primary"
@@ -265,7 +274,7 @@ const AdminRoutes = () => {
               next();
             }}
           >
-            Guardar
+            Continuar
           </Button>,
         ]}
       >
@@ -277,6 +286,28 @@ const AdminRoutes = () => {
           autoComplete="off"
           layout="vertical"
           initialValues={{ checkboxField: false }}
+          fields={[
+            {
+              name: ["cBomba"],
+              value: clBombaDefault || Number(47939476),
+            },
+            {
+              name: ["tIngreso"],
+              value: tipoIngresoDefault || Number(47918782),
+            },
+            {
+              name: ["cBimTrim"],
+              value: clBimTrimDefault || Number(47939326),
+            },
+            {
+              name: ["primeraVez"], 
+              value: false,
+            },
+            {
+              name: ["Prerrq"],
+              value: false,
+            }
+          ]}
         >
           <Steps
             current={current}
@@ -304,6 +335,9 @@ const AdminRoutes = () => {
                         const resListBomba = await getListBomba();
                         setlistClasBomba(resListBomba);
                         setContrato(true);
+                        setTipoIngresoDefault(Number(47918782));
+                        setClBimTrimDefault(Number(47939326));
+                        setClBombaDefault(Number(47939476));
                         setProgram(parseInt(options?.idPrograma));
                         console.log("id Programa" + _idProgram);
                       }
@@ -419,11 +453,11 @@ const AdminRoutes = () => {
                     </Form.Item>
                   </div>
                   <div>
-                    <Form.Item valuePropName="checked" name="Prerrq">
+                    <Form.Item valuePropName="checked" name="Prerrq"> 
                       <Checkbox
                         style={{ display: "flex", flexDirection: "row-reverse", justifyContent: 'flex-end' }}
                       >
-                        Prerrequisito:
+                        Predecesora:
                       </Checkbox>
                     </Form.Item>
                   </div>
@@ -455,36 +489,34 @@ const AdminRoutes = () => {
               </div>
               <div className="row">
                 <div className="col-12 col-md-6">
-                  <Form.Item label="Clasificacion Bim/Trim" name="cBimTrim" rules={[{ required: listClasBimTrim?.length !== 0, message: 'Campo obligatorio' }]}>
+                  <Form.Item label="Clasificacion Bim/Trim" name="cBimTrim" rules={[{ required: _idProgram == 18147640, message: 'Campo obligatorio' }]}>
                     <Select
                       placeholder="Seleccione"
                       style={{ width: "100%" }}
                       options={listClasBimTrim}
-                      defaultValue={47939326} // Establece el valor Preterminado
-                      disabled={listClasBimTrim?.length === 0}
+                      disabled={ _idProgram !== 18147640}
                     />
                   </Form.Item>
                 </div>
                 <div className="col-12 col-md-6">
-                  <Form.Item label="Tipo Ingreso" name="tIngreso" rules={[{ required: true, message: 'Campo obligatorio' }]}>
+                  <Form.Item label="Tipo Ingreso" name="tIngreso" rules={[{ required: _idProgram == 18147640, message: 'Campo obligatorio' }]}>
                     <Select
                       placeholder="Seleccione"
                       style={{ width: "100%" }}
-                      defaultValue={47918782} // Establece el valor Preterminado
                       options={listTipoIngreso}
+                      disabled = {_idProgram !== 18147640}
                     />
                   </Form.Item>
                 </div>
               </div>
               <div className="row">
                 <div className="col-12 col-md-6">
-                  <Form.Item label="Clasificacion Bomba" name="cBomba" rules={[{ required: listClasBomba?.length !== 0, message: 'Campo obligatorio' }]}>
+                  <Form.Item label="Clasificacion Bomba" name="cBomba" rules={[{ required: _idProgram == 27357773, message: 'Campo obligatorio' }]}>
                     <Select
                       placeholder="Seleccione"
                       style={{ width: "100%" }}
                       options={listClasBomba}
-                      defaultValue={47939476} // Establece el valor Preterminado
-                      disabled={listClasBomba?.length === 0}
+                      disabled={ _idProgram !== 27357773}
                     />
                   </Form.Item>
                 </div>
