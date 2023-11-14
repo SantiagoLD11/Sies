@@ -20,6 +20,7 @@ import {
   getListContrato,
   getListEspecialidad,
   getListClaseExamen,
+  getListSedesSies,
   getListCanalAtencion,
   getListEstadio,
   getListBomba,
@@ -62,6 +63,7 @@ const AdminRoutes = () => {
   const [listTipoIngreso, setlistTipoIngreso] = useState(null);
   const [listClasBomba, setlistClasBomba] = useState(null);
   const [listEtAsistencial, setListEtAsistencial] = useState(null);
+  const [listSedes, setListSedes] = useState(null);
   const [listSexo, setListSexo] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [
@@ -334,6 +336,15 @@ const AdminRoutes = () => {
                         setlistClasBimTrim(resListBimTrim);
                         const resListBomba = await getListBomba();
                         setlistClasBomba(resListBomba);
+
+                        console.log('value: '+ value);
+
+
+                        const resListSedes = await getListSedesSies(value);
+                        setListSedes(resListSedes);
+                        
+                        
+
                         setContrato(true);
                         setTipoIngresoDefault(Number(47918782));
                         setClBimTrimDefault(Number(47939326));
@@ -526,6 +537,19 @@ const AdminRoutes = () => {
                       placeholder="Seleccione"
                       style={{ width: "100%" }}
                       options={listSexo}
+                    />
+                  </Form.Item>
+                </div>
+              </div>
+              <div className="row">
+                <div className="col-12 col-md-6">
+                  <Form.Item label="Sedes(Opcional)" name="sedesSies" rules={[{ required: form.getFieldValue('contrato') && listSedes?.length !== 0, message: 'Campo obligatorio' }]}>
+                    <Select
+                      placeholder="Seleccione"
+                      mode="multiple"
+                      style={{ width: "100%" }}
+                      options={listSedes}
+                      disabled={listSedes?.length === 0 || !contrato}
                     />
                   </Form.Item>
                 </div>

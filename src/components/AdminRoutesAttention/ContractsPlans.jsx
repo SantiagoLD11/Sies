@@ -25,6 +25,7 @@ import {
   InfoCircleOutlined,
   MoreOutlined,
 } from "@ant-design/icons";
+import { tagStatusCPView } from "../../constants/Tags";
 const { Panel } = Collapse;
 
 export const ContractsPlans = ({ activeKey }) => {
@@ -105,11 +106,19 @@ export const ContractsPlans = ({ activeKey }) => {
       title: "Contrato Plan",
       dataIndex: "name",
       key: "name",
+      render :(text) => <strong>{text}</strong>,
     },
     {
       title: "Primera Vez",
       dataIndex: "Primera_Vez",
       key: "Primera_Vez",
+      render: (val) => <Checkbox disabled checked={val} />,
+    },
+    {
+      title: "Predecesor",
+      dataIndex: "Prerrequisito",
+      key: "Prerrequisito",
+      render: (val) => <Checkbox disabled checked={val} />,
     },
     {
       title: "Estadio",
@@ -135,6 +144,7 @@ export const ContractsPlans = ({ activeKey }) => {
       title: "Clase Exámen",
       dataIndex: "Clase_Examen_txt",
       key: "Clase_Examen_txt",
+      render :(text) => <strong>{text}</strong>,
     },
     {
       title: "Canales Atención",
@@ -159,6 +169,7 @@ export const ContractsPlans = ({ activeKey }) => {
       title: "Etiqueta Asistencial",
       dataIndex: "Etiquetas_Asistenciales_txt",
       key: "Etiquetas_Asistenciales_txt",
+      render :(text) => <strong>{text}</strong>,
     },
     {
       title: "Etiquetas Administrativas",
@@ -185,6 +196,40 @@ export const ContractsPlans = ({ activeKey }) => {
       key: "Sexo_al_Nacer_txt",
     },
     {
+      title: "Tipo Ingreso",
+      dataIndex: "Tipo_Ingreso_txt",
+      key: "Tipo_Ingreso_txt",
+    },
+    {
+      title: "Clasificacion Bim/Trim",
+      dataIndex: "Clasificacion_BT_txt",
+      key: "Clasificacion_BT_txt",
+    },
+    {
+      title: "Clasificacion Bomba",
+      dataIndex: "Clasificacion_Bomba_txt",
+      key: "Clasificacion_Bomba_txt",
+    },
+    {
+      title: "Sedes",
+      dataIndex: "Sedes_txt",
+      key: "Sedes_txt",
+      render: (text) => {
+        const list = text.split(",");
+        return (
+          <span>
+            {(
+              <ul>
+                {list?.map((value) => (
+                  <li key={value}>{value || "No Aplica"}</li>
+                ))}
+              </ul>
+            ) || "-"}
+          </span>
+        );
+      },
+    },
+    {
       title: "Menor de",
       dataIndex: "Menor_de",
       key: "Menor_de",
@@ -208,6 +253,12 @@ export const ContractsPlans = ({ activeKey }) => {
       title: "Estado",
       dataIndex: "Estado_txt",
       key: "Estado_txt",
+      render :(text) => (
+        <Tag style={{ width: "100%" }} color={tagStatusCPView[text]?.color}>
+          {tagStatusCPView[text]?.text}
+          <strong>{text}</strong>
+        </Tag>
+      ),
     },
   ];
 

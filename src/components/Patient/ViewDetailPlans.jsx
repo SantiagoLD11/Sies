@@ -81,10 +81,10 @@ export const ViewDetailPlans = ({
   }, [detailPlans]);
 
   const program = async () => {
-    const resp = await validateQuotes();
+    const resp = await validateQuotes(idPaciente);
     if (resp > 0) {
       const detailsPlans = await triggerProgram(detailPlan);
-      const resp = await countProgram();
+      const resp = await countProgram(detailPlan);
       if (resp == 0) {
         await messageApi.open({
           type: "error",

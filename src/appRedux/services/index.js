@@ -750,7 +750,7 @@ export const getListContractsPlans = async () => {
   console.log("token guardado", token);
   try {
     let query = encodeURI(
-      `SELECT name,Primera_Vez,Estadio_txt,Sub_Programa,Meses,Profesion_txt,Clase_Examen_txt,Canales,Etiquetas_Asistenciales_txt,Etiquetas_Administrativas_txt,Sexo_al_Nacer_txt,Menor_de,Mayor_de,Duracion_1era_Visita,Duracion_Seguimiento,Estado_txt,id FROM Contrato_Plan ORDER BY createdAt DESC`
+      `SELECT name,Primera_Vez,Estadio_txt,Sub_Programa,Meses,Profesion_txt,Clase_Examen_txt,Canales,Etiquetas_Asistenciales_txt,Etiquetas_Administrativas_txt,Sexo_al_Nacer_txt,Menor_de,Mayor_de,Duracion_1era_Visita,Duracion_Seguimiento,Estado_txt,id,Sedes_txt,Clasificacion_Bomba_txt,Clasificacion_BT_txt,Tipo_Ingreso_txt,Prerrequisito FROM Contrato_Plan ORDER BY createdAt DESC`
     );
     const { data } = await httpClient.get(
       `/selectQuery?maxRows=1000000&query=${query}&sessionId=${token}&output=json`
@@ -776,6 +776,11 @@ export const getListContractsPlans = async () => {
           Duracion_Seguimiento: value[14],
           Estado_txt: value[15],
           id: value[16],
+          Sedes_txt: value[17],
+          Clasificacion_Bomba_txt: value[18],
+          Clasificacion_BT_txt: value[19],
+          Tipo_Ingreso_txt: value[20],
+          Prerrequisito: value[21]
         };
       });
       return final_data;
@@ -1096,6 +1101,38 @@ export const getListCanalAtencionfilter = async (canal) => {
   try {
     let query = encodeURI(
       `SELECT id,name FROM Canal_Atencion WHERE id IN (${canal})`
+    );
+    const { data } = await httpClient.get(
+      `/selectQuery?maxRows=1300&query=${query}&sessionId=${token}&output=json`
+    );
+    if (data.length > 0) {
+      const final_data = data.map((value) => {
+        return { value: value[0], label: value[1] };
+      });
+      return final_data;
+    } else {
+      return [];
+    }
+  } catch (error) {
+    httpClient.defaults.headers.common["Authorization"] = "";
+    return Promise.reject(error);
+  }
+};
+
+export const getListSedesSies = async (idContrato) => {
+  const token = localStorage.getItem("token");
+  try {
+    let queryCS = encodeURI(
+      `SELECT R18621257,GROUP_CONCAT(R49002959 SEPARATOR ',') FROM Contrato_Sede WHERE R18621257 = ${idContrato} GROUP BY R18621257 `
+    );
+    const { dataCS }  = await httpClient.get(
+      `/selectQuery?maxRows=1300&query=${queryCS}&sessionId=${token}&output=json`
+    );
+
+    console.log(dataCS);
+
+    let query = encodeURI(
+      `SELECT id,name FROM IPS_Afiliada WHERE id IN(${dataCS[0][1]})`
     );
     const { data } = await httpClient.get(
       `/selectQuery?maxRows=1300&query=${query}&sessionId=${token}&output=json`
@@ -2600,6 +2637,7 @@ export const createPlanContract = async (values) => {
     }&R47939456=${values?.cBomba
     }&R47939308=${values?.cBimTrim
     }&R47918753=${values?.tIngreso
+    }&R48813645=${values?.sedesSies?.join("|")
     }&sessionId=${token}&output=json`)
     return data;
   } catch (error) {
@@ -3548,12 +3586,13 @@ export const countProgram = async (id) => {
   }
 };
 
-export const validateQuotes = async () => {
+export const validateQuotes = async (id) => {
   const token = localStorage.getItem("token");
   const idPac = localStorage.getItem("idPaciente");
   console.log("token guardado", token);
   let query = encodeURI(
-    `SELECT COUNT(*) FROM Consulta WHERE R15590447=${idPac}`
+    `SELECT COUNT(*) FROM Consulta WHERE R15590447=${id == undefined ? idPac : id
+    }`
   );
   try {
     const { data } = await httpClient.get(

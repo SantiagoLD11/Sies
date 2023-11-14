@@ -86,3 +86,14 @@ export const tagStatus4 = {
     text: "Programado",
   },
 };
+
+export const tagStatusCPView = {
+  Creado: {
+    color: "#62a864",
+    text: "Activo",
+  },
+  Inactivo: {
+    color: "#BFBFBF",
+    text: "Inactivo",
+  },
+};
