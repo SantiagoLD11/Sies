@@ -33,7 +33,7 @@ export const CareRoutes = ({ id, getInfo }) => {
     fecha_inscripcion: "",
     fecha_activacion: "",
     fecha_renovacion: "",
-    subprograma: "",
+    Sub_Programa_txt: "",
     renovacion: false,
     programa: "",
     contrato_sede: "",
@@ -120,8 +120,8 @@ export const CareRoutes = ({ id, getInfo }) => {
     },
     {
       title: "Sub programa",
-      dataIndex: "sub_programa",
-      key: "sub_programa",
+      dataIndex: "Sub_Programa_txt",
+      key: "Sub_Programa_txt",
     },
     {
       title: "Estado",

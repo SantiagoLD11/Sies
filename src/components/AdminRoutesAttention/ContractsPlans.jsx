@@ -1,4 +1,5 @@
 import { React, useState, useEffect } from "react";
+import Swal from "sweetalert2";
 import {
   Table,
   Collapse,
@@ -8,6 +9,7 @@ import {
   Row,
   Form,
   Checkbox,
+  Tag,
 } from "antd";
 import {
   getListContractsPlans,
@@ -55,8 +57,45 @@ export const ContractsPlans = ({ activeKey }) => {
     setListClaseExamen(respuest);
   };
 
-  const inactivarContrato = async (id) => {
-    await inactivarContratoPlan(id);
+  const inactivarContrato = async (id,Estado) => {
+    if(Estado == 'Activo'){
+      Swal.fire({
+        title: "¿Seguro?",
+        text: "¿Esta seguro de Inactivar el Contrato Plan?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Si",
+        cancelButtonText: "No",
+      }).then(async (result) => {
+        if (result.isConfirmed) {
+            await inactivarContratoPlan(id,44189567);
+          Swal.fire("El Contrato Plan fue Inactivado");
+        }
+      });
+
+    }else{
+      Swal.fire({
+        title: "¿Seguro?",
+        text: "¿Esta seguro de Activar el Contrato Plan?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Si",
+        cancelButtonText: "No",
+      }).then(async (result) => {
+        if (result.isConfirmed) {
+            await inactivarContratoPlan(id,44189580);
+          Swal.fire("El Contrato Plan fue Activado");
+        }
+      });
+    }
+    setLoading(true);
+    const resp = await getListContractsPlans();
+    setLoading(false);
+    setData(resp);
   };
 
   const columns = [
@@ -90,8 +129,8 @@ export const ContractsPlans = ({ activeKey }) => {
                   <EditOutlined />
                 </Button>
               </Tooltip>
-              <Tooltip title="Inactivar">
-                <Button onClick={() => inactivarContrato(data.id)}>
+              <Tooltip title={`${data.Estado_txt == 'Activo' ? 'Inactivar' : 'Activar'}`}>
+                <Button onClick={() => inactivarContrato(data.id,data.Estado_txt)}>
                   <InfoCircleOutlined />
                 </Button>
               </Tooltip>
@@ -106,7 +145,7 @@ export const ContractsPlans = ({ activeKey }) => {
       title: "Contrato Plan",
       dataIndex: "name",
       key: "name",
-      render :(text) => <strong>{text}</strong>,
+      render: (text) => <strong>{text}</strong>,
     },
     {
       title: "Primera Vez",
@@ -144,7 +183,7 @@ export const ContractsPlans = ({ activeKey }) => {
       title: "Clase Exámen",
       dataIndex: "Clase_Examen_txt",
       key: "Clase_Examen_txt",
-      render :(text) => <strong>{text}</strong>,
+      render: (text) => <strong>{text}</strong>,
     },
     {
       title: "Canales Atención",
@@ -169,25 +208,27 @@ export const ContractsPlans = ({ activeKey }) => {
       title: "Etiqueta Asistencial",
       dataIndex: "Etiquetas_Asistenciales_txt",
       key: "Etiquetas_Asistenciales_txt",
-      render :(text) => <strong>{text}</strong>,
+      render: (text) => <strong>{text}</strong>,
     },
     {
       title: "Etiquetas Administrativas",
       dataIndex: "Etiquetas_Administrativas_txt",
       key: "Etiquetas_Administrativas_txt",
       render: (text) => {
-        const list = text.split(",");
-        return (
-          <span>
-            {(
-              <ul>
-                {list?.map((value) => (
-                  <li key={value}>{value || "Sin información"}</li>
-                ))}
-              </ul>
-            ) || "-"}
-          </span>
-        );
+        if (text !== null) {
+          const list = text.split(",");
+          return (
+            <span>
+              {(
+                <ul>
+                  {list?.map((value) => (
+                    <li key={value}>{value || "Sin información"}</li>
+                  ))}
+                </ul>
+              ) || "-"}
+            </span>
+          );
+        }
       },
     },
     {
@@ -215,18 +256,20 @@ export const ContractsPlans = ({ activeKey }) => {
       dataIndex: "Sedes_txt",
       key: "Sedes_txt",
       render: (text) => {
-        const list = text.split(",");
-        return (
-          <span>
-            {(
-              <ul>
-                {list?.map((value) => (
-                  <li key={value}>{value || "No Aplica"}</li>
-                ))}
-              </ul>
-            ) || "-"}
-          </span>
-        );
+        if (text !== null) {
+          const list = text.split(",");
+          return (
+            <span>
+              {(
+                <ul>
+                  {list?.map((value) => (
+                    <li key={value}>{value || "No Aplica"}</li>
+                  ))}
+                </ul>
+              ) || "-"}
+            </span>
+          );
+        }
       },
     },
     {
@@ -253,10 +296,9 @@ export const ContractsPlans = ({ activeKey }) => {
       title: "Estado",
       dataIndex: "Estado_txt",
       key: "Estado_txt",
-      render :(text) => (
+      render: (text) => (
         <Tag style={{ width: "100%" }} color={tagStatusCPView[text]?.color}>
-          {tagStatusCPView[text]?.text}
-          <strong>{text}</strong>
+          <strong> {tagStatusCPView[text]?.text}</strong>
         </Tag>
       ),
     },

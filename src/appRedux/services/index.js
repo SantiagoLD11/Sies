@@ -1081,7 +1081,7 @@ export const listCiudades = async () => {
     let query = encodeURI(`SELECT Nombre,id FROM Ciudad`);
     const { data } = await httpClient.get(
       `/selectQuery?maxRows=1300&query=${query}&sessionId=${token}&output=json`
-    );
+    )
     if (data.length > 0) {
       const final_data = data.map((value) => {
         return { value: value[1], label: value[0] };
@@ -1089,7 +1089,7 @@ export const listCiudades = async () => {
       return final_data;
     } else {
       return [];
-    }
+    };
   } catch (error) {
     httpClient.defaults.headers.common["Authorization"] = "";
     return Promise.reject(error);
@@ -1119,20 +1119,11 @@ export const getListCanalAtencionfilter = async (canal) => {
   }
 };
 
-export const getListSedesSies = async (idContrato) => {
+export const getListContratoSedesAsync = async (idContrato) => {
   const token = localStorage.getItem("token");
   try {
-    let queryCS = encodeURI(
-      `SELECT R18621257,GROUP_CONCAT(R49002959 SEPARATOR ',') FROM Contrato_Sede WHERE R18621257 = ${idContrato} GROUP BY R18621257 `
-    );
-    const { dataCS }  = await httpClient.get(
-      `/selectQuery?maxRows=1300&query=${queryCS}&sessionId=${token}&output=json`
-    );
-
-    console.log(dataCS);
-
     let query = encodeURI(
-      `SELECT id,name FROM IPS_Afiliada WHERE id IN(${dataCS[0][1]})`
+      `SELECT R18621257,GROUP_CONCAT(R49002959 SEPARATOR ',') FROM Contrato_Sede WHERE R18621257 = ${idContrato} GROUP BY R18621257 `
     );
     const { data } = await httpClient.get(
       `/selectQuery?maxRows=1300&query=${query}&sessionId=${token}&output=json`
@@ -1143,6 +1134,39 @@ export const getListSedesSies = async (idContrato) => {
       });
       return final_data;
     } else {
+      return [];
+    }
+  } catch (error) {
+    httpClient.defaults.headers.common["Authorization"] = "";
+    return Promise.reject(error);
+  }
+};
+
+export const getListSedesSies = async (idContrato) => {
+  const token = localStorage.getItem("token");
+  try {
+
+    const dataCs = await getListContratoSedesAsync(idContrato);
+
+    if(dataCs.length > 0){
+      console.log("Datos: "+JSON.stringify(dataCs, null, 2));
+      console.log("id Contrato: "+idContrato);
+      let query = encodeURI(
+        `SELECT id,name FROM IPS_Afiliada WHERE id IN(${dataCs[0].label})`
+      );
+      const { data } = await httpClient.get(
+        `/selectQuery?maxRows=1300&query=${query}&sessionId=${token}&output=json`
+      );
+      if (data.length > 0) {
+        const final_data = data.map((value) => {
+          return { value: value[0], label: value[1] };
+        });
+        return final_data;
+      } else {
+        return [];
+      }
+
+    } else{
       return [];
     }
   } catch (error) {
@@ -2554,11 +2578,11 @@ export const actualizarRegistroNovedadInformado = async (id) => {
   }
 };
 
-export const inactivarContratoPlan = async (id) => {
+export const inactivarContratoPlan = async (id,idEstado) => {
   const token = localStorage.getItem("token");
   try {
     const { data } = await httpClient.get(
-      `/updateRecord?output=json&useIds=true&objName=Contrato_Plan&id=${id}&Estado=44189567&sessionId=${token}&output=json`
+      `/updateRecord?output=json&useIds=true&objName=Contrato_Plan&id=${id}&Estado=${idEstado}&sessionId=${token}&output=json`
     );
     return data;
   } catch (error) {
@@ -2978,7 +3002,7 @@ export const getViewDetailPlans = async (id) => {
   const token = localStorage.getItem("token");
   try {
     let query = encodeURI(
-      `SELECT createdAt,Fecha_Inscripcion,Fecha_Activacion, Fecha_Renovacion,SubPrograma,Renovacion,Programa_txt,Contrato_Sede_txt, Ciudad_txt,Estadio_txt,Contrato_Plan_Gomedisys_txt,Primera_Vez,Estado_txt,R25170505 FROM Plan WHERE id=${id}`
+      `SELECT createdAt,Fecha_Inscripcion,Fecha_Activacion, Fecha_Renovacion,Sub_Programa_txt,Renovacion,Programa_txt,Sede_txt,Ciudad_txt,Estadio_txt,Contrato_Plan_Gomedisys_txt,Primera_Vez,Estado_txt,R25170505,Contrato_Gomedisys_txt,R45912497,Etiqueta_Asistencial_txt,R45912488,Etiqueta_Administrativa_txt,Clasificacion_BT_txt,Clasificacion_Bomba_txt FROM Plan WHERE id=${id}`
     );
     const { data } = await httpClient.get(
       `/selectQuery?maxRows=1&query=${query}&sessionId=${token}&output=json`
@@ -2990,16 +3014,23 @@ export const getViewDetailPlans = async (id) => {
         fecha_inscripcion: values[1],
         fecha_activacion: values[2],
         fecha_renovacion: values[3],
-        subprograma: values[4],
+        Sub_Programa_txt: values[4],
         renovacion: values[5],
         programa: values[6],
-        contrato_sede: values[7],
+        Sede_txt: values[7],
         ciudad: values[8],
         estadio: values[9],
         contrato_plan: values[10],
         primera_vez: values[11],
         Estado_txt: values[12],
         idPrograma: values[13],
+        contratoGomedisys: values[14],
+        idEtAsistencial: values[15],
+        nameEtAsistencial: values[16],
+        idEtAdmin: values[17],
+        nameEtAdmin: values[18],
+        csBT: values[19],
+        csBomba: values[20],
       };
     } else {
       return null;

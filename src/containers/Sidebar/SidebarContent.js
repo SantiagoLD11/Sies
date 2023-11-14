@@ -60,11 +60,19 @@ const SidebarContent = ({ sidebarCollapsed, setSidebarCollapsed }) => {
             theme={themeType === THEME_TYPE_LITE ? "lite" : "dark"}
             mode="inline"
           >
-            {/* <Menu.Item key="sample">
-              <Link to="/sample"><i className="icon icon-widgets"/>
-                <span><IntlMessages id="sidebar.samplePage"/></span>
-              </Link>
-            </Menu.Item> */}
+            {Administrador_AdminProfesionales && (
+              <Menu.Item key="perfil">
+                <Link to="/dashboard">
+                  <i
+                    style={{ color: "#FFF" }}
+                    className="icon icon-profile2"
+                  />
+                  <span style={{ color: "#FFF" }}>
+                    <IntlMessages id="Dashboard" />
+                  </span>
+                </Link>
+              </Menu.Item>
+            )}
             <Menu.SubMenu title={"Profesionales"}>
               {Administrador_AdminProfesionales && (
                 <Menu.Item key="perfil">
@@ -79,16 +87,6 @@ const SidebarContent = ({ sidebarCollapsed, setSidebarCollapsed }) => {
                   </Link>
                 </Menu.Item>
               )}
-              {/* {Administrador_AdminProfesionales && (
-              <Menu.Item key="perfil">
-                <Link to="/list-profesional">
-                  <i style={{ color: "#FFF" }} className="icon icon-profile2" />
-                  <span style={{ color: "#FFF" }}>
-                    <IntlMessages id="Listado de profesionales" />
-                  </span>
-                </Link>
-              </Menu.Item>
-            )} */}
               {Administrador_AdminProfesionales && (
                 <Menu.Item key="perfil">
                   <Link to="/historico-bloqueos">
@@ -128,6 +126,22 @@ const SidebarContent = ({ sidebarCollapsed, setSidebarCollapsed }) => {
                     />
                     <span style={{ color: "#FFF" }}>
                       <IntlMessages id="Administración Rutas" />
+                    </span>
+                  </Link>
+                </Menu.Item>
+              )}
+            </Menu.SubMenu>
+
+            <Menu.SubMenu title={"Informes"}>
+              {Administrador_AdminProfesionales && (
+                <Menu.Item key="perfil">
+                  <Link to="/notas-admin">
+                    <i
+                      style={{ color: "#FFF" }}
+                      className="icon icon-profile2"
+                    />
+                    <span style={{ color: "#FFF" }}>
+                      <IntlMessages id="Notas Administrativas" />
                     </span>
                   </Link>
                 </Menu.Item>

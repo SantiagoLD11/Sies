@@ -88,7 +88,7 @@ export const tagStatus4 = {
 };
 
 export const tagStatusCPView = {
-  Creado: {
+  Activo: {
     color: "#62a864",
     text: "Activo",
   },

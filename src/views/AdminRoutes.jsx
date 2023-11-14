@@ -163,6 +163,8 @@ const AdminRoutes = () => {
   const prev = () => {
     if (current > 0)
       setCurrent(current - 1);
+    else if(current == 0)
+      closeModalCreate();
   };
 
 
@@ -253,7 +255,7 @@ const AdminRoutes = () => {
         Crear Contrato Plan
       </Button>
       <Modal
-        title="Creación contrato plan"
+        title="Creación Contrato Plan"
         width="800px"
         open={modalVisible}
         onCancel={closeModalCreate}
@@ -336,15 +338,8 @@ const AdminRoutes = () => {
                         setlistClasBimTrim(resListBimTrim);
                         const resListBomba = await getListBomba();
                         setlistClasBomba(resListBomba);
-
-                        console.log('value: '+ value);
-
-
                         const resListSedes = await getListSedesSies(value);
                         setListSedes(resListSedes);
-                        
-                        
-
                         setContrato(true);
                         setTipoIngresoDefault(Number(47918782));
                         setClBimTrimDefault(Number(47939326));
@@ -468,7 +463,7 @@ const AdminRoutes = () => {
                       <Checkbox
                         style={{ display: "flex", flexDirection: "row-reverse", justifyContent: 'flex-end' }}
                       >
-                        Predecesora:
+                        Predecesor:
                       </Checkbox>
                     </Form.Item>
                   </div>
@@ -543,7 +538,7 @@ const AdminRoutes = () => {
               </div>
               <div className="row">
                 <div className="col-12 col-md-6">
-                  <Form.Item label="Sedes(Opcional)" name="sedesSies" rules={[{ required: form.getFieldValue('contrato') && listSedes?.length !== 0, message: 'Campo obligatorio' }]}>
+                  <Form.Item label="Sedes(Opcional)" name="sedesSies" >
                     <Select
                       placeholder="Seleccione"
                       mode="multiple"

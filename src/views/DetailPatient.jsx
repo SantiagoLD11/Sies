@@ -165,73 +165,7 @@ const DetailPatient = () => {
           // bodyStyle={{ display: "flex" }}
           style={{ marginBottom: "0px", width: "440px" }}
         >
-          <Row>
-            {atribEtiquetas?.id_Etiqueta_Asistencial_Actual != null ? (
-              <Col span={atribEtiquetas?.id_Etiqueta_Amin_Actual ? 12 : 24}>
-                <>
-                  <div
-                    style={{
-                      fontSize: "15px",
-                      color: "#FFF",
-                    }}
-                  >
-                    Etiqueta Asistencial
-                  </div>
-                  <Divider />
-                  <div
-                    className="d-flex align-items-center "
-                    style={{ margin: "10px" }}
-                  >
-                    <img
-                      src={
-                        icons[atribEtiquetas?.id_Etiqueta_Asistencial_Actual]
-                          ?.url || icons[null].url
-                      }
-                      style={{ height: "50px" }}
-                      alt="Descripción del icono"
-                    ></img>
-                    <div>
-                      <div style={{ color: "#FFF", fontWeight: "bold" }}>
-                        {atribEtiquetas?.Etiqueta_Asistencial_Actual}:
-                      </div>
-                      <Switch disabled checked={true} />
-                    </div>
-                  </div>
-                </>
-              </Col>
-            ) : null}
-            {atribEtiquetas?.id_Etiqueta_Amin_Actual != null ? (
-              <Col
-                span={atribEtiquetas?.id_Etiqueta_Asistencial_Actual ? 12 : 24}
-              >
-                <>
-                  <div style={{ fontSize: "15px", color: "#FFF" }}>
-                    Etiqueta Administrativa
-                  </div>
-                  <Divider />
-                  <div
-                    className="d-flex align-items-center "
-                    style={{ margin: "10px" }}
-                  >
-                    <img
-                      src={
-                        icons[atribEtiquetas?.id_Etiqueta_Amin_Actual]?.url ||
-                        icons[null].url
-                      }
-                      style={{ height: "50px" }}
-                      alt="Descripción del icono"
-                    ></img>
-                    <div>
-                      <div style={{ color: "#FFF", fontWeight: "bold" }}>
-                        {atribEtiquetas?.Etiqueta_Amin_Actual}:
-                      </div>
-                      <Switch className="my-element" disabled checked={true} />
-                    </div>
-                  </div>
-                </>
-              </Col>
-            ) : null}
-          </Row>
+
         </div>
       </div>
       <Card style={{ zIndex: 2 }}>

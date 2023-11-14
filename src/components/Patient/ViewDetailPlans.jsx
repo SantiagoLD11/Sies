@@ -16,6 +16,7 @@ import {
   Col,
   message,
   Modal,
+  Switch,
 } from "antd";
 import {
   getListExamsRoutes,
@@ -33,6 +34,7 @@ import { DefaultTimeLineItem } from "../timeline/DefaultTimeLineItem";
 import { GenerateQuotes } from "./GenerateQuotes";
 import { GenerateNoteAdmin } from "../Patient/GenerateNoteAdmin";
 import { SelectMeses } from "../../constants/Months";
+import { icons } from "../../constants/icons";
 const { Panel } = Collapse;
 const { Text } = Typography;
 
@@ -168,7 +170,7 @@ export const ViewDetailPlans = ({
     <>
       {contextHolder}
       <Collapse>
-        <Panel header="Información plan">
+        <Panel header="Información Ruta Atencion">
           <div
             style={{
               display: "flex",
@@ -388,7 +390,7 @@ export const ViewDetailPlans = ({
                     SubPrograma:
                   </label>
                   <div style={{ display: "flex", alignItems: "center" }}>
-                    <Text>{detailPlans.subprograma}</Text>
+                    <Text>{detailPlans.Sub_Programa_txt}</Text>
                   </div>
                 </div>
               </div>
@@ -415,10 +417,10 @@ export const ViewDetailPlans = ({
               <div className="col-12 col-md-2">
                 <div style={{ display: "flex", flexDirection: "column" }}>
                   <label style={{ fontWeight: "bold", textAlign: "left" }}>
-                    Contrato sede:
+                    Sede:
                   </label>
                   <div style={{ display: "flex", alignItems: "center" }}>
-                    <Text>{detailPlans.contrato_sede}</Text>
+                    <Text>{detailPlans.Sede_txt}</Text>
                   </div>
                 </div>
               </div>
@@ -445,10 +447,10 @@ export const ViewDetailPlans = ({
               <div className="col-12 col-md-2">
                 <div style={{ display: "flex", flexDirection: "column" }}>
                   <label style={{ fontWeight: "bold", textAlign: "left" }}>
-                    Contrato Plan Gomedisys:
+                    Clasificacion Bim/Trim:
                   </label>
                   <div style={{ display: "flex", alignItems: "center" }}>
-                    <Text>{detailPlans.contrato_plan}</Text>
+                    <Text>{detailPlans.csBT}</Text>
                   </div>
                 </div>
               </div>
@@ -462,8 +464,113 @@ export const ViewDetailPlans = ({
                   </div>
                 </div>
               </div>
+              <div className="col-12 col-md-2">
+                <div style={{ display: "flex", flexDirection: "column" }}>
+                  <label style={{ fontWeight: "bold", textAlign: "left" }}>
+                    Contrato Gomedisys:
+                  </label>
+                  <div style={{ display: "flex", alignItems: "center" }}>
+                    <Text>{detailPlans.contratoGomedisys}</Text>
+                  </div>
+                </div>
+              </div>
+              <div className="col-12 col-md-2">
+                <div style={{ display: "flex", flexDirection: "column" }}>
+                  <label style={{ fontWeight: "bold", textAlign: "left" }}>
+                    Contrato Plan Gomedisys:
+                  </label>
+                  <div style={{ display: "flex", alignItems: "center" }}>
+                    <Text>{detailPlans.contrato_plan}</Text>
+                  </div>
+                </div>
+              </div>
+              <div className="col-12 col-md-2">
+                <div style={{ display: "flex", flexDirection: "column" }}>
+                  <label style={{ fontWeight: "bold", textAlign: "left" }}>
+                    Clasificacion Bomba:
+                  </label>
+                  <div style={{ display: "flex", alignItems: "center" }}>
+                    <Text>{detailPlans.csBomba}</Text>
+                  </div>
+                </div>
+              </div>
             </div>
           </Form>
+          <Divider />
+
+          <Row>
+            {detailPlans.idEtAsistencial != null ? (
+              <Col span={detailPlans.idEtAdmin ? 12 : 24}>
+                <>
+                  <div
+                    style={{
+                      fontSize: "15px",
+                      color: "#2d3d7d",
+                      fontWeight: "bold",
+                    }}
+                  >
+                    Etiqueta Asistencial
+                  </div>
+                  <Divider />
+                  <div
+                    className="d-flex align-items-center "
+                    style={{ margin: "10px" }}
+                  >
+                    <img
+                      src={
+                        icons[detailPlans.idEtAsistencial]
+                          ?.url || icons[null].url
+                      }
+                      style={{ height: "50px" }}
+                      alt="Descripción del icono"
+                    ></img>
+                    <div>
+                      <div style={{ color: "#3d3434", fontWeight: "bold" }}>
+                        {detailPlans.nameEtAsistencial}:
+                      </div>
+                      <Switch disabled checked={true} />
+                    </div>
+                  </div>
+                </>
+              </Col>
+            ) : null}
+            {detailPlans.idEtAdmin != null ? (
+              <Col
+                span={detailPlans.idEtAsistencial ? 12 : 24}
+              >
+                <>
+                  <div style={{ 
+                      fontSize: "15px", 
+                      color: "#2d3d7d",
+                      fontWeight: "bold",
+                   }}>
+                    Etiqueta Administrativa
+                  </div>
+                  <Divider />
+                  <div
+                    className="d-flex align-items-center "
+                    style={{ margin: "10px" }}
+                  >
+                    <img
+                      src={
+                        icons[detailPlans.idEtAdmin]?.url ||
+                        icons[null].url
+                      }
+                      style={{ height: "50px" }}
+                      alt="Descripción del icono"
+                    ></img>
+                    <div>
+                      <div style={{ color: "#3d3434", fontWeight: "bold" }}>
+                        {detailPlans.nameEtAdmin}:
+                      </div>
+                      <Switch className="my-element" disabled checked={true} />
+                    </div>
+                  </div>
+                </>
+              </Col>
+            ) : null}
+          </Row>
+
         </Panel>
         <Panel header="Filtros">
           <Form
