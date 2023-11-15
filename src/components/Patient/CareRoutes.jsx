@@ -82,7 +82,7 @@ export const CareRoutes = ({ id, getInfo }) => {
       title: "Plan",
       dataIndex: "contrato_sede",
       key: "contrato_sede",
-      render: (text) => <>{text}</>,
+      render: (text) => <strong>{text}</strong>,
     },
     {
       title: "Ciudad",
@@ -117,6 +117,7 @@ export const CareRoutes = ({ id, getInfo }) => {
       title: "Programa",
       dataIndex: "programa",
       key: "programa",
+      render: (text) => <strong>{text}</strong>,
     },
     {
       title: "Sub programa",

@@ -6,6 +6,7 @@ import { useAuth } from "../authentication";
 import AppNotificationContainer from "../components/AppNotificationContainer";
 import logosies from "../assets/images/logosies.png";
 import Logo from "../assets/images/LOGO_SIES_170_x_115_px.png";
+import svgMicrosoft from "../assets/images/Microsoft_logo.svg";
 import {
   AuthenticatedTemplate,
   UnauthenticatedTemplate,
@@ -159,7 +160,7 @@ const SignIn = () => {
                   <IntlMessages id="app.userAuth.signIn" />
                 </Button>
                 <Button className="gx-mb-0" onClick={() => loginAzure()}>
-                  <WindowsOutlined />
+                  <img src={svgMicrosoft} alt="logoMicrosoft" width="50" height="50" />
                   Ingresa con Microsoft
                 </Button>
                 {/* <span><IntlMessages id="app.userAuth.or"/></span> <Link to="/signup"><IntlMessages

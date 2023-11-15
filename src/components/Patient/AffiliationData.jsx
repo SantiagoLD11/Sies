@@ -57,6 +57,17 @@ export const AffiliationData = ({ id, activeKey }) => {
             </div>
           </div>
         </Col>
+        <Col span={8}>
+          <div className="d-flex align-items-center ">
+            <img src={dos} className="icons" alt="Descripción del icono"></img>
+            <div>
+              <div style={{ color: "#8c8c8c", fontWeight: "bold" }}>
+                Tipo Ingreso:
+              </div>
+              {data?.tipoIngreso || "Sin información"}
+            </div>
+          </div>
+        </Col>
       </Row>
     </>
   );

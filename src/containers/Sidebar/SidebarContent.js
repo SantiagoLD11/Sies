@@ -77,10 +77,6 @@ const SidebarContent = ({ sidebarCollapsed, setSidebarCollapsed }) => {
               {Administrador_AdminProfesionales && (
                 <Menu.Item key="perfil">
                   <Link to="/profile">
-                    <i
-                      style={{ color: "#FFF" }}
-                      className="icon icon-profile2"
-                    />
                     <span style={{ color: "#FFF" }}>
                       <IntlMessages id="Consultar Profesional" />
                     </span>
@@ -90,10 +86,6 @@ const SidebarContent = ({ sidebarCollapsed, setSidebarCollapsed }) => {
               {Administrador_AdminProfesionales && (
                 <Menu.Item key="perfil">
                   <Link to="/historico-bloqueos">
-                    <ExclamationCircleOutlined
-                      style={{ color: "#FFF" }}
-                      className="icon icon-profile2"
-                    />
                     <span style={{ color: "#FFF", marginLeft: "0px" }}>
                       <IntlMessages id="Histórico Novedades" />
                     </span>
@@ -105,10 +97,6 @@ const SidebarContent = ({ sidebarCollapsed, setSidebarCollapsed }) => {
               {AdminAgenda_Administrador && (
                 <Menu.Item key="perfil">
                   <Link to="/consultar-pacientes">
-                    <i
-                      style={{ color: "#FFF" }}
-                      className="icon icon-profile2"
-                    />
                     <span style={{ color: "#FFF" }}>
                       <IntlMessages id="Consultar Pacientes" />
                     </span>
@@ -120,10 +108,6 @@ const SidebarContent = ({ sidebarCollapsed, setSidebarCollapsed }) => {
               {AdminAgenda_Administrador && (
                 <Menu.Item key="perfil">
                   <Link to="/admin-routes">
-                    <i
-                      style={{ color: "#FFF" }}
-                      className="icon icon-profile2"
-                    />
                     <span style={{ color: "#FFF" }}>
                       <IntlMessages id="Administración Rutas" />
                     </span>
@@ -136,10 +120,6 @@ const SidebarContent = ({ sidebarCollapsed, setSidebarCollapsed }) => {
               {Administrador_AdminProfesionales && (
                 <Menu.Item key="perfil">
                   <Link to="/notas-admin">
-                    <i
-                      style={{ color: "#FFF" }}
-                      className="icon icon-profile2"
-                    />
                     <span style={{ color: "#FFF" }}>
                       <IntlMessages id="Notas Administrativas" />
                     </span>

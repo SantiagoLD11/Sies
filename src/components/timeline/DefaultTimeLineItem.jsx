@@ -307,6 +307,10 @@ export const DefaultTimeLineItem = ({
               <Checkbox checked={Number(item.Tercerizado)} disabled={true} />
             </p>
             <p style={{ width: "50%" }}>
+              <span style={{ fontWeight: "bold" }}>Predecesor: </span>
+              <Checkbox checked={Number(item.Prerrequisito)} disabled={true} />
+            </p>
+            <p style={{ width: "50%" }}>
               <span style={{ fontWeight: "bold" }}>Estado: </span>
               <Tag
                 color={tagStatus2[item.Pendiente][item.Disentido]?.color}

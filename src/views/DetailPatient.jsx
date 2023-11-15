@@ -63,7 +63,7 @@ const DetailPatient = () => {
     paciente: [
       {
         key: "1",
-        label: `Información básica`,
+        label: `Informacion Paciente`,
         children: (
           <PatientInformation
             type={type}

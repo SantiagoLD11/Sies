@@ -1,0 +1,2 @@
+(this["webpackJsonpwieldy-hook"]=this["webpackJsonpwieldy-hook"]||[]).push([[11],{965:function(e,t,i){"use strict";i.r(t);i(0);var s=i(44),c=i(1);t.default=function(){return Object(c.jsxs)("div",{children:[Object(c.jsx)("h2",{className:"title gx-mb-4",children:Object(c.jsx)(s.a,{id:"sidebar.samplePage"})}),Object(c.jsx)("div",{className:"gx-d-flex justify-content-center",children:Object(c.jsx)("h4",{children:"Start building your app. Happy Coding!"})})]})}}}]);
+//# sourceMappingURL=11.78dcfe0f.chunk.js.map

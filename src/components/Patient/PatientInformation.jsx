@@ -44,11 +44,6 @@ const PatientInformation = ({ idPaciente, type, id, activeKey }) => {
 
   return (
     <>
-      <div style={{ float: "right" }}>
-        <Button type="primary" onClick={() => setOpenModalPatient(true)}>
-          Editar
-        </Button>
-      </div>
       <EditarPaciente
         setIsActualizar={setIsActualizar}
         open={openModalPatient}
@@ -56,6 +51,14 @@ const PatientInformation = ({ idPaciente, type, id, activeKey }) => {
         idPaciente={idPaciente}
       />
       <Row gutter={[16, 16]}>
+      <div style={{ float: "right" }}>
+        <Button type="primary" onClick={() => setOpenModalPatient(true)}>
+          Editar
+        </Button>
+      </div>
+      <Divider plain style={{ fontWeight: "bold" }}>
+        Informacion Basica
+      </Divider>
         <Col span={6}>
           <div className="d-flex align-items-center ">
             <PhoneOutlined style={{ fontSize: "40px", margin: "10px" }} />

@@ -106,6 +106,26 @@ export const getListTypeAction = async () => {
   }
 };
 
+export const getListEstadosContratoPlan = async () => {
+  const token = localStorage.getItem("token");
+  try {
+    const { data } = await httpClient.get(
+      `/getPicklist?objName=Contrato_Plan&fieldName=Estado&sessionId=${token}&output=json`
+    );
+    if (data.length > 0) {
+      const final_data = data.map((value) => {
+        return { value: value.id, label: value.name };
+      });
+      return final_data;
+    } else {
+      return [];
+    }
+  } catch (error) {
+    httpClient.defaults.headers.common["Authorization"] = "";
+    return Promise.reject(error);
+  }
+};
+
 export const getListAsegurador = async () => {
   const token = localStorage.getItem("token");
   try {
@@ -1175,6 +1195,30 @@ export const getListSedesSies = async (idContrato) => {
   }
 };
 
+export const getListSedesSiesBasic = async () => {
+  const token = localStorage.getItem("token");
+  try {
+
+      let query = encodeURI(
+        `SELECT id,name FROM IPS_Afiliada)`
+      );
+      const { data } = await httpClient.get(
+        `/selectQuery?maxRows=1300&query=${query}&sessionId=${token}&output=json`
+      );
+      if (data.length > 0) {
+        const final_data = data.map((value) => {
+          return { value: value[0], label: value[1] };
+        });
+        return final_data;
+      } else {
+        return [];
+      }
+  } catch (error) {
+    httpClient.defaults.headers.common["Authorization"] = "";
+    return Promise.reject(error);
+  }
+};
+
 export const getListCanalAtencion = async (canal) => {
   const token = localStorage.getItem("token");
   try {
@@ -1373,7 +1417,8 @@ export const getListEstadio = async () => {
 export const getListSubProgramas = async (id_Programa) => {
   const token = localStorage.getItem("token");
   try {
-    let query = encodeURI(`SELECT id,name FROM Sub_Programas WHERE R45358267 = ${id_Programa}`);
+    let query = id_Programa !== null ? encodeURI(`SELECT id,name FROM Sub_Programas WHERE R45358267 = ${id_Programa}`) :
+    encodeURI(`SELECT id,name FROM Sub_Programas`);
     const { data } = await httpClient.get(
       `/selectQuery?maxRows=1000000&query=${query}&sessionId=${token}&output=json`
     );
@@ -1457,7 +1502,8 @@ export const getListTipoIngreso = async () => {
 export const getListEtiquetasAdmin = async (idPrograma) => {
   const token = localStorage.getItem("token");
   try {
-    let query = encodeURI(`SELECT id,name FROM Etiqueta_Administrativa1 WHERE Programa_txt LIKE ('%${idPrograma}%')`);
+    let query = idPrograma !== null ? encodeURI(`SELECT id,name FROM Etiqueta_Administrativa1 WHERE Programa_txt LIKE ('%${idPrograma}%')`)
+    : encodeURI(`SELECT id,name FROM Etiqueta_Administrativa1`);
     const { data } = await httpClient.get(
       `/selectQuery?maxRows=1000000&query=${query}&sessionId=${token}&output=json`
     );
@@ -1876,7 +1922,7 @@ export const getAffiliationData = async (id) => {
   const token = localStorage.getItem("token");
   try {
     let query = encodeURI(
-      `SELECT NivelAfiliacion,TipoAfiliacion,RegimenAfiliacion FROM Candidato WHERE id = ${id}`
+      `SELECT NivelAfiliacion,TipoAfiliacion,RegimenAfiliacion,Tipo_Ingreso_txt FROM Candidato WHERE id = ${id}`
     );
     const { data } = await httpClient.get(
       `/selectQuery?maxRows=1&query=${query}&sessionId=${token}&output=json`
@@ -1887,6 +1933,7 @@ export const getAffiliationData = async (id) => {
         NivelAfiliacion: values[0],
         TipoAfiliacion: values[1],
         RegimenAfiliacion: values[2],
+        tipoIngreso: values[3],
       };
     } else {
       return null;
@@ -1947,7 +1994,17 @@ export const getInfoFilterContratPlans = async (final_values) => {
         final_values.estadio !== undefined ||
         final_values.contrato !== undefined ||
         final_values.profesion !== undefined ||
-        final_values.claseExamen !== undefined
+        final_values.claseExamen !== undefined ||
+        final_values.subPrograma !== undefined ||
+        final_values.etAsistencial !== undefined ||
+        final_values.etAdmin !== undefined ||
+        final_values.sede !== undefined ||
+        final_values.state !== undefined ||
+        final_values.tpIngreso !== undefined ||
+        final_values.clsBimTrim !== undefined ||
+        final_values.genero !== undefined ||
+        final_values.bomba !== undefined ||
+        final_values.cnlAtencion !== undefined 
       ) {
         query += ` WHERE`;
         if (final_values.estadio) {
@@ -2937,7 +2994,7 @@ export const getCareRoutes = async (id) => {
   console.log("token guardado", token);
   try {
     let query = encodeURI(
-      `SELECT name,Ciudad_txt,Estadio_txt,Fecha_Activacion,Renovacion,Primera_Vez,Programa_txt,SubPrograma,Estado_txt,id FROM Plan WHERE R18387076 = ${id} ORDER BY status ASC`
+      `SELECT name,Ciudad_txt,Estadio_txt,Fecha_Activacion,Renovacion,Primera_Vez,Programa_txt,Sub_Programa_txt,Estado_txt,id FROM Plan WHERE R18387076 = ${id} ORDER BY status ASC`
     );
     const { data } = await httpClient.get(
       `/selectQuery?maxRows=1000000&query=${query}&sessionId=${token}&output=json`
@@ -2953,7 +3010,7 @@ export const getCareRoutes = async (id) => {
           renovacion: value[4],
           primera_vez: value[5],
           programa: value[6],
-          sub_programa: value[7],
+          Sub_Programa_txt: value[7],
           estado: value[8],
           id: value[9],
         };
@@ -3002,7 +3059,7 @@ export const getViewDetailPlans = async (id) => {
   const token = localStorage.getItem("token");
   try {
     let query = encodeURI(
-      `SELECT createdAt,Fecha_Inscripcion,Fecha_Activacion, Fecha_Renovacion,Sub_Programa_txt,Renovacion,Programa_txt,Sede_txt,Ciudad_txt,Estadio_txt,Contrato_Plan_Gomedisys_txt,Primera_Vez,Estado_txt,R25170505,Contrato_Gomedisys_txt,R45912497,Etiqueta_Asistencial_txt,R45912488,Etiqueta_Administrativa_txt,Clasificacion_BT_txt,Clasificacion_Bomba_txt FROM Plan WHERE id=${id}`
+      `SELECT createdAt,Fecha_Inscripcion,Fecha_Activacion,Fecha_Renovacion,Sub_Programa_txt,Renovacion,Programa_txt,Sede_txt,Ciudad_txt,Estadio_txt,Contrato_Plan_Gomedisys_txt,Primera_Vez,Estado_txt,R25170505,Contrato_Gomedisys_txt,R45912497,Etiqueta_Asistencial_txt,R45912488,Etiqueta_Administrativa_txt,Clasificacion_BT_txt,Clasificacion_Bomba_txt FROM Plan WHERE id=${id}`
     );
     const { data } = await httpClient.get(
       `/selectQuery?maxRows=1&query=${query}&sessionId=${token}&output=json`
@@ -3127,7 +3184,7 @@ export const getInfPlans = async (id) => {
   const token = localStorage.getItem("token");
   try {
     let query = encodeURI(
-      `SELECT GROUP_CONCAT(Canal_Atencion_txt SEPARATOR ','),GROUP_CONCAT(Origen SEPARATOR ','),GROUP_CONCAT(Disentido SEPARATOR ','),GROUP_CONCAT(Pendiente SEPARATOR ','),GROUP_CONCAT(Tercerizado SEPARATOR ','),GROUP_CONCAT(Examen_txt SEPARATOR ','),GROUP_CONCAT(Duracion_Min SEPARATOR ','),Year,Mes,GROUP_CONCAT(id SEPARATOR ','),GROUP_CONCAT(Notas_Administrativas_txt SEPARATOR ','),GROUP_CONCAT(name SEPARATOR ','),GROUP_CONCAT(Canales_Iniciales SEPARATOR '-'),GROUP_CONCAT(Canal_Atencion_IdString SEPARATOR '-') FROM Plan_Mensual WHERE R18387241 = ${id} GROUP BY Year,Mes ORDER BY Year,Mes ASC`
+      `SELECT GROUP_CONCAT(Canal_Atencion_txt SEPARATOR ','),GROUP_CONCAT(Origen SEPARATOR ','),GROUP_CONCAT(Disentido SEPARATOR ','),GROUP_CONCAT(Pendiente SEPARATOR ','),GROUP_CONCAT(Tercerizado SEPARATOR ','),GROUP_CONCAT(Examen_txt SEPARATOR ','),GROUP_CONCAT(Duracion_Min SEPARATOR ','),Year,Mes,GROUP_CONCAT(id SEPARATOR ','),GROUP_CONCAT(Notas_Administrativas_txt SEPARATOR ','),GROUP_CONCAT(name SEPARATOR ','),GROUP_CONCAT(Canales_Iniciales SEPARATOR '-'),GROUP_CONCAT(Canal_Atencion_IdString SEPARATOR '-'),GROUP_CONCAT(Prerrequisito SEPARATOR ',') FROM Plan_Mensual WHERE R18387241 = ${id} GROUP BY Year,Mes ORDER BY Year,Mes ASC`
     );
     const { data } = await httpClient.get(
       `/selectQuery?maxRows=1000000&query=${query}&sessionId=${token}&output=json`
@@ -3154,6 +3211,7 @@ export const getInfPlans = async (id) => {
             Name: item[11]?.split(",")[i].trim(),
             Canales_Iniciales: item[12]?.split("-")[i].trim(),
             Canal_Atencion_IdString: item[13]?.split("-")[i].trim(),
+            Prerrequisito: item[14].split(",")[i].trim(),
           };
 
           group.push(obj);

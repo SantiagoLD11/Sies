@@ -19,6 +19,16 @@ import {
   getListEspecialidad,
   getListClaseExam,
   getInfoFilterContratPlans,
+  getListEstadosContratoPlan,
+  getListTipoIngreso,
+  getListCanalAtencion,
+  getListEtiquetasAdmin,
+  getListEtAsistencial,
+  getlistSexoNacer,
+  getListSubProgramas,
+  getListSedesSiesBasic,
+  getListBimTrim,
+  getListBomba,
 } from "../../appRedux/services";
 import { ViewAndEdit } from "../Underwriters/ViewAndEdit";
 import {
@@ -41,6 +51,16 @@ export const ContractsPlans = ({ activeKey }) => {
   const [listContrato, setListContrato] = useState(null);
   const [listProfesion, setListProfesion] = useState(null);
   const [listClaseExamen, setListClaseExamen] = useState(null);
+  const [listSedes, setListSedes] = useState(null);
+  const [listGenero, setListGenero] = useState(null);
+  const [listEtiquetasAsis, setListEtiquetasAsis] = useState(null);
+  const [listTipoIngreso, setListTipoIngreso] = useState(null);
+  const [listEtiquetasAdmin, setListEtiquetasAdmin] = useState(null);
+  const [listClsBimTrim, setListClsBimTrim] = useState(null);
+  const [listClsBomba, setListClsBomba] = useState(null);
+  const [listEstados, setListEstados] = useState(null);
+  const [listSubPrograma, setListSubPrograma] = useState(null);
+  const [listCnlAtencion ,setListCnlAtencion] = useState(null);
 
   const getData = async () => {
     setLoading(true);
@@ -55,6 +75,30 @@ export const ContractsPlans = ({ activeKey }) => {
     setListProfesion(respues);
     const respuest = await getListClaseExam();
     setListClaseExamen(respuest);
+
+
+    const rEstados = await getListEstadosContratoPlan();
+    setListEstados(rEstados);
+    const rTpIngreso = await getListTipoIngreso();
+    setListTipoIngreso(rTpIngreso);
+
+    const rCnlAtencion = await getListCanalAtencion(null);
+    setListCnlAtencion(rCnlAtencion);
+    const rEtsAdmin = await getListEtiquetasAdmin(null);
+    setListEtiquetasAdmin(rEtsAdmin);
+    const rEtiquetasAsis = await getListEtAsistencial();
+    setListEtiquetasAsis(rEtiquetasAsis);
+    const rGenero = await getlistSexoNacer();
+    setListGenero(rGenero);
+
+    const rSubPrograms = await getListSubProgramas(null);
+    setListSubPrograma(rSubPrograms);
+    const rSedes = await getListSedesSiesBasic();
+    setListSedes(rSedes);
+    const rBimTrim = await getListBimTrim();
+    setListClsBimTrim(rBimTrim);
+    const rBomba = await getListBomba();
+    setListClsBomba(rBomba);
   };
 
   const inactivarContrato = async (id,Estado) => {
@@ -373,6 +417,115 @@ export const ContractsPlans = ({ activeKey }) => {
                   options={listClaseExamen}
                 />
               </Form.Item>
+              <div
+              >
+                 <Form.Item
+                label="Sub Programa"
+                name="subPrograma"
+                style={{ width: "20%" }}
+              >
+                <Select
+                  placeholder="Seleccione un Sub Programa"
+                  options={listSubPrograma}
+                />
+              </Form.Item>
+              <Form.Item
+                label="Etiqueta Asistencial"
+                name="etAsistencial"
+                style={{ width: "20%" }}
+              >
+                <Select
+                  placeholder="Seleccione un Etiqueta"
+                  options={listEtiquetasAsis}
+                />
+              </Form.Item>
+              <Form.Item
+                label="Etiqueta Administrativa"
+                name="etAdmin"
+                style={{ width: "20%" }}
+              >
+                <Select
+                  placeholder="Seleccione una Etiqueta"
+                  options={listEtiquetasAdmin}
+                />
+              </Form.Item>
+              <Form.Item
+                label="Sede"
+                name="sede"
+                style={{ width: "20%" }}
+              >
+                <Select
+                  placeholder="Seleccione una Sede"
+                  options={listSedes}
+                />
+              </Form.Item>
+              </div>
+              <div
+              >
+                 <Form.Item
+                label="Estado"
+                name="state"
+                style={{ width: "20%" }}
+              >
+                <Select
+                  placeholder="Seleccione un Estado"
+                  options={listEstados}
+                />
+              </Form.Item>
+              <Form.Item
+                label="Tipo Ingreso"
+                name="tpIngreso"
+                style={{ width: "20%" }}
+              >
+                <Select
+                  placeholder="Seleccione un Ingreso"
+                  options={listTipoIngreso}
+                />
+              </Form.Item>
+              <Form.Item
+                label="Clasificacion Bim/Trim"
+                name="clsBimTrim"
+                style={{ width: "20%" }}
+              >
+                <Select
+                  placeholder="Seleccione una Etiqueta"
+                  options={listClsBimTrim}
+                />
+              </Form.Item>
+              <Form.Item
+                label="Sexo al Nacer"
+                name="genero"
+                style={{ width: "20%" }}
+              >
+                <Select
+                  placeholder="Seleccione una Sexo"
+                  options={listGenero}
+                />
+              </Form.Item>
+
+              <Form.Item
+                label="Clasificacion Bomba"
+                name="bomba"
+                style={{ width: "20%" }}
+              >
+                <Select
+                  placeholder="Seleccione una Etiqueta"
+                  options={listClsBomba}
+                />
+              </Form.Item>
+
+              <Form.Item
+                label="Canal Atencion"
+                name="cnlAtencion"
+                style={{ width: "20%" }}
+              >
+                <Select
+                  placeholder="Seleccione un Canal"
+                  options={listCnlAtencion}
+                />
+              </Form.Item>
+
+              </div>
               <div
                 key="button-actions"
                 className="d-flex justify-content-end me-4"
