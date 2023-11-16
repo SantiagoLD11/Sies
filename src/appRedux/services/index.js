@@ -729,7 +729,7 @@ export const getEditContractsPlans = async (id) => {
   console.log("token guardado", token);
   try {
     let query = encodeURI(
-      `SELECT name,Primera_Vez,R19917234,R45397404,Meses,R18147953,R42695674,Canal_Atencion_txt,R45397437,Etiquetas_Admin_Ids,Sexo_al_Nacer,Menor_de,Mayor_de,Duracion_1era_Visita,Duracion_Seguimiento,id FROM Contrato_Plan WHERE id = ${id}`
+      `SELECT name,Sexo_al_Nacer,Sexo_al_Nacer_txt,Meses,Mayor_de,Menor_de,Duracion_Seguimiento,Duracion_1era_Visita,Canal_Atencion_txt FROM Contrato_Plan WHERE id = ${id}`
     );
     const { data } = await httpClient.get(
       `/selectQuery?maxRows=2&query=${query}&sessionId=${token}&output=json`
@@ -739,21 +739,14 @@ export const getEditContractsPlans = async (id) => {
       console.log("información data", data);
       const final_data = {
         name: values[0],
-        Primera_Vez: values[1],
-        Estadio_txt: values[2],
-        Sub_Programa: values[3],
-        Meses: values[4],
-        Profesion_txt: values[5],
-        Clase_Examen_txt: values[6],
-        Canales: values[7],
-        Etiquetas_Asistenciales_txt: values[8],
-        Etiquetas_Administrativas_txt: values[9],
-        Sexo_al_Nacer_txt: values[10],
-        Menor_de: values[11],
-        Mayor_de: values[12],
-        Duracion_1era_Visita: values[13],
-        Duracion_Seguimiento: values[14],
-        id: values[15],
+        Sexo_al_Nacer_id: values[1],
+        Sexo_al_Nacer_txt: values[2],
+        Meses: values[3],
+        Mayor_de: values[4],
+        Menor_de: values[5],
+        Duracion_Seguimiento: values[6],
+        Duracion_1era_Visita: values[7],
+        Canales_ids: values[8]
       };
       return final_data;
     } else {
@@ -1189,30 +1182,6 @@ export const getListSedesSies = async (idContrato) => {
     } else{
       return [];
     }
-  } catch (error) {
-    httpClient.defaults.headers.common["Authorization"] = "";
-    return Promise.reject(error);
-  }
-};
-
-export const getListSedesSiesBasic = async () => {
-  const token = localStorage.getItem("token");
-  try {
-
-      let query = encodeURI(
-        `SELECT id,name FROM IPS_Afiliada)`
-      );
-      const { data } = await httpClient.get(
-        `/selectQuery?maxRows=1300&query=${query}&sessionId=${token}&output=json`
-      );
-      if (data.length > 0) {
-        const final_data = data.map((value) => {
-          return { value: value[0], label: value[1] };
-        });
-        return final_data;
-      } else {
-        return [];
-      }
   } catch (error) {
     httpClient.defaults.headers.common["Authorization"] = "";
     return Promise.reject(error);
@@ -1987,7 +1956,7 @@ export const getInfoFilterNotes = async (type, value, id) => {
 export const getInfoFilterContratPlans = async (final_values) => {
   const token = localStorage.getItem("token");
   console.log("token guardado", token);
-  let query = `SELECT name,Primera_Vez,Estadio_txt,SubPrograma,Meses,Renovacion,Clase_Examen_txt,Canal_Atencion_txt,Abandonado,Bimestralizado,Hospitalizado,Menor_Expuesto,Naive,Novo,Paciente_Gestante,TBC,Tuberculosis,Criterio_Medico,Menor_de,Mayor_de,Duracion_1era_Visita,Duracion_Seguimiento,id FROM Contrato_Plan`;
+  let query = `SELECT name,Primera_Vez,Estadio_txt,Sub_Programa,Meses,Profesion_txt,Clase_Examen_txt,Canales,Etiquetas_Asistenciales_txt,Etiquetas_Administrativas_txt,Sexo_al_Nacer_txt,Menor_de,Mayor_de,Duracion_1era_Visita,Duracion_Seguimiento,Estado_txt,id,Sedes_txt,Clasificacion_Bomba_txt,Clasificacion_BT_txt,Tipo_Ingreso_txt,Prerrequisito FROM Contrato_Plan`;
   try {
     if (final_values) {
       if (
@@ -2031,6 +2000,141 @@ export const getInfoFilterContratPlans = async (final_values) => {
               ? ` AND R42695674 = ${final_values.claseExamen}`
               : ` R42695674 = ${final_values.claseExamen}`;
         }
+        if (final_values.subPrograma) {
+          query +=
+            final_values.estadio != undefined ||
+              final_values.contrato != undefined ||
+              final_values.profesion != undefined ||
+              final_values.claseExamen != undefined 
+              ? ` AND R45397404 = ${final_values.subPrograma}`
+              : ` R45397404 = ${final_values.subPrograma}`;
+        }
+        if (final_values.etAsistencial) {
+          query +=
+            final_values.estadio != undefined ||
+              final_values.contrato != undefined ||
+              final_values.profesion != undefined ||
+              final_values.claseExamen != undefined ||
+              final_values.subPrograma != undefined 
+              ? ` AND R45397437 = ${final_values.etAsistencial}`
+              : ` R45397437 = ${final_values.etAsistencial}`;
+        }
+        if (final_values.etAdmin) {
+          query +=
+            final_values.estadio != undefined ||
+              final_values.contrato != undefined ||
+              final_values.profesion != undefined ||
+              final_values.claseExamen != undefined ||
+              final_values.subPrograma != undefined ||
+              final_values.etAsistencial != undefined
+              ? ` AND Etiquetas_Admin_Ids LIKE('%${final_values.etAdmin}%')`
+              : ` Etiquetas_Admin_Ids LIKE('%${final_values.etAdmin}%')`;
+        }
+        if (final_values.sede) {
+          query +=
+            final_values.estadio != undefined ||
+              final_values.contrato != undefined ||
+              final_values.profesion != undefined ||
+              final_values.claseExamen != undefined ||
+              final_values.subPrograma != undefined ||
+              final_values.etAsistencial != undefined ||
+              final_values.etAdmin != undefined
+              ? ` AND CadenasIdsSedes LIKE('%${final_values.sede}%')`
+              : ` CadenasIdsSedes LIKE('%${final_values.sede}%')`;
+        }
+        if (final_values.state) {
+          query +=
+            final_values.estadio != undefined ||
+              final_values.contrato != undefined ||
+              final_values.profesion != undefined ||
+              final_values.claseExamen != undefined ||
+              final_values.subPrograma != undefined ||
+              final_values.etAsistencial != undefined ||
+              final_values.etAdmin != undefined  ||
+              final_values.sede != undefined
+              ? ` AND Estado = ${final_values.state}`
+              : ` Estado = ${final_values.state}`;
+        }
+        if (final_values.tpIngreso) {
+          query +=
+            final_values.estadio != undefined ||
+              final_values.contrato != undefined ||
+              final_values.profesion != undefined ||
+              final_values.claseExamen != undefined ||
+              final_values.subPrograma != undefined ||
+              final_values.etAsistencial != undefined ||
+              final_values.etAdmin != undefined  ||
+              final_values.sede != undefined ||
+              final_values.state != undefined
+              ? ` AND R47918753 = ${final_values.tpIngreso}`
+              : ` R47918753 = ${final_values.tpIngreso}`;
+        }
+        if (final_values.clsBimTrim) {
+          query +=
+            final_values.estadio != undefined ||
+              final_values.contrato != undefined ||
+              final_values.profesion != undefined ||
+              final_values.claseExamen != undefined ||
+              final_values.subPrograma != undefined ||
+              final_values.etAsistencial != undefined ||
+              final_values.etAdmin != undefined  ||
+              final_values.sede != undefined ||
+              final_values.state != undefined ||
+              final_values.tpIngreso != undefined
+              ? ` AND R47939308 = ${final_values.clsBimTrim}`
+              : ` R47939308 = ${final_values.clsBimTrim}`;
+        }
+        if (final_values.genero) {
+          query +=
+            final_values.estadio != undefined ||
+              final_values.contrato != undefined ||
+              final_values.profesion != undefined ||
+              final_values.claseExamen != undefined ||
+              final_values.subPrograma != undefined ||
+              final_values.etAsistencial != undefined ||
+              final_values.etAdmin != undefined  ||
+              final_values.sede != undefined ||
+              final_values.state != undefined ||
+              final_values.tpIngreso != undefined ||
+              final_values.clsBimTrim != undefined
+              ? ` AND Sexo_al_Nacer = ${final_values.genero}`
+              : ` Sexo_al_Nacer = ${final_values.genero}`;
+        }
+        if (final_values.bomba) {
+          query +=
+            final_values.estadio != undefined ||
+              final_values.contrato != undefined ||
+              final_values.profesion != undefined ||
+              final_values.claseExamen != undefined ||
+              final_values.subPrograma != undefined ||
+              final_values.etAsistencial != undefined ||
+              final_values.etAdmin != undefined  ||
+              final_values.sede != undefined ||
+              final_values.state != undefined ||
+              final_values.tpIngreso != undefined ||
+              final_values.clsBimTrim != undefined ||
+              final_values.genero != undefined 
+              ? ` AND R47939456 = ${final_values.bomba}`
+              : ` R47939456 = ${final_values.bomba}`;
+        }
+        if (final_values.cnlAtencion) {
+          query +=
+            final_values.estadio != undefined ||
+              final_values.contrato != undefined ||
+              final_values.profesion != undefined ||
+              final_values.claseExamen != undefined ||
+              final_values.subPrograma != undefined ||
+              final_values.etAsistencial != undefined ||
+              final_values.etAdmin != undefined  ||
+              final_values.sede != undefined ||
+              final_values.state != undefined ||
+              final_values.tpIngreso != undefined ||
+              final_values.clsBimTrim != undefined ||
+              final_values.genero != undefined  ||
+              final_values.bomba != undefined
+              ? ` AND R47939456 = ${final_values.cnlAtencion}`
+              : ` R47939456 = ${final_values.cnlAtencion}`;
+        }
       }
     }
     let querys = encodeURI(query);
@@ -2044,26 +2148,25 @@ export const getInfoFilterContratPlans = async (final_values) => {
           name: value[0],
           Primera_Vez: value[1],
           Estadio_txt: value[2],
-          SubPrograma: value[3],
+          Sub_Programa: value[3],
           Meses: value[4],
-          Renovacion: value[5],
+          Profesion_txt: value[5],
           Clase_Examen_txt: value[6],
-          Canal_Atencion_txt: value[7],
-          Abandonado: value[8],
-          Bimestralizado: value[9],
-          Hospitalizado: value[10],
-          Menor_Expuesto: value[11],
-          Naive: value[12],
-          Novo: value[13],
-          Paciente_Gestante: value[14],
-          TBC: value[15],
-          Tuberculosis: value[16],
-          Criterio_Medico: value[17],
-          Menor_de: value[18],
-          Mayor_de: value[19],
-          Duracion_1era_Visita: value[20],
-          Duracion_Seguimiento: value[21],
-          id: value[22],
+          Canales: value[7],
+          Etiquetas_Asistenciales_txt: value[8],
+          Etiquetas_Administrativas_txt: value[9],
+          Sexo_al_Nacer_txt: value[10],
+          Menor_de: value[11],
+          Mayor_de: value[12],
+          Duracion_1era_Visita: value[13],
+          Duracion_Seguimiento: value[14],
+          Estado_txt: value[15],
+          id: value[16],
+          Sedes_txt: value[17],
+          Clasificacion_Bomba_txt: value[18],
+          Clasificacion_BT_txt: value[19],
+          Tipo_Ingreso_txt: value[20],
+          Prerrequisito: value[21]
         };
       });
       return final_data;
@@ -2812,20 +2915,13 @@ export const updatePlanContract = async (id, values) => {
   const token = localStorage.getItem("token");
   try {
     const { data } = await httpClient.get(
-      `/updateRecord?output=json&useIds=true&objName=Contrato_Plan&id=${id}&R18147928=${values?.contrato
-      }&R18147953 =${values?.especialidad}&R42695674=${values?.claseExamen
-      }&R19917234=${values?.estadio}&R42695687=${values?.canalAtencion
-      }&Meses=${values?.meses?.join(
-        ","
-      )}&Renovacion=${values?.mesesRenovacion?.join(
-        ","
-      )}&Duracion_1era_Visita=${values?.firstDuracion}&Duracion_Seguimiento=${values?.duracionSeg
-      }&Mayor_de=${values?.mayor}&Menor_de=${values?.menor}&Abandonado=${values?.abandonado === 1
-      }&Hospitalizado=${values?.hospitalizado === 1}&Naive=${values?.naive === 1
-      }&Paciente_Gestante=${values?.PacienteG === 1}&Tuberculosis=${values?.tuberculosis === 1
-      }&Primera_Vez=${values?.primeraVez === 1}&Bimestralizado=${values?.bimestralizado === 1
-      }&Menor_Expuesto=${values?.menorExpuesto === 1}&Novo=${values?.novo === 1
-      }&TBC=${values?.tbc === undefined ? false : values?.tbc
+      `/updateRecord?output=json&useIds=true&objName=Contrato_Plan&id=${id}&R42695687=${values?.canalAtencion?.join(
+        "|"
+      )
+      }&Sexo_al_Nacer=${values?.Sexo_al_Nacer_txt}&Meses=${values?.meses
+      }&Renovacion=${values?.meses
+      }&Mayor_de=${values?.mayor}&Menor_de=${values?.menor
+      }&Duracion_1era_Visita=${values?.firstDuracion}&Duracion_Seguimiento=${values?.duracionSeg
       }&sessionId=${token}&output=json`
     );
     return data;

@@ -150,13 +150,13 @@ export const FiltersNotes = ({ id, activeKey }) => {
       title: "Fecha Etiqueta",
       dataIndex: "Fecha_Etiqueta",
       key: "Fecha_Etiqueta",
-      render: (text) => moment(text).format("DD/MM/YYYY"),
+      render: (text) =><strong>{moment(text).format("DD/MM/YYYY")}</strong> ,
     },
     {
       title: "Etiqueta Seguimiento",
       dataIndex: "Etiqueta_Seguimiento_txt",
       key: "Etiqueta_Seguimiento_txt",
-      render: (text) => <>{text}</>,
+      render: (text) => <strong>{text}</strong>,
     },
     {
       title: "Resultado de Contacto",
@@ -213,13 +213,14 @@ export const FiltersNotes = ({ id, activeKey }) => {
         idPaciente={id}
       />
       <Collapse>
-        <Panel header="Filtros Notas" key="1">
+        <Panel header={<strong>Filtros Notas</strong>} key="1">
           <Form
             colon={false}
             onFinish={onSubmit}
             form={form}
             autoComplete="off"
             layout="vertical"
+            
           >
             <Row
               style={{ flexDirection: "row", justifyContent: "space-between" }}

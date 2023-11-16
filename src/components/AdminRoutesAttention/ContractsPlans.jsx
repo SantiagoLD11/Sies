@@ -26,7 +26,7 @@ import {
   getListEtAsistencial,
   getlistSexoNacer,
   getListSubProgramas,
-  getListSedesSiesBasic,
+  getListSede,
   getListBimTrim,
   getListBomba,
 } from "../../appRedux/services";
@@ -60,7 +60,7 @@ export const ContractsPlans = ({ activeKey }) => {
   const [listClsBomba, setListClsBomba] = useState(null);
   const [listEstados, setListEstados] = useState(null);
   const [listSubPrograma, setListSubPrograma] = useState(null);
-  const [listCnlAtencion ,setListCnlAtencion] = useState(null);
+  const [listCnlAtencion, setListCnlAtencion] = useState(null);
 
   const getData = async () => {
     setLoading(true);
@@ -93,7 +93,7 @@ export const ContractsPlans = ({ activeKey }) => {
 
     const rSubPrograms = await getListSubProgramas(null);
     setListSubPrograma(rSubPrograms);
-    const rSedes = await getListSedesSiesBasic();
+    const rSedes = await getListSede();
     setListSedes(rSedes);
     const rBimTrim = await getListBimTrim();
     setListClsBimTrim(rBimTrim);
@@ -101,8 +101,8 @@ export const ContractsPlans = ({ activeKey }) => {
     setListClsBomba(rBomba);
   };
 
-  const inactivarContrato = async (id,Estado) => {
-    if(Estado == 'Activo'){
+  const inactivarContrato = async (id, Estado) => {
+    if (Estado == 'Activo') {
       Swal.fire({
         title: "¿Seguro?",
         text: "¿Esta seguro de Inactivar el Contrato Plan?",
@@ -114,12 +114,17 @@ export const ContractsPlans = ({ activeKey }) => {
         cancelButtonText: "No",
       }).then(async (result) => {
         if (result.isConfirmed) {
-            await inactivarContratoPlan(id,44189567);
+          await inactivarContratoPlan(id, 44189567);
           Swal.fire("El Contrato Plan fue Inactivado");
+          setLoading(true);
+          const resp = await getListContractsPlans();
+          setLoading(false);
+          setData(resp);
+          onSubmit(resp);
         }
       });
 
-    }else{
+    } else {
       Swal.fire({
         title: "¿Seguro?",
         text: "¿Esta seguro de Activar el Contrato Plan?",
@@ -131,15 +136,16 @@ export const ContractsPlans = ({ activeKey }) => {
         cancelButtonText: "No",
       }).then(async (result) => {
         if (result.isConfirmed) {
-            await inactivarContratoPlan(id,44189580);
+          await inactivarContratoPlan(id, 44189580);
           Swal.fire("El Contrato Plan fue Activado");
+          setLoading(true);
+          const resp = await getListContractsPlans();
+          setLoading(false);
+          setData(resp);
+          onSubmit(resp);
         }
       });
     }
-    setLoading(true);
-    const resp = await getListContractsPlans();
-    setLoading(false);
-    setData(resp);
   };
 
   const columns = [
@@ -174,7 +180,7 @@ export const ContractsPlans = ({ activeKey }) => {
                 </Button>
               </Tooltip>
               <Tooltip title={`${data.Estado_txt == 'Activo' ? 'Inactivar' : 'Activar'}`}>
-                <Button onClick={() => inactivarContrato(data.id,data.Estado_txt)}>
+                <Button onClick={() => inactivarContrato(data.id, data.Estado_txt)}>
                   <InfoCircleOutlined />
                 </Button>
               </Tooltip>
@@ -417,9 +423,10 @@ export const ContractsPlans = ({ activeKey }) => {
                   options={listClaseExamen}
                 />
               </Form.Item>
-              <div
-              >
-                 <Form.Item
+            </Row>
+            <Row style={{ flexDirection: "row", justifyContent: "space-between" }}
+            >
+              <Form.Item
                 label="Sub Programa"
                 name="subPrograma"
                 style={{ width: "20%" }}
@@ -459,10 +466,12 @@ export const ContractsPlans = ({ activeKey }) => {
                   options={listSedes}
                 />
               </Form.Item>
-              </div>
-              <div
-              >
-                 <Form.Item
+
+            </Row>
+            <Row
+              style={{ flexDirection: "row", justifyContent: "space-between" }}
+            >
+              <Form.Item
                 label="Estado"
                 name="state"
                 style={{ width: "20%" }}
@@ -502,7 +511,10 @@ export const ContractsPlans = ({ activeKey }) => {
                   options={listGenero}
                 />
               </Form.Item>
-
+            </Row>
+            <Row
+              style={{ flexDirection: "row", justifyContent: "flex-start" }}
+            >
               <Form.Item
                 label="Clasificacion Bomba"
                 name="bomba"
@@ -524,8 +536,8 @@ export const ContractsPlans = ({ activeKey }) => {
                   options={listCnlAtencion}
                 />
               </Form.Item>
-
-              </div>
+            </Row>
+            <Row>
               <div
                 key="button-actions"
                 className="d-flex justify-content-end me-4"
@@ -536,7 +548,9 @@ export const ContractsPlans = ({ activeKey }) => {
                 <Button
                   onClick={() => {
                     form.resetFields();
-                    setData([]);
+                    setLoading(true);
+                    getData();
+                    setLoading(false);
                   }}
                 >
                   Limpiar Filtros
@@ -545,7 +559,7 @@ export const ContractsPlans = ({ activeKey }) => {
             </Row>
           </Form>
         </Panel>
-      </Collapse>
+      </Collapse >
       <ViewAndEdit
         view={view}
         modalVisible={modalVisible}

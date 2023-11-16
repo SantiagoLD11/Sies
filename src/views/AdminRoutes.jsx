@@ -51,7 +51,8 @@ const AdminRoutes = () => {
   const [contrato, setContrato] = useState(false);
   const [_idProgram, setProgram] = useState(false);
   const [listSubprograma, setSubprograma] = useState(null);
-  const [tipoIngresoDefault, setTipoIngresoDefault] = useState(null); 
+  const [tipoIngresoDefault, setTipoIngresoDefault] = useState(null);
+  const [etAsistencialDefault, setetAsistencialDefault] = useState(null);
   const [clBimTrimDefault, setClBimTrimDefault] = useState(null);
   const [clBombaDefault, setClBombaDefault] = useState(null);
   const [listEspecialidad, setListEspecialidad] = useState(null);
@@ -120,6 +121,7 @@ const AdminRoutes = () => {
       setlistTipoIngreso(resListTpIngreso);
       const resListSexo = await getlistSexoNacer();
       setListSexo(resListSexo);
+      setetAsistencialDefault(Number(45676429));
     }
   }, [modalVisible]);
 
@@ -293,15 +295,19 @@ const AdminRoutes = () => {
           fields={[
             {
               name: ["cBomba"],
-              value: clBombaDefault || Number(47939476),
+              value: clBombaDefault,
             },
             {
               name: ["tIngreso"],
-              value: tipoIngresoDefault || Number(47918782),
+              value: tipoIngresoDefault,
             },
             {
               name: ["cBimTrim"],
-              value: clBimTrimDefault || Number(47939326),
+              value: clBimTrimDefault,
+            },
+            {
+              name: ["etAsitenciales"],
+              value: etAsistencialDefault,
             },
             {
               name: ["primeraVez"], 
@@ -310,6 +316,10 @@ const AdminRoutes = () => {
             {
               name: ["Prerrq"],
               value: false,
+            },
+            {
+              name: ["meses"],
+              value: '1,2,3,4,5,6,7,8,9,10,11,12',
             }
           ]}
         >

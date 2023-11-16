@@ -58,7 +58,7 @@ export const ViewNote = ({ open, setOpen, dataNote, idPaciente }) => {
       title: "Servicio",
       dataIndex: "servicio",
       key: "servicio",
-      // render: (text) => {text},
+      render: (text) =><strong>{text}</strong>,
     },
     {
       title: "Resultado contacto",

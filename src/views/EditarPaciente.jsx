@@ -49,7 +49,7 @@ export const EditarPaciente = ({
       await updatePatient(idPaciente, values);
       await messageApi.open({
         type: "success",
-        content: "Paciente integrado correctamente",
+        content: "Paciente Actualizado Correctamente",
       });
       close();
     } catch (error) {

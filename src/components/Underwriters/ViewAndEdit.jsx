@@ -12,11 +12,8 @@ import {
 } from "antd";
 import {
   ViewContractsPlans,
-  getListContrato,
-  getListEspecialidad,
   getListCanalAtencion,
-  getListEstadio,
-  getListClaseExamen,
+  getlistSexoNacer,
   updatePlanContract,
   getEditContractsPlans,
 } from "../../appRedux/services";
@@ -30,65 +27,58 @@ export const ViewAndEdit = ({
 }) => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
+  const [inputDate, setInputDate] = useState('');
   const [messageApi, contextHolder] = message.useMessage();
-  const [listContrato, setListContrato] = useState(null);
-  const [listEspecialidad, setListEspecialidad] = useState(null);
-  const [listClaseExamen, setListClaseExamen] = useState(null);
+  const [listSexo, setListSexo] = useState(null);
   const [listCanalAtencion, setListCanalAtencion] = useState(null);
-  const [listEstadio, setListEstadio] = useState(null);
   const [dataModView, setDataModView] = useState(null);
+  const [dataModEdit, setDataModEdit] = useState({
+    _canalAtencion: "",
+    _meses: "",
+    _menor: "",
+    _mayor: "",
+    _firstDuracion: "",
+    _duracionSeg: "",
+    _gen:""
+  });
 
   useEffect(async () => {
     if (modalVisible) {
       if (view == false) {
-        const resp = await getListContrato();
-        setListContrato(resp);
-        const respu = await getListEspecialidad();
-        setListEspecialidad(respu);
         const respues = await getListCanalAtencion();
         setListCanalAtencion(respues);
-        const respuest = await getListEstadio();
-        setListEstadio(respuest);
+
+        const resListSexo = await getlistSexoNacer();
+        setListSexo(resListSexo);
+
         const getDataEdit = getEditContractsPlans(idContract);
-        await onChangeEspecialidad(getDataEdit.Profesion_txt);
-        form.setFieldValue("contrato", getDataEdit.name);
-        form.setFieldValue("especialidad", getDataEdit.Profesion_txt);
-        form.setFieldValue("claseExamen", getDataEdit.Clase_Examen_txt);
-        form.setFieldValue("estadio", getDataEdit.Estadio_txt);
-        form.setFieldValue("canalAtencion", getDataEdit.Canales);
-        const meses = getDataEdit.Meses.split(",").map((item) => Number(item));
-        form.setFieldValue("meses", meses);
-        //  const renovacion = getDataEdit.Renovacion.split(",").map((item) =>
-        //    Number(item)
-        //  );
-        //form.setFieldValue("mesesRenovacion", renovacion);
+
+        form.setFieldValue("canalAtencion", getDataEdit.Canales_ids);
+        form.setFieldValue("meses", getDataEdit.Meses);
+        form.setFieldValue("menor", getDataEdit.Menor_de);
+        form.setFieldValue("mayor", getDataEdit.Mayor_de);
         form.setFieldValue("firstDuracion", getDataEdit.Duracion_1era_Visita);
         form.setFieldValue("duracionSeg", getDataEdit.Duracion_Seguimiento);
-        form.setFieldValue("subPrograma", getDataEdit.Sub_Programa);
-        form.setFieldValue("mayor", getDataEdit.Mayor_de);
-        form.setFieldValue("menor", getDataEdit.Menor_de);
-        //form.setFieldValue("abandonado", getDataEdit.Abandonado);
-        //form.setFieldValue("hospitalizado", getDataEdit.Hospitalizado);
-        // form.setFieldValue("naive", respuesta.Naive);
-        // form.setFieldValue("PacienteG", respuesta.Paciente_Gestante);
-        // form.setFieldValue("tuberculosis", respuesta.Tuberculosis);
-        // form.setFieldValue("primeraVez", respuesta.Primera_Vez);
-        // form.setFieldValue("bimestralizado", respuesta.Bimestralizado);
-        // form.setFieldValue("menorExpuesto", respuesta.Menor_Expuesto);
-        // form.setFieldValue("novo", respuesta.Novo);
-        // form.setFieldValue("tbc", respuesta.TBC);
-        // form.setFieldValue("criterioM", respuesta.Criterio_Medico);
+        form.setFieldValue("Sexo_al_Nacer_txt", getDataEdit.Sexo_al_Nacer_id);
+
+        let objEdit = {
+          _canalAtencion: getDataEdit.Canales_ids,
+          _meses: getDataEdit.Meses,
+          _menor: getDataEdit.Menor_de,
+          _mayor: getDataEdit.Mayor_de,
+          _firstDuracion: getDataEdit.Duracion_1era_Visita,
+          _duracionSeg: getDataEdit.Duracion_Seguimiento,
+          _gen: getDataEdit.Sexo_al_Nacer_id
+        };
+
+        setDataModEdit(objEdit);
+        
       } else {
         const respuesta = await ViewContractsPlans(idContract);
         setDataModView(respuesta);
       }
     }
   }, [modalVisible]);
-
-  const onChangeEspecialidad = async (value) => {
-    const respue = await getListClaseExamen(value);
-    setListClaseExamen(respue);
-  };
 
   const onSubmit = async () => {
     setLoading(true);
@@ -146,6 +136,36 @@ export const ViewAndEdit = ({
           autoComplete="off"
           layout="vertical"
           initialValues={{ checkboxField: false }}
+          fields={[
+            {
+              name: ["canalAtencion"],
+              value: dataModEdit._canalAtencion,
+            },
+            {
+              name: ["meses"],
+              value: dataModEdit._meses,
+            },
+            {
+              name: ["menor"],
+              value: dataModEdit._menor,
+            },
+            {
+              name: ["mayor"],
+              value: dataModEdit._mayor,
+            },
+            {
+              name: ["Sexo_al_Nacer_txt"], 
+              value: dataModEdit._gen,
+            },
+            {
+              name: ["firstDuracion"],
+              value: dataModEdit._firstDuracion,
+            },
+            {
+              name: ["duracionSeg"],
+              value: dataModEdit._duracionSeg,
+            }
+          ]}
         >
           <Row
             style={{
@@ -153,61 +173,9 @@ export const ViewAndEdit = ({
               flexDirection: "row",
             }}
           >
-            <Col style={{ width: "40%" }}>
-              <Form.Item label="Contrato" name="contrato">
-                {view ? (
-                  <p>{dataModView?.name}</p>
-                ) : (
-                  <Select
-                    placeholder="Seleccione un contrato"
-                    style={{ width: "100%" }}
-                    options={listContrato}
-                  />
-                )}
-              </Form.Item>
+            <Col style={{ width: "50%" }}>
 
-              <Form.Item label="Primera Vez" name="Primera_Vez">
-                {view ? <p>{dataModView?.Primera_Vez}</p> : null}
-              </Form.Item>
-
-              <Form.Item label="Especialidad" name="especialidad">
-                {view ? (
-                  <p>{dataModView?.Profesion_txt}</p>
-                ) : (
-                  <Select
-                    placeholder="Seleccione una especialidad"
-                    style={{ width: "100%" }}
-                    options={listEspecialidad}
-                    onChange={(value) => onChangeEspecialidad(value)}
-                  />
-                )}
-              </Form.Item>
-
-              <Form.Item label="Clase examen" name="claseExamen">
-                {view ? (
-                  <p>{dataModView?.Clase_Examen_txt}</p>
-                ) : (
-                  <Select
-                    placeholder="Seleccione una clase de examen"
-                    style={{ width: "100%" }}
-                    options={listClaseExamen}
-                  />
-                )}
-              </Form.Item>
-
-              <Form.Item label="Estadio" name="estadio">
-                {view ? (
-                  <p>{dataModView?.Estadio_txt}</p>
-                ) : (
-                  <Select
-                    placeholder="Seleccione un estadio"
-                    style={{ width: "100%" }}
-                    options={listEstadio}
-                  />
-                )}
-              </Form.Item>
-
-              <Form.Item label="Canal atención" name="canalAtencion">
+              <Form.Item label="Canal atención" name="canalAtencion" rules={[{ required: true, message: 'Campo obligatorio' }]}>
                 {view ? (
                   <p>{dataModView?.Canales}</p>
                 ) : (
@@ -219,50 +187,59 @@ export const ViewAndEdit = ({
                 )}
               </Form.Item>
 
-              <Form.Item
-                label="Etiquetas Asistenciales"
-                name="Etiquetas_Asistenciales_txt"
-              >
-                {view ? (
-                  <p>{dataModView?.Etiquetas_Asistenciales_txt}</p>
-                ) : null}
-              </Form.Item>
-
-              <Form.Item
-                label="Etiquetas Administrativas"
-                name="Etiquetas_Administrativas_txt"
-              >
-                {view ? (
-                  <p>{dataModView?.Etiquetas_Administrativas_txt}</p>
-                ) : null}
-              </Form.Item>
-            </Col>
-            <Col style={{ width: "40%" }}>
-              <Form.Item label="Meses" name="meses">
+              <Form.Item label="Meses" name="meses" rules={[{ required: true, message: 'Campo obligatorio' }]} >
                 {view ? (
                   <p>{dataModView?.Meses}</p>
                 ) : (
-                  <Select
-                    mode="multiple"
-                    placeholder="Seleccione meses"
+                  <Input
+                    placeholder="Digite los meses separados por comas"
                     style={{ width: "100%" }}
-                    options={SelectMeses}
+                    onChange={(e) => {
+                      form.setFieldsValue({
+                        meses: inputDate,
+                      });
+                      const value = e.target.value;
+                      const regex = /^[0-9,]*$/;
+                      if (regex.test(value)) {
+                        form.setFieldsValue({
+                          meses: value,
+                        });
+                        setInputDate(value);
+                      }
+                    }}
                   />
                 )}
               </Form.Item>
-              <Form.Item label="Meses renovación" name="mesesRenovacion">
+
+              <Form.Item label="Menor de (Años):" name="menor" rules={[{ required: true, message: 'Campo obligatorio' }]}>
                 {view ? (
-                  <p>{dataModView?.Renovacion}</p>
+                  <p>{dataModView?.Menor_de}</p>
                 ) : (
+                  <Input type="number" />
+                )}
+              </Form.Item>
+
+              <Form.Item label="Mayor de (Años):" name="mayor" rules={[{ required: true, message: 'Campo obligatorio' }]}>
+                {view ? (
+                  <p>{dataModView?.Mayor_de}</p>
+                ) : (
+                  <Input type="number" />
+                )}
+              </Form.Item>
+
+            </Col>
+            <Col style={{ width: "50%" }}>
+              
+            <Form.Item label="Sexo al Nacer" name="Sexo_al_Nacer_txt" rules={[{ required: true, message: 'Campo obligatorio' }]}>
+                {view ? <p>{dataModView?.Sexo_al_Nacer_txt}</p> : (
                   <Select
-                    mode="multiple"
-                    placeholder="Seleccione meses de renovación"
+                    placeholder="Seleccione un Genero"
                     style={{ width: "100%" }}
-                    options={SelectMeses}
+                    options={listSexo}
                   />
                 )}
               </Form.Item>
-              <Form.Item label="Duración (1era vez)" name="firstDuracion">
+              <Form.Item label="Duración (1era vez)" name="firstDuracion" rules={[{ required: true, message: 'Campo obligatorio' }]}>
                 {view ? (
                   <p>{dataModView?.Duracion_1era_Visita}</p>
                 ) : (
@@ -273,7 +250,7 @@ export const ViewAndEdit = ({
                   />
                 )}
               </Form.Item>
-              <Form.Item label="Duración (Seguimiento)" name="duracionSeg">
+              <Form.Item label="Duración (Seguimiento)" name="duracionSeg" rules={[{ required: true, message: 'Campo obligatorio' }]}>
                 {view ? (
                   <p>{dataModView?.Duracion_Seguimiento}</p>
                 ) : (
@@ -283,37 +260,6 @@ export const ViewAndEdit = ({
                     type="Number"
                   />
                 )}
-              </Form.Item>
-              <Form.Item label="SubPrograma" name="subPrograma">
-                {view ? (
-                  <p>{dataModView?.Sub_Programa}</p>
-                ) : (
-                  <Select
-                    placeholder="Seleccione un subprograma"
-                    style={{ width: "100%" }}
-                    options={null}
-                  />
-                )}
-              </Form.Item>
-
-              <Form.Item label="Menor de (Años):" name="menor">
-                {view ? (
-                  <p>{dataModView?.Menor_de}</p>
-                ) : (
-                  <Input type="number" />
-                )}
-              </Form.Item>
-
-              <Form.Item label="Mayor de (Años):" name="mayor">
-                {view ? (
-                  <p>{dataModView?.Mayor_de}</p>
-                ) : (
-                  <Input type="number" />
-                )}
-              </Form.Item>
-
-              <Form.Item label="Sexo al Nacer" name="Sexo_al_Nacer_txt">
-                {view ? <p>{dataModView?.Sexo_al_Nacer_txt}</p> : null}
               </Form.Item>
             </Col>
           </Row>

@@ -160,8 +160,8 @@ const SignIn = () => {
                   <IntlMessages id="app.userAuth.signIn" />
                 </Button>
                 <Button className="gx-mb-0" onClick={() => loginAzure()}>
-                  <img src={svgMicrosoft} alt="logoMicrosoft" width="50" height="50" />
-                  Ingresa con Microsoft
+                  <img src={svgMicrosoft} alt="logoMicrosoft" width="20" height="20"/>
+                  <span style={{ marginLeft: '5px' }}>Ingresa con Microsoft</span>
                 </Button>
                 {/* <span><IntlMessages id="app.userAuth.or"/></span> <Link to="/signup"><IntlMessages
                 id="app.userAuth.signUp"/></Link> */}

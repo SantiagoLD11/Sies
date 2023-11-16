@@ -63,13 +63,13 @@ export const Quotes = ({ id, activeKey }) => {
       title: "Cita",
       dataIndex: "name",
       key: "name",
-      render: (text) => <>{text}</>,
+      render: (text) => <strong>{text}</strong>,
     },
     {
       title: "Fecha Cita",
       dataIndex: "Fecha_Cita",
       key: "Fecha_Cita",
-      render: (text) => moment(text).format("DD/MM/YYYY HH:MM"),
+      render: (text) => <strong>{moment(text).format("DD/MM/YYYY HH:MM")}</strong>,
     },
     {
       title: "Duración",
