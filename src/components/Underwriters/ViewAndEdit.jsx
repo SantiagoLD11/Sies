@@ -103,7 +103,7 @@ export const ViewAndEdit = ({
     if (resp?.status === "ok") {
       await messageApi.open({
         type: "success",
-        content: "Se ha modificado correctamente",
+        content: "Se ha actualizado el contrato plan, y los pacientes asociados a este correctamente!.",
       });
     }
     setLoading(false);
@@ -162,9 +162,9 @@ export const ViewAndEdit = ({
               flexDirection: "row",
             }}
           >
-            <Col style={{ width: "50%" }}>
+            <Col style={{ width: "48%", marginRight: "5px"}}>
 
-              <Form.Item label="Canal atención" name="canalAtencion" rules={[{ required: true, message: 'Campo obligatorio' }]}>
+              <Form.Item initialValue ={canalAtencionDefault} label="Canal atención" name="canalAtencion" rules={[{ required: true, message: 'Campo obligatorio' }]}>
 
                   <Select
                     placeholder="Seleccione los canales"
@@ -217,7 +217,7 @@ export const ViewAndEdit = ({
               </Form.Item>
 
             </Col>
-            <Col style={{ width: "50%" }}>
+            <Col style={{ width: "48%" }}>
               
             <Form.Item label="Sexo al Nacer" name="Sexo_al_Nacer_txt" rules={[{ required: true, message: 'Campo obligatorio' }]}>
                   <Select

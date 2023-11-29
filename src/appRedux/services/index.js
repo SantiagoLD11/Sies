@@ -746,7 +746,7 @@ export const getEditContractsPlans = async (id) => {
         Menor_de: values[5],
         Duracion_Seguimiento: values[6],
         Duracion_1era_Visita: values[7],
-        Canales_ids: values[8]
+        Canales_ids: values[8] != null ? values[8].split(",").map(Number) : null
       };
       return final_data;
     } else {
@@ -2915,9 +2915,7 @@ export const updatePlanContract = async (id, values) => {
   const token = localStorage.getItem("token");
   try {
     const { data } = await httpClient.get(
-      `/updateRecord?output=json&useIds=true&objName=Contrato_Plan&id=${id}&R42695687=${values?.canalAtencion?.join(
-        "|"
-      )
+      `/updateRecord?output=json&useIds=true&objName=Contrato_Plan&id=${id}&R42695687=${values?.canalAtencion?.join("|")
       }&Sexo_al_Nacer=${values?.Sexo_al_Nacer_txt}&Meses=${values?.meses
       }&Renovacion=${values?.meses
       }&Mayor_de=${values?.mayor}&Menor_de=${values?.menor

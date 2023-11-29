@@ -133,6 +133,11 @@ export const RouteChangeHistory = ({ activeKey }) => {
       dataIndex: "Filtro_Programa",
       key: "Filtro_Programa",
     },
+    {
+      title: "Creado Por",
+      dataIndex: "Creado_Por",
+      key: "Creado_Por",
+    }
   ];
 
   useEffect(() => {
