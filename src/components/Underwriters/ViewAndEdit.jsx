@@ -31,54 +31,60 @@ export const ViewAndEdit = ({
   const [messageApi, contextHolder] = message.useMessage();
   const [listSexo, setListSexo] = useState(null);
   const [listCanalAtencion, setListCanalAtencion] = useState(null);
+  const [canalAtencionDefault, setCanalAtencionDefault] = useState(null);
+  const [generoDefault, setGeneroDefault] = useState(null);
+
   const [dataModView, setDataModView] = useState(null);
   const [dataModEdit, setDataModEdit] = useState({
-    _canalAtencion: "",
     _meses: "",
     _menor: "",
     _mayor: "",
     _firstDuracion: "",
-    _duracionSeg: "",
-    _gen:""
+    _duracionSeg: ""
   });
 
   useEffect(async () => {
-    if (modalVisible) {
-      if (view == false) {
-        const getDataEdit = await getEditContractsPlans(idContract);
+    try {
+      if(modalVisible){
+      const respues = await getListCanalAtencion();
+      setListCanalAtencion(respues);
 
-        console.log("Datos "+getDataEdit.Canales_ids);
+      const resListSexo = await getlistSexoNacer();
+      setListSexo(resListSexo);
+          const getDataEdit = await getEditContractsPlans(idContract);
+  
+          console.log("Datos "+getDataEdit.Canales_ids);
+  
+          form.setFieldValue("canalAtencion", getDataEdit.Canales_ids);
+          form.setFieldValue("meses", getDataEdit.Meses);
+          form.setFieldValue("menor", getDataEdit.Menor_de);
+          form.setFieldValue("mayor", getDataEdit.Mayor_de);
+          form.setFieldValue("firstDuracion", getDataEdit.Duracion_1era_Visita);
+          form.setFieldValue("duracionSeg", getDataEdit.Duracion_Seguimiento);
+          form.setFieldValue("Sexo_al_Nacer_txt", getDataEdit.Sexo_al_Nacer_id);
+  
+          const objEdit = {
+            _meses: getDataEdit.Meses,
+            _menor: getDataEdit.Menor_de,
+            _mayor: getDataEdit.Mayor_de,
+            _firstDuracion: getDataEdit.Duracion_1era_Visita,
+            _duracionSeg: getDataEdit.Duracion_Seguimiento,
+          };
 
-        form.setFieldValue("canalAtencion", getDataEdit.Canales_ids);
-        form.setFieldValue("meses", getDataEdit.Meses);
-        form.setFieldValue("menor", getDataEdit.Menor_de);
-        form.setFieldValue("mayor", getDataEdit.Mayor_de);
-        form.setFieldValue("firstDuracion", getDataEdit.Duracion_1era_Visita);
-        form.setFieldValue("duracionSeg", getDataEdit.Duracion_Seguimiento);
-        form.setFieldValue("Sexo_al_Nacer_txt", getDataEdit.Sexo_al_Nacer_id);
+          setDataModEdit(objEdit);
 
-        const objEdit = {
-          _canalAtencion: getDataEdit.Canales_ids,
-          _meses: getDataEdit.Meses,
-          _menor: getDataEdit.Menor_de,
-          _mayor: getDataEdit.Mayor_de,
-          _firstDuracion: getDataEdit.Duracion_1era_Visita,
-          _duracionSeg: getDataEdit.Duracion_Seguimiento,
-          _gen: getDataEdit.Sexo_al_Nacer_id
-        };
+          setGeneroDefault(Number(getDataEdit.Sexo_al_Nacer_id));
+  
+          setCanalAtencionDefault(getDataEdit.Canales_ids);
 
-        setDataModEdit(objEdit);
+          console.log(generoDefault);
 
-        const respues = await getListCanalAtencion();
-        setListCanalAtencion(respues);
+        }
+                  
+    } catch (error) {
 
-        const resListSexo = await getlistSexoNacer();
-        setListSexo(resListSexo);
-        
-      } else {
-        const respuesta = await ViewContractsPlans(idContract);
-        setDataModView(respuesta);
-      }
+      console.error("Error en visualizacion");
+      
     }
   }, [modalVisible]);
 
@@ -138,6 +144,17 @@ export const ViewAndEdit = ({
           autoComplete="off"
           layout="vertical"
           initialValues={{ checkboxField: false }}
+          fields={[
+            {
+              name: ["canalAtencion"],
+              value: canalAtencionDefault,
+          },
+          {
+            name: ["Sexo_al_Nacer_txt"],
+            value: generoDefault,
+        },
+
+        ]}
         >
           <Row
             style={{
@@ -148,16 +165,13 @@ export const ViewAndEdit = ({
             <Col style={{ width: "50%" }}>
 
               <Form.Item label="Canal atención" name="canalAtencion" rules={[{ required: true, message: 'Campo obligatorio' }]}>
-                {view ? (
-                  <p>{dataModView?.Canales}</p>
-                ) : (
+
                   <Select
-                    placeholder="Seleccione un canal"
+                    placeholder="Seleccione los canales"
+                    mode="multiple"
                     style={{ width: "100%" }}
                     options={listCanalAtencion}
-                    value={dataModEdit._canalAtencion}
                   />
-                )}
               </Form.Item>
 
               <Form.Item label="Meses" name="meses" rules={[{ required: true, message: 'Campo obligatorio' }]} >
@@ -190,7 +204,7 @@ export const ViewAndEdit = ({
                 {view ? (
                   <p>{dataModView?.Menor_de}</p>
                 ) : (
-                  <Input type="number" value={dataModEdit._menor} defaultValue={dataModEdit._menor}/>
+                  <Input type="number" value={dataModEdit._menor}/>
                 )}
               </Form.Item>
 
@@ -198,7 +212,7 @@ export const ViewAndEdit = ({
                 {view ? (
                   <p>{dataModView?.Mayor_de}</p>
                 ) : (
-                  <Input type="number" value={dataModEdit._mayor} defaultValue={dataModEdit._mayor}/>
+                  <Input type="number" value={dataModEdit._mayor} />
                 )}
               </Form.Item>
 
@@ -206,14 +220,11 @@ export const ViewAndEdit = ({
             <Col style={{ width: "50%" }}>
               
             <Form.Item label="Sexo al Nacer" name="Sexo_al_Nacer_txt" rules={[{ required: true, message: 'Campo obligatorio' }]}>
-                {view ? <p>{dataModView?.Sexo_al_Nacer_txt}</p> : (
                   <Select
                     placeholder="Seleccione un Genero"
                     style={{ width: "100%" }}
                     options={listSexo}
-                    value={dataModEdit._gen}
                   />
-                )}
               </Form.Item>
               <Form.Item label="Duración (1era vez)" name="firstDuracion" rules={[{ required: true, message: 'Campo obligatorio' }]}>
                 {view ? (
@@ -243,149 +254,6 @@ export const ViewAndEdit = ({
               </Form.Item>
             </Col>
           </Row>
-          {/* <div className="col-12 col-md-12">
-            <h4 style={{ fontWeight: "bold", textAlign: "left" }}>
-              Clasificación pacientes
-            </h4>
-          </div>
-          <Row
-            gutter={[8, 4]}
-            style={{
-              flexDirection: "row",
-            }}
-          >
-            <Col style={{ display: "flex", flexDirection: "row" }} span={8}>
-              <Form.Item valuePropName="checked" name="abandonado">
-                <Checkbox
-                  style={{ display: "flex", flexDirection: "row-reverse" }}
-                  disabled={view}
-                >
-                  Abandonado:
-                </Checkbox>
-              </Form.Item>
-            </Col>
-            <Col style={{ display: "flex", flexDirection: "row" }} span={8}>
-              <Form.Item valuePropName="checked" name="primeraVez">
-                <Checkbox
-                  style={{ display: "flex", flexDirection: "row-reverse" }}
-                  disabled={view}
-                >
-                  1era Vez:
-                </Checkbox>
-              </Form.Item>
-            </Col>
-            <Col style={{ display: "flex", flexDirection: "row" }} span={8}>
-              <Form.Item valuePropName="checked" name="tbc">
-                <Checkbox
-                  style={{ display: "flex", flexDirection: "row-reverse" }}
-                  disabled={view}
-                >
-                  TBC:
-                </Checkbox>
-              </Form.Item>
-            </Col>
-
-            <Col style={{ display: "flex", flexDirection: "row" }} span={8}>
-              <Form.Item valuePropName="checked" name="hospitalizado">
-                <Checkbox
-                  style={{ display: "flex", flexDirection: "row-reverse" }}
-                  disabled={view}
-                >
-                  Hospitalizado:
-                </Checkbox>
-              </Form.Item>
-            </Col>
-            <Col style={{ display: "flex", flexDirection: "row" }} span={8}>
-              <Form.Item valuePropName="checked" name="bimestralizado">
-                <Checkbox
-                  style={{ display: "flex", flexDirection: "row-reverse" }}
-                  disabled={view}
-                >
-                  Bimestralizado:
-                </Checkbox>
-              </Form.Item>
-            </Col>
-            <Col style={{ display: "flex", flexDirection: "row" }} span={8}>
-              <Form.Item label="Mayor de (Años):" name="mayor">
-                {view ? (
-                  <p>{dataModView?.Mayor_de}</p>
-                ) : (
-                  <Input type="number" />
-                )}
-              </Form.Item>
-            </Col>
-
-            <Col style={{ display: "flex", flexDirection: "row" }} span={8}>
-              <Form.Item valuePropName="checked" name="naive">
-                <Checkbox
-                  style={{ display: "flex", flexDirection: "row-reverse" }}
-                  disabled={view}
-                >
-                  Naive:
-                </Checkbox>
-              </Form.Item>
-            </Col>
-            <Col style={{ display: "flex", flexDirection: "row" }} span={8}>
-              <Form.Item valuePropName="checked" name="menorExpuesto">
-                <Checkbox
-                  style={{ display: "flex", flexDirection: "row-reverse" }}
-                  disabled={view}
-                >
-                  Menor Expuesto:
-                </Checkbox>
-              </Form.Item>
-            </Col>
-            <Col style={{ display: "flex", flexDirection: "row" }} span={8}>
-              <Form.Item label="Menor de (Años):" name="menor">
-                {view ? (
-                  <p>{dataModView?.Menor_de}</p>
-                ) : (
-                  <Input type="number" />
-                )}
-              </Form.Item>
-            </Col>
-
-            <Col style={{ display: "flex", flexDirection: "row" }} span={8}>
-              <Form.Item valuePropName="checked" name="PacienteG">
-                <Checkbox
-                  style={{ display: "flex", flexDirection: "row-reverse" }}
-                  disabled={view}
-                >
-                  Paciente Gestante:
-                </Checkbox>
-              </Form.Item>
-            </Col>
-            <Col style={{ display: "flex", flexDirection: "row" }} span={8}>
-              <Form.Item valuePropName="checked" name="criterioM">
-                <Checkbox
-                  style={{ display: "flex", flexDirection: "row-reverse" }}
-                  disabled={view}
-                >
-                  Criterio Medico:
-                </Checkbox>
-              </Form.Item>
-            </Col>
-            <Col style={{ display: "flex", flexDirection: "row" }} span={8}>
-              <Form.Item valuePropName="checked" name="tuberculosis">
-                <Checkbox
-                  style={{ display: "flex", flexDirection: "row-reverse" }}
-                  disabled={view}
-                >
-                  Tuberculosis:
-                </Checkbox>
-              </Form.Item>
-            </Col>
-            <Col style={{ display: "flex", flexDirection: "row" }} span={8}>
-              <Form.Item valuePropName="checked" name="novo">
-                <Checkbox
-                  style={{ display: "flex", flexDirection: "row-reverse" }}
-                  disabled={view}
-                >
-                  Novo:
-                </Checkbox>
-              </Form.Item>
-            </Col>
-          </Row> */}
         </Form>
       </Modal>
     </>

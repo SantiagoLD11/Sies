@@ -1113,7 +1113,7 @@ export const getListCanalAtencionfilter = async (canal) => {
   const token = localStorage.getItem("token");
   try {
     let query = encodeURI(
-      `SELECT id,name FROM Canal_Atencion WHERE id IN (${canal})`
+      `SELECT name,id FROM Canal_Atencion WHERE id IN (${canal})`
     );
     const { data } = await httpClient.get(
       `/selectQuery?maxRows=1300&query=${query}&sessionId=${token}&output=json`
@@ -1188,7 +1188,7 @@ export const getListSedesSies = async (idContrato) => {
   }
 };
 
-export const getListCanalAtencion = async (canal) => {
+export const getListCanalAtencion = async () => {
   const token = localStorage.getItem("token");
   try {
     let query = encodeURI(`SELECT id,name FROM Canal_Atencion`);
@@ -1498,7 +1498,7 @@ export const getlistSexoNacer = async () => {
     );
     if (data.length > 0) {
       const final_data = data.map((value) => {
-        return { value: value.code, label: value.name };
+        return { value: value.id, label: value.name };
       });
       return final_data;
     } else {

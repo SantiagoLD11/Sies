@@ -335,9 +335,15 @@ const AdminRoutes = () => {
               <div className="col-12 col-md-6">
                 <Form.Item label="Contrato" name="contrato" rules={[{ required: true, message: 'Campo obligatorio' }]}>
                   <Select
+                    showSearch
                     placeholder="Seleccione un contrato"
                     style={{ width: "100%" }}
                     options={listContrato}
+                    filterOption={(input, option) =>
+                      (option?.label ?? "")
+                        .toLowerCase()
+                        .includes(input.toLowerCase())
+                    }
                     onChange={async (value, options) => {
                       if (options?.idPrograma) {
                         const subProgramas = await getListSubProgramas(options?.idPrograma);
@@ -364,8 +370,14 @@ const AdminRoutes = () => {
                 <Form.Item label="Profesion" name="especialidad" rules={[{ required: true, message: 'Campo obligatorio' }]}>
                   <Select
                     placeholder="Seleccione una Profesion"
+                    showSearch
                     style={{ width: "100%" }}
                     options={listEspecialidad}
+                    filterOption={(input, option) =>
+                      (option?.label ?? "")
+                        .toLowerCase()
+                        .includes(input.toLowerCase())
+                    }
                     onChange={(value) => onChangeEspecialidad(value)}
                   />
                 </Form.Item>
@@ -373,8 +385,14 @@ const AdminRoutes = () => {
                 <Form.Item label="Clase examen" name="claseExamen" rules={[{ required: form.getFieldValue('especialidad') && listClaseExamen?.length !== 0, message: 'Campo obligatorio' }]}>
                   <Select
                     placeholder="Seleccione una clase de examen"
+                    showSearch
                     style={{ width: "100%" }}
                     options={listClaseExamen}
+                    filterOption={(input, option) =>
+                      (option?.label ?? "")
+                        .toLowerCase()
+                        .includes(input.toLowerCase())
+                    }
                     disabled={listClaseExamen?.length === 0 || !form.getFieldValue('especialidad')}
                   />
                 </Form.Item>
@@ -432,9 +450,15 @@ const AdminRoutes = () => {
                 </Form.Item>
                 <Form.Item label="SubPrograma" name="subPrograma" rules={[{ required: form.getFieldValue('contrato') && listSubprograma?.length !== 0, message: 'Campo obligatorio' }]}>
                   <Select
+                    showSearch
                     placeholder="Seleccione un subprograma"
                     style={{ width: "100%" }}
                     options={listSubprograma}
+                    filterOption={(input, option) =>
+                      (option?.label ?? "")
+                        .toLowerCase()
+                        .includes(input.toLowerCase())
+                    }
                     disabled={listSubprograma?.length === 0 || !contrato}
                   />
                 </Form.Item>
@@ -554,6 +578,11 @@ const AdminRoutes = () => {
                       mode="multiple"
                       style={{ width: "100%" }}
                       options={listSedes}
+                      filterOption={(input, option) =>
+                        (option?.label ?? "")
+                          .toLowerCase()
+                          .includes(input.toLowerCase())
+                      }
                       disabled={listSedes?.length === 0 || !contrato}
                     />
                   </Form.Item>
