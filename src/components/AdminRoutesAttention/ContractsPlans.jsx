@@ -529,7 +529,7 @@ export const ContractsPlans = ({ activeKey }) => {
               <Form.Item
                 label="Canal Atencion"
                 name="cnlAtencion"
-                style={{ width: "20%", marginLeft: "60px"}}
+                style={{ width: "20%", marginLeft: "65px"}}
               >
                 <Select
                   placeholder="Seleccione un Canal"

@@ -94,17 +94,17 @@ export const RouteChangeHistory = ({ activeKey }) => {
       key: "Filtro_Profesion",
     },
     {
+      title: "Filtro Sede",
+      dataIndex: "Filtro_Sede",
+      key: "Filtro_Sede",
+    },
+    {
       title: "Meses Atencion",
       dataIndex: "Meses",
       key: "Meses",
     },
     {
-      title: "Meses Renovación",
-      dataIndex: "Renovacion",
-      key: "Renovacion",
-    },
-    {
-      title: "Mover Año de",
+      title: "Año",
       dataIndex: "Mover_yyy_de",
       key: "Mover_yyy_de",
     },
@@ -122,11 +122,6 @@ export const RouteChangeHistory = ({ activeKey }) => {
       title: "Mover Mes a",
       dataIndex: "Mover_Mes_a",
       key: "Mover_Mes_a",
-    },
-    {
-      title: "Filtro Sede",
-      dataIndex: "Filtro_Sede",
-      key: "Filtro_Sede",
     },
     {
       title: "Respuesta",

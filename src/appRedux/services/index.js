@@ -1251,6 +1251,27 @@ export const getListContrato = async () => {
   }
 };
 
+export const getListContratoPlanes = async () => {
+  const token = localStorage.getItem("token");
+  try {
+    let query = encodeURI(`SELECT id,name FROM Contrato_Plan`);
+    const { data } = await httpClient.get(
+      `/selectQuery?maxRows=1000000&query=${query}&sessionId=${token}&output=json`
+    );
+    if (data.length > 0) {
+      const final_data = data.map((value) => {
+        return { value: value[0], label: value[1] };
+      });
+      return final_data;
+    } else {
+      return [];
+    }
+  } catch (error) {
+    httpClient.defaults.headers.common["Authorization"] = "";
+    return Promise.reject(error);
+  }
+};
+
 export const getListEspecialidad = async () => {
   const token = localStorage.getItem("token");
   try {
