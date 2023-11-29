@@ -45,13 +45,9 @@ export const ViewAndEdit = ({
   useEffect(async () => {
     if (modalVisible) {
       if (view == false) {
-        const respues = await getListCanalAtencion();
-        setListCanalAtencion(respues);
+        const getDataEdit = await getEditContractsPlans(idContract);
 
-        const resListSexo = await getlistSexoNacer();
-        setListSexo(resListSexo);
-
-        const getDataEdit = getEditContractsPlans(idContract);
+        console.log("Datos "+getDataEdit.Canales_ids);
 
         form.setFieldValue("canalAtencion", getDataEdit.Canales_ids);
         form.setFieldValue("meses", getDataEdit.Meses);
@@ -61,7 +57,7 @@ export const ViewAndEdit = ({
         form.setFieldValue("duracionSeg", getDataEdit.Duracion_Seguimiento);
         form.setFieldValue("Sexo_al_Nacer_txt", getDataEdit.Sexo_al_Nacer_id);
 
-        let objEdit = {
+        const objEdit = {
           _canalAtencion: getDataEdit.Canales_ids,
           _meses: getDataEdit.Meses,
           _menor: getDataEdit.Menor_de,
@@ -72,6 +68,12 @@ export const ViewAndEdit = ({
         };
 
         setDataModEdit(objEdit);
+
+        const respues = await getListCanalAtencion();
+        setListCanalAtencion(respues);
+
+        const resListSexo = await getlistSexoNacer();
+        setListSexo(resListSexo);
         
       } else {
         const respuesta = await ViewContractsPlans(idContract);
@@ -136,36 +138,6 @@ export const ViewAndEdit = ({
           autoComplete="off"
           layout="vertical"
           initialValues={{ checkboxField: false }}
-          fields={[
-            {
-              name: ["canalAtencion"],
-              value: dataModEdit._canalAtencion,
-            },
-            {
-              name: ["meses"],
-              value: dataModEdit._meses,
-            },
-            {
-              name: ["menor"],
-              value: dataModEdit._menor,
-            },
-            {
-              name: ["mayor"],
-              value: dataModEdit._mayor,
-            },
-            {
-              name: ["Sexo_al_Nacer_txt"], 
-              value: dataModEdit._gen,
-            },
-            {
-              name: ["firstDuracion"],
-              value: dataModEdit._firstDuracion,
-            },
-            {
-              name: ["duracionSeg"],
-              value: dataModEdit._duracionSeg,
-            }
-          ]}
         >
           <Row
             style={{
@@ -183,6 +155,7 @@ export const ViewAndEdit = ({
                     placeholder="Seleccione un canal"
                     style={{ width: "100%" }}
                     options={listCanalAtencion}
+                    value={dataModEdit._canalAtencion}
                   />
                 )}
               </Form.Item>
@@ -194,6 +167,8 @@ export const ViewAndEdit = ({
                   <Input
                     placeholder="Digite los meses separados por comas"
                     style={{ width: "100%" }}
+                    value={dataModEdit._meses}
+                    defaultValue={dataModEdit._meses}
                     onChange={(e) => {
                       form.setFieldsValue({
                         meses: inputDate,
@@ -215,7 +190,7 @@ export const ViewAndEdit = ({
                 {view ? (
                   <p>{dataModView?.Menor_de}</p>
                 ) : (
-                  <Input type="number" />
+                  <Input type="number" value={dataModEdit._menor} defaultValue={dataModEdit._menor}/>
                 )}
               </Form.Item>
 
@@ -223,7 +198,7 @@ export const ViewAndEdit = ({
                 {view ? (
                   <p>{dataModView?.Mayor_de}</p>
                 ) : (
-                  <Input type="number" />
+                  <Input type="number" value={dataModEdit._mayor} defaultValue={dataModEdit._mayor}/>
                 )}
               </Form.Item>
 
@@ -236,6 +211,7 @@ export const ViewAndEdit = ({
                     placeholder="Seleccione un Genero"
                     style={{ width: "100%" }}
                     options={listSexo}
+                    value={dataModEdit._gen}
                   />
                 )}
               </Form.Item>
@@ -247,6 +223,8 @@ export const ViewAndEdit = ({
                     placeholder="Digite la duración en minutos"
                     style={{ width: "100%" }}
                     type="Number"
+                    value={dataModEdit._firstDuracion}
+                    defaultValue={dataModEdit._firstDuracion}
                   />
                 )}
               </Form.Item>
@@ -258,6 +236,8 @@ export const ViewAndEdit = ({
                     placeholder="Digite la duración en minutos"
                     style={{ width: "100%" }}
                     type="Number"
+                    value={dataModEdit._duracionSeg}
+                    defaultValue={dataModEdit._duracionSeg}
                   />
                 )}
               </Form.Item>

@@ -58,7 +58,7 @@ const ListProfesional = () => {
       title: "Nombres",
       dataIndex: "nombres",
       key: "nombres",
-      render: (text) => <a>{text}</a>,
+      render: (text) => <strong>{text}</strong>,
     },
     {
       title: "Apellidos",

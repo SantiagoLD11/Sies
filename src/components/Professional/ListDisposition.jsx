@@ -98,7 +98,7 @@ const ListDisposition = ({
       dataIndex: "fecha_hora",
       key: "fecha_hora",
       width: "12%",
-      render: (text) => moment(text).format("DD/MM/YYYY : HH:mm"),
+      render: (text) =><strong>{moment(text).format("DD/MM/YYYY : HH:mm")}</strong>,
     },
     {
       title: "Examen",
@@ -125,6 +125,7 @@ const ListDisposition = ({
       dataIndex: "canal_atencion",
       key: "canal_atencion",
       width: "13%",
+      render: (text) =><strong>{text}</strong>,
     },
     {
       title: "Duración",

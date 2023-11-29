@@ -119,10 +119,8 @@ const SidebarContent = ({ sidebarCollapsed, setSidebarCollapsed }) => {
             <Menu.SubMenu title={"Informes"}>
               {Administrador_AdminProfesionales && (
                 <Menu.Item key="perfil">
-                  <Link to="/notas-admin">
-                    <div style={{ color: "#FFF" }}>
-                    Notas Administrativas
-                    </div>
+                  <Link to="/notas-admin" style = {'text-align: left'}>
+                     <span>Notas Administrativas</span>
                   </Link>
                 </Menu.Item>
               )}
