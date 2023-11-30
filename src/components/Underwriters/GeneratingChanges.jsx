@@ -80,7 +80,7 @@ export const GeneratingChanges = ({ modalVisible, SetModalVisible }) => {
         setListSedes(five);
         two = await getListEspecialidad();
         setListEspecialidad(two);
-        one = await getListSubProgramas();
+        one = await getListSubProgramas(null);
         setListSubProgramas(one);
         three = await getListCanalAtencion();
         setListCanalAtencion(three);
@@ -120,7 +120,7 @@ export const GeneratingChanges = ({ modalVisible, SetModalVisible }) => {
     if (resp?.status === "ok") {
       await messageApi.open({
         type: "success",
-        content: "Se ha creado correctamente",
+        content: "Se ha creado correctamente!",
       });
     }
     setLoading(false);
@@ -165,7 +165,7 @@ export const GeneratingChanges = ({ modalVisible, SetModalVisible }) => {
             }}
           >
             <Col style={{ width: "48%" }}>
-              <Form.Item label="Tipo Acción" name="tipoAccion">
+              <Form.Item label="Tipo Acción" name="tipoAccion"  rules={[{ required:true, message: 'Campo Obligatorio' }]}>
                 <Select
                   placeholder="Seleccione un tipo acción"
                   style={{ width: "100%" }}
@@ -175,66 +175,11 @@ export const GeneratingChanges = ({ modalVisible, SetModalVisible }) => {
               </Form.Item>
 
               {itemsGeneratingChanges[type].contrato ? (
-                <Form.Item label="Contrato Plan" name="contratoPlan">
+                <Form.Item label="Contrato Plan" name="contratoPlan"  rules={[{ required:true, message: 'Campo Obligatorio' }]}>
                   <Select
                     placeholder="Seleccione un contrato plan"
                     style={{ width: "100%" }}
                     options={listContratoPlanes}
-                    showSearch
-                    filterOption={(input, option) =>
-                      (option?.label ?? "")
-                        .toLowerCase()
-                        .includes(input.toLowerCase())
-                    }
-                  />
-                </Form.Item>
-              ) : null}
-              {itemsGeneratingChanges[type].especialidad ? (
-                <Form.Item label="Especialidad" name="especialidad">
-                  <Select
-                    placeholder="Seleccione una especialidad"
-                    style={{ width: "100%" }}
-                    options={listEspecialidad}
-                    onChange={(value) => onChangeEspecialidad(value)}
-                    showSearch
-                    filterOption={(input, option) =>
-                      (option?.label ?? "")
-                        .toLowerCase()
-                        .includes(input.toLowerCase())
-                    }
-                  />
-                </Form.Item>
-              ) : null}
-              {itemsGeneratingChanges[type].claseExamen1 ? (
-                <Form.Item label="Clase examen" name="claseExamen">
-                  <Select
-                    placeholder="Seleccione una clase de examen"
-                    style={{ width: "100%" }}
-                    options={listClaseExamen}
-                  />
-                </Form.Item>
-              ) : null}
-              {itemsGeneratingChanges[type].estadio ? (
-                <Form.Item label="Filtro Estadio" name="estadio">
-                  <Select
-                    placeholder="Seleccione un estadio"
-                    style={{ width: "100%" }}
-                    options={listEstadio}
-                    showSearch
-                    filterOption={(input, option) =>
-                      (option?.label ?? "")
-                        .toLowerCase()
-                        .includes(input.toLowerCase())
-                    }
-                  />
-                </Form.Item>
-              ) : null}
-              {itemsGeneratingChanges[type].canalAtencion1 ? (
-                <Form.Item label="Canal atención" name="canalAtencion">
-                  <Select
-                    placeholder="Seleccione un canal"
-                    style={{ width: "100%" }}
-                    options={listCanalAtencion}
                     showSearch
                     filterOption={(input, option) =>
                       (option?.label ?? "")
@@ -259,10 +204,40 @@ export const GeneratingChanges = ({ modalVisible, SetModalVisible }) => {
                   />
                 </Form.Item>
               ) : null}
+              {itemsGeneratingChanges[type].estadio ? (
+                <Form.Item label="Filtro Estadio" name="estadio">
+                  <Select
+                    placeholder="Seleccione un estadio"
+                    style={{ width: "100%" }}
+                    options={listEstadio}
+                    showSearch
+                    filterOption={(input, option) =>
+                      (option?.label ?? "")
+                        .toLowerCase()
+                        .includes(input.toLowerCase())
+                    }
+                  />
+                </Form.Item>
+              ) : null}
+              {itemsGeneratingChanges[type].canalAtencion1 ? (
+                <Form.Item label="Canal Atención" name="canalAtencion"  rules={[{ required:true, message: 'Campo Obligatorio' }]}>
+                  <Select
+                    placeholder="Seleccione un canal"
+                    style={{ width: "100%" }}
+                    options={listCanalAtencion}
+                    showSearch
+                    filterOption={(input, option) =>
+                      (option?.label ?? "")
+                        .toLowerCase()
+                        .includes(input.toLowerCase())
+                    }
+                  />
+                </Form.Item>
+              ) : null}
             </Col>
             <Col style={{ width: "48%" }}>
               {itemsGeneratingChanges[type].meses1 ? (
-                <Form.Item label="Meses Atencion" name="meses">
+                <Form.Item label="Meses Atencion" name="meses"  rules={[{ required:true, message: 'Campo Obligatorio' }]}>
                   <Select
                     mode="multiple"
                     placeholder="Seleccione meses"
@@ -299,21 +274,6 @@ export const GeneratingChanges = ({ modalVisible, SetModalVisible }) => {
                   />
                 </Form.Item>
               ) : null}
-              {itemsGeneratingChanges[type].subPrograma ? (
-                <Form.Item label="Filtro SubPrograma" name="subPrograma">
-                  <Select
-                    placeholder="Seleccione un subprograma"
-                    style={{ width: "100%" }}
-                    options={listSubProgramas}
-                    showSearch
-                    filterOption={(input, option) =>
-                      (option?.label ?? "")
-                        .toLowerCase()
-                        .includes(input.toLowerCase())
-                    }
-                  />
-                </Form.Item>
-              ) : null}
               {itemsGeneratingChanges[type].filtroSede ? (
                 <Form.Item label="Filtro Sede" name="filtroSede">
                   <Select
@@ -329,12 +289,27 @@ export const GeneratingChanges = ({ modalVisible, SetModalVisible }) => {
                   />
                 </Form.Item>
               ) : null}
+              {itemsGeneratingChanges[type].subPrograma ? (
+                <Form.Item label="Filtro SubPrograma" name="subPrograma">
+                  <Select
+                    placeholder="Seleccione un subprograma"
+                    style={{ width: "100%" }}
+                    options={listSubProgramas}
+                    showSearch
+                    filterOption={(input, option) =>
+                      (option?.label ?? "")
+                        .toLowerCase()
+                        .includes(input.toLowerCase())
+                    }
+                  />
+                </Form.Item>
+              ) : null}
             </Col>
           </Row>
           {itemsGeneratingChanges[type].dateCreate ? (
             <>
               <div className="col-12 col-md-12">
-                <h4 style={{ fontWeight: "bold", textAlign: "left" }}>
+                <h4 style={{ fontWeight: "bold", textAlign: "left" ,marginBlockEnd:"8px"}}>
                   Datos para Creación
                 </h4>
               </div>
@@ -359,6 +334,7 @@ export const GeneratingChanges = ({ modalVisible, SetModalVisible }) => {
                     <Form.Item
                       label="Profesion"
                       name="profesion"
+                      rules={[{ required:true, message: 'Campo Obligatorio' }]}
                     >
                       <Select
                         placeholder="Seleccione una profesion"
@@ -392,7 +368,7 @@ export const GeneratingChanges = ({ modalVisible, SetModalVisible }) => {
                 </Col>
                 <Col style={{ width: "48%" }}>
                   {itemsGeneratingChanges[type].anos ? (
-                    <Form.Item label="Año" name="anos">
+                    <Form.Item label="Año" name="years" rules={[{ required:true, message: 'Campo Obligatorio' }]}>
                       <DatePicker
                         style={{ width: "100%" }}
                         picker="year"
@@ -400,7 +376,7 @@ export const GeneratingChanges = ({ modalVisible, SetModalVisible }) => {
                     </Form.Item>
                   ) : null}
                   {itemsGeneratingChanges[type].meses2 ? (
-                    <Form.Item label="Meses Atencion" name="meses">
+                    <Form.Item label="Meses Atencion" name="meses" rules={[{ required:true, message: 'Campo Obligatorio' }]}>
                       <Select
                         mode="multiple"
                         placeholder="Seleccione meses"
@@ -416,7 +392,7 @@ export const GeneratingChanges = ({ modalVisible, SetModalVisible }) => {
           {itemsGeneratingChanges[type].moverMesEspecialidad ? (
             <>
               <div className="col-12 col-md-12">
-                <h4 style={{ fontWeight: "bold", textAlign: "left" }}>
+                <h4 style={{ fontWeight: "bold", textAlign: "left" ,marginBlockEnd:"8px"}}>
                   Mover Mes Contrato Plan
                 </h4>
               </div>
@@ -428,7 +404,7 @@ export const GeneratingChanges = ({ modalVisible, SetModalVisible }) => {
               >
                 <Col style={{ width: "48%" }}>
                   {itemsGeneratingChanges[type].moverAnoDe ? (
-                    <Form.Item label="Mover Año de" name="moverAnoDe">
+                    <Form.Item label="Mover Año de" name="moverYearDe"  rules={[{ required:true, message: 'Campo Obligatorio' }]}>
                       <DatePicker
                         style={{ width: "100%" }}
                         picker="year"
@@ -436,7 +412,7 @@ export const GeneratingChanges = ({ modalVisible, SetModalVisible }) => {
                     </Form.Item>
                   ) : null}
                   {itemsGeneratingChanges[type].moverMesDe ? (
-                    <Form.Item label="Mover Mes de" name="moverMesDe">
+                    <Form.Item label="Mover Mes de" name="moverMesDe"  rules={[{ required:true, message: 'Campo Obligatorio' }]}>
                       <Select
                         placeholder="Seleccione un Mes"
                         style={{ width: "100%" }}
@@ -447,7 +423,7 @@ export const GeneratingChanges = ({ modalVisible, SetModalVisible }) => {
                 </Col>
                 <Col style={{ width: "48%" }}>
                   {itemsGeneratingChanges[type].moverAñoA ? (
-                    <Form.Item label="Mover Año a" name="moverAñoA">
+                    <Form.Item label="Mover Año a" name="moverYearA"  rules={[{ required:true, message: 'Campo Obligatorio' }]}>
                       <DatePicker
                         style={{ width: "100%" }}
                         picker="year"
@@ -455,7 +431,7 @@ export const GeneratingChanges = ({ modalVisible, SetModalVisible }) => {
                     </Form.Item>
                   ) : null}
                   {itemsGeneratingChanges[type].moverMesA ? (
-                    <Form.Item label="Mover Mes a" name="moverMesA">
+                    <Form.Item label="Mover Mes a" name="moverMesA"  rules={[{ required:true, message: 'Campo Obligatorio' }]}>
                       <Select
                         placeholder="Seleccione meses"
                         style={{ width: "100%" }}

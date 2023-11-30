@@ -811,7 +811,7 @@ export const getListChangeHistory = async () => {
   console.log("token guardado", token);
   try {
     let query = encodeURI(
-      `SELECT name,Tipo_Accion_txt,Contrato_Plan_txt,Filtro_Profesion, Meses,Renovacion,Mover_yyy_de, Mover_Mes_de,Mover_yyy_a,Mover_Mes_a,Filtro_Sede,Filtro_Programa  FROM Cambio_Ruta`
+      `SELECT name,Tipo_Accion_txt,Contrato_Plan_txt,Profesion_txt, Meses,Mover_yyy_de,Mover_Mes_de,Mover_yyy_a,Mover_Mes_a,Sede_txt,Respuesta,CreadoPor FROM Cambio_Ruta`
     );
     const { data } = await httpClient.get(
       `/selectQuery?maxRows=1000000&query=${query}&sessionId=${token}&output=json`
@@ -825,13 +825,13 @@ export const getListChangeHistory = async () => {
           Contrato_Plan_txt: value[2],
           Filtro_Profesion: value[3],
           Meses: value[4],
-          Renovacion: value[5],
-          Mover_yyy_de: value[6],
-          Mover_Mes_de: value[7],
-          Mover_yyy_a: value[8],
-          Mover_Mes_a: value[9],
-          Filtro_Sede: value[10],
-          Filtro_Programa: value[11],
+          Mover_yyy_de: value[5],
+          Mover_Mes_de: value[6],
+          Mover_yyy_a: value[7],
+          Mover_Mes_a: value[8],
+          Filtro_Sede: value[9],
+          Respuesta: value[9],
+          CreadoPor: value[10]
         };
       });
       return final_data;
@@ -2204,7 +2204,7 @@ export const getInfoFilterChangesRoutes = async (final_values) => {
   //console.log(values?.fecha?.format("YYYY/MM/DD"));
   const token = localStorage.getItem("token");
   console.log("token guardado", token);
-  let query = `SELECT name,Tipo_Accion_txt,Contrato_Plan_txt,Filtro_Profesion, Meses,Renovacion,Mover_yyy_de, Mover_Mes_de,Mover_yyy_a,Mover_Mes_a,Filtro_Sede,Filtro_Programa FROM Cambio_Ruta`;
+  let query = `SELECT name,Tipo_Accion_txt,Contrato_Plan_txt,Profesion_txt, Meses,Mover_yyy_de,Mover_Mes_de,Mover_yyy_a,Mover_Mes_a,Sede_txt,Respuesta,CreadoPor FROM Cambio_Ruta`;
   try {
     if (final_values) {
       if (
@@ -2300,13 +2300,13 @@ export const getInfoFilterChangesRoutes = async (final_values) => {
           Contrato_Plan_txt: value[2],
           Filtro_Profesion: value[3],
           Meses: value[4],
-          Renovacion: value[5],
-          Mover_yyy_de: value[6],
-          Mover_Mes_de: value[7],
-          Mover_yyy_a: value[8],
-          Mover_Mes_a: value[9],
-          Filtro_Sede: value[10],
-          Filtro_Programa: value[11],
+          Mover_yyy_de: value[5],
+          Mover_Mes_de: value[6],
+          Mover_yyy_a: value[7],
+          Mover_Mes_a: value[8],
+          Filtro_Sede: value[9],
+          Respuesta: value[9],
+          CreadoPor: value[10]
         };
       });
       return final_data;
@@ -2852,37 +2852,30 @@ export const createPlanContract = async (values) => {
 };
 
 export const handleGenerateChanges = async (values) => {
-  switch (values.Tipo_Accion) {
-    case 41346129:
-      addContractPlan(values);
-      break;
+  switch (values.tipoAccion) {
     case 41561613:
-      addContractPlan2(values);
-      break;
+    const resp = ChangesRoutesAddPlanMensuales(values);
+     return resp;
     case 41381695:
-      addContractPlan3(values);
-      break;
+     const resp2 = ChangesRoutesEditContratoPlan(values);
+     return resp2;
   }
 };
 
-export const addContractPlan = async (values) => {
+export const ChangesRoutesAddPlanMensuales = async (values) => {
   const token = localStorage.getItem("token");
+  const user = localStorage.getItem("name");
   try {
     const { data } = await httpClient.get(
       `/create2?output=json&useIds=true&objName=Cambio_Ruta&Tipo_Accion=${values?.tipoAccion
-      }&R41349167=${values?.contrato}&R41346608 =${values?.especialidad
-      }&R45175661=${values?.claseExamen}&R41346618=${values?.estadio
-      }&R45175677=${values?.canalAtencion}&Meses=${values?.meses?.join(
-        ","
-      )}&Renovacion=${values?.mesesRenovacion?.join(
-        ","
-      )}&Duracion_1era_Visita=${values?.firstDuracion}&Duracion_Seguimiento=${values?.duracionSeg
-      }&Mayor_de=${values?.mayor}&Menor_de=${values?.menor}&Abandonado=${values?.abandonado === 1
-      }&Hospitalizado=${values?.hospitalizado === 1}&Naive=${values?.naive === 1
-      }&Paciente_Gestante=${values?.PacienteG === 1}&Tuberculosis=${values?.tuberculosis === 1
-      }&Primera_Vez=${values?.primeraVez === 1}&Bimestralizado=${values?.bimestralizado === 1
-      }&Menor_Expuesto=${values?.menorExpuesto === 1}&Novo=${values?.novo === 1
-      }&TBC=${values?.tbc === 1}&sessionId=${token}&output=json`
+      }&Filtro_Sede=${values?.filtroSede}&Filtro_Estadio=${values?.estadio
+      }&SubPrograma=${values?.subPrograma}&Filtro_Asegurador=${values?.filtroAsegurador
+      }&R45175677=${values?.canalAtencion?.join("|")}&Filtro_Profesion=${values?.profesion
+      }&R45175661=${values?.claseExamen}&Mover_yyy_de=${values?.years?.format(
+        "YYYY"
+      )
+      }&Meses=${values?.meses?.join(",")}
+      &CreadoPor=${user}&sessionId=${token}&output=json`
     );
     return data;
   } catch (error) {
@@ -2891,39 +2884,18 @@ export const addContractPlan = async (values) => {
   }
 };
 
-export const addContractPlan2 = async (values) => {
+export const ChangesRoutesEditContratoPlan = async (values) => {
   const token = localStorage.getItem("token");
+  const user = localStorage.getItem("name");
   try {
     const { data } = await httpClient.get(
       `/create2?output=json&useIds=true&objName=Cambio_Ruta&Tipo_Accion=${values?.tipoAccion
-      }&Filtro_Asegurador=${values?.filtroAsegurador}&Filtro_Programa=${values?.filtroPrograma
-      }&Filtro_Estadio=${values?.filtroEstadio}&Filtro_Sede=${values?.filtroSede
-      }&Filtro_Profesion=${values?.filtroEspecialidad}&R45175661=${values?.claseExamen
-      }&R45175677=${values?.canalAtencion?.join(
-        "|"
-      )}&Meses=${values?.meses?.join(",")}&Mover_yyy_de=${values?.anos?.format(
+      }&R41312785=${values?.contratoPlan}&Filtro_Sede=${values?.filtroSede
+      }&Mover_Mes_de=${values?.moverMesDe}&Mover_yyy_de=${values?.moverYearDe?.format(
         "YYYY"
-      )}&sessionId=${token}&output=json`
-    );
-    return data;
-  } catch (error) {
-    httpClient.defaults.headers.common["Authorization"] = "";
-    return Promise.reject(error);
-  }
-};
-
-export const addContractPlan3 = async (values) => {
-  const token = localStorage.getItem("token");
-  try {
-    const { data } = await httpClient.get(
-      `/create2?output=json&useIds=true&objName=Cambio_Ruta&Tipo_Accion=${values?.tipoAccion
-      }&Filtro_Asegurador=${values?.filtroAsegurador}&Filtro_Programa=${values?.filtroPrograma
-      }&Filtro_Estadio=${values?.filtroEstadio}&Filtro_Sede=${values?.filtroSede
-      }&Filtro_Profesion=${values?.filtroEspecialidad
-      }&Mover_yyy_de=${values?.moverAnoDe?.format(
+      )}&Mover_yyy_a=${values?.moverYearA?.format(
         "YYYY"
-      )}&Mover_yyy_a=${values?.moverAñoA?.format("YYYY")}&Mover_Mes_de=${values?.moverMesDe
-      }&Mover_Mes_a=${values?.moverMesA}&sessionId=${token}&output=json`
+      )}&Mover_Mes_a=${values?.moverMesA}&CreadoPor=${user}&sessionId=${token}&output=json`
     );
     return data;
   } catch (error) {

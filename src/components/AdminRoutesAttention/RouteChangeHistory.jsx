@@ -50,30 +50,6 @@ export const RouteChangeHistory = ({ activeKey }) => {
 
   const columns = [
     {
-      title: "Action",
-      key: "action",
-      render: (data) => (
-        <Tooltip
-          trigger="click"
-          title={
-            <>
-              <Button
-                onClick={async () => {
-                  //setView(true);
-                  //setIdContract(data.id);
-                  //setModalVisible(true);
-                }}
-              >
-                <EyeOutlined />
-              </Button>
-            </>
-          }
-        >
-          <MoreOutlined />
-        </Tooltip>
-      ),
-    },
-    {
       title: "Fecha",
       dataIndex: "name",
       key: "name",
@@ -89,7 +65,7 @@ export const RouteChangeHistory = ({ activeKey }) => {
       key: "Contrato_Plan_txt",
     },
     {
-      title: "Especialidad",
+      title: "Profesion",
       dataIndex: "Filtro_Profesion",
       key: "Filtro_Profesion",
     },
@@ -125,13 +101,13 @@ export const RouteChangeHistory = ({ activeKey }) => {
     },
     {
       title: "Respuesta",
-      dataIndex: "Filtro_Programa",
-      key: "Filtro_Programa",
+      dataIndex: "Respuesta",
+      key: "Respuesta",
     },
     {
       title: "Creado Por",
-      dataIndex: "Creado_Por",
-      key: "Creado_Por",
+      dataIndex: "CreadoPor",
+      key: "CreadoPor",
     }
   ];
 
@@ -231,10 +207,12 @@ export const RouteChangeHistory = ({ activeKey }) => {
                 Filtrar
               </Button>
               <Button
-                onClick={() => {
-                  form.resetFields();
-                  setData([]);
-                }}
+                  onClick={() => {
+                    form.resetFields();
+                    setLoading(true);
+                    getData();
+                    setLoading(false);
+                  }}
               >
                 Limpiar Filtros
               </Button>

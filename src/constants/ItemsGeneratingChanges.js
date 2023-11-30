@@ -28,7 +28,7 @@ export const itemsGeneratingChanges = {
     moverMesA: false,
   },
   41381695: {
-    contrato: false,
+    contrato: true,
     especialidad: false,
     claseExamen1: false,
     estadio: false,

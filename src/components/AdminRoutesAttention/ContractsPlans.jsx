@@ -157,17 +157,6 @@ export const ContractsPlans = ({ activeKey }) => {
           trigger="click"
           title={
             <>
-              <Tooltip title="Ver">
-                <Button
-                  onClick={async () => {
-                    setView(true);
-                    setIdContract(data.id);
-                    setModalVisible(true);
-                  }}
-                >
-                  <EyeOutlined />
-                </Button>
-              </Tooltip>
               <Tooltip title="Editar">
                 <Button
                   onClick={async () => {
