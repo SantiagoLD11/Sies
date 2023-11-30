@@ -654,7 +654,7 @@ export const listHistoricoBloqueos = async () => {
   console.log("token guardado", token);
   try {
     let query = encodeURI(
-      `SELECT name,Fecha_Inicio,Fecha_Final,Hora_Inicio,Hora_Final,Tipo_Novedad_Txt,Motivo_txt,Dias_Semana_txt  FROM Agenda`
+      `SELECT name,Fecha_Inicio,Fecha_Final,Hora_Inicio,Hora_Final,Tipo_Novedad_Txt,Motivo_txt,Dias_Semana_txt FROM Agenda ORDER BY createdAt DESC `
     );
     const { data } = await httpClient.get(
       `/selectQuery?maxRows=1000000&query=${query}&sessionId=${token}&output=json`
@@ -811,7 +811,7 @@ export const getListChangeHistory = async () => {
   console.log("token guardado", token);
   try {
     let query = encodeURI(
-      `SELECT name,Tipo_Accion_txt,Contrato_Plan_txt,Profesion_txt, Meses,Mover_yyy_de,Mover_Mes_de,Mover_yyy_a,Mover_Mes_a,Sede_txt,Respuesta,CreadoPor FROM Cambio_Ruta`
+      `SELECT name,Tipo_Accion_txt,Contrato_Plan_txt,Profesion_txt,Meses,Mover_yyy_de,Mover_Mes_de,Mover_yyy_a,Mover_Mes_a,Sede_txt,Respuesta,CreadoPor FROM Cambio_Ruta`
     );
     const { data } = await httpClient.get(
       `/selectQuery?maxRows=1000000&query=${query}&sessionId=${token}&output=json`
@@ -830,8 +830,8 @@ export const getListChangeHistory = async () => {
           Mover_yyy_a: value[7],
           Mover_Mes_a: value[8],
           Filtro_Sede: value[9],
-          Respuesta: value[9],
-          CreadoPor: value[10]
+          Respuesta: value[10],
+          CreadoPor: value[11]
         };
       });
       return final_data;
@@ -882,7 +882,7 @@ export const listHistoricoBloqueosFiltrados = async (type, value) => {
   try {
     let query = encodeURI(filtros[type]);
     const { data } = await httpClient.get(
-      `/selectQuery?maxRows=1000000&query=${query}&sessionId=${token}&output=json`
+      `/selectQuery?maxRows=1000000&query=${query}ORDER BY createdAt DESC &sessionId=${token}&output=json`
     );
     if (data.length > 0) {
       console.log("información data", data);

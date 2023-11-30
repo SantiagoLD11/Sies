@@ -28,7 +28,7 @@ const ListProfesional = () => {
       ),
       dataIndex: "nombres",
       key: "nombres",
-      render: (text) => <a>{text}</a>,
+      render: (text) => <strong>{text}</strong>,
     },
     {
       title: (
@@ -48,7 +48,7 @@ const ListProfesional = () => {
       ),
       dataIndex: "fecha_final",
       key: "fecha_final",
-      render: (text) => moment(text).format("DD/MM/YYYY"),
+      render: (text) => <strong>{moment(text).format("DD/MM/YYYY")}</strong>,
     },
     {
       title: (

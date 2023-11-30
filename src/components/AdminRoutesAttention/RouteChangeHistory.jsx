@@ -53,11 +53,13 @@ export const RouteChangeHistory = ({ activeKey }) => {
       title: "Fecha",
       dataIndex: "name",
       key: "name",
+      render: (text) => <strong>{text}</strong>,
     },
     {
       title: "Tipo Acción",
       dataIndex: "Tipo_Accion_txt",
       key: "Tipo_Accion_txt",
+      render: (text) => <strong>{text}</strong>,
     },
     {
       title: "Contrato Plan",
@@ -108,6 +110,7 @@ export const RouteChangeHistory = ({ activeKey }) => {
       title: "Creado Por",
       dataIndex: "CreadoPor",
       key: "CreadoPor",
+      render: (text) => <strong>{text}</strong>,
     }
   ];
 
@@ -120,7 +123,7 @@ export const RouteChangeHistory = ({ activeKey }) => {
   return (
     <>
       <Collapse style={{ marginBottom: "20px" }}>
-        <Panel header="Filtros cambios rutas" key="1">
+        <Panel header={<strong>Filtros Cambios Rutas</strong>} key="1">
           <Form
             colon={false}
             onFinish={onSubmit}

@@ -106,33 +106,50 @@ export const GeneratingChanges = ({ modalVisible, SetModalVisible }) => {
   };
 
   const onSubmit = async () => {
-    setLoading(true);
-    const values = form.getFieldsValue();
-    console.log(values);
-    const resp = await handleGenerateChanges(values);
-    if (resp?.status === "fail") {
-      console.log("Actualizar: ", resp);
-      await messageApi.open({
-        type: "error",
-        content: resp?.message || "error",
-      });
-    }
-    if (resp?.status === "ok") {
-      await messageApi.open({
-        type: "success",
-        content: "Se ha creado correctamente!",
-      });
-    }
-    setLoading(false);
-    close();
-    form.resetFields();
+    Swal.fire({
+      title: "¿Seguro?",
+      text: "Este proceso tiene afectacion en los planes actuales de los pacientes",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Si",
+      cancelButtonText: "No",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        setLoading(true);
+        const values = form.getFieldsValue();
+        console.log(values);
+        try {
+          const resp = await handleGenerateChanges(values);
+          if (resp?.status === "ok") {
+            await messageApi.open({
+              type: "success",
+              content: "Se ha creado correctamente!",
+            });
+            close();
+            setLoading(false);
+            form.resetFields();
+          }
+          
+        } catch (error) {
+            console.log("error: ", error);
+            await messageApi.open({
+              type: "error",
+              content: error.response?.data?.message || "error!!",
+            });   
+        }
+      }
+    });
+
+    //form.resetFields();
   };
 
   return (
     <>
       {contextHolder}
       <Modal
-        title="Generación Cambios en Rutas de Atención"
+        title="Cambios Temporales Rutas de Atención"
         width="800px"
         open={modalVisible}
         onCancel={close}

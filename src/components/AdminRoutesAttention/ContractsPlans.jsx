@@ -361,7 +361,7 @@ export const ContractsPlans = ({ activeKey }) => {
   return (
     <>
       <Collapse style={{ marginBottom: "20px" }}>
-        <Panel header="Filtros contratos planes" key="1">
+        <Panel header={<strong>Filtros Contratos Planes</strong>}key="1">
           <Form
             colon={false}
             onFinish={onSubmit}
