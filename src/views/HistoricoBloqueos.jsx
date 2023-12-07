@@ -111,11 +111,20 @@ const ListProfesional = () => {
       dataIndex: "dias_semana",
       key: "dias_semana",
     },
+    {
+      title: (
+        <span style={{ backgroundColor: "#184F9D", color: "#fff" }}>
+          Creado Por
+        </span>
+      ),
+      dataIndex: "creadoPor",
+      key: "creadoPor",
+    }
   ];
 
   return (
     <>
-      <CreateLock setData={setData} />
+      <CreateLock setData={setData} onSubmit={onSubmit} />
       <Card>
         <Table
           columns={columns}

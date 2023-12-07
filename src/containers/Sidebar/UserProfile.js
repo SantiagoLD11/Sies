@@ -22,15 +22,13 @@ const UserProfile = ({ sidebarCollapsed }) => {
 
   const onLogoutClick = () => {
     userSignOut(() => {
-      history.push("/");
+      history.push("/sies");
     });
   };
 
   const userMenuOptions = (
     <ul className="gx-user-popover">
-      <li>My Account</li>
-      <li>Connections</li>
-      <li onClick={onLogoutClick}>Logout</li>
+      <li onClick={onLogoutClick}>Salir</li>
     </ul>
   );
 

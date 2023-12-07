@@ -84,7 +84,7 @@ export const CreateLock = ({ setData }) => {
         await createBlockDisposition(final_values.profesional, final_values);
         messageApi.open({
           type: "success",
-          content: "Proceso exitoso",
+          content: "Se ha generado la novedad correctamente.",
         });
         console.log("Enviar else: ", final_values);
       } catch (error) {
@@ -176,7 +176,7 @@ export const CreateLock = ({ setData }) => {
   return (
     <>
       <Card
-        title="Filtrar Novedades"
+        title={<strong>Filtrar Novedades</strong>}
         extra={
           <Button
             style={{ backgroundColor: "#00ABC8", color: "#FFF" }}
@@ -198,7 +198,7 @@ export const CreateLock = ({ setData }) => {
               htmlType="submit"
               onClick={() => {
                 form.resetFields();
-                setData([]);
+                form.submit();
               }}
             >
               Limpiar Filtros

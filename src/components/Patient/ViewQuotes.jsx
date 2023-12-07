@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { Modal, Button, Typography, Table, message } from "antd";
+import { Modal, Button, Typography, Table, message,Tag } from "antd";
 import {
   getInfoQuote,
-  getCitasRemisiones,
+  getRemissionQuotes,
   schedule,
   reschedule,
   deleteQuotes,
 } from "../../appRedux/services/index";
 import moment from "moment";
 import { CancelAppointment } from "./CancelAppointment";
+import { tagStatusRemQuotes } from "../../constants/Tags";
 
 const { Text } = Typography;
 
@@ -37,7 +38,7 @@ export const ViewQuotes = ({
     setDataQuote(Data);
     console.log(dataRow);
     console.log("Llego: ", Data);
-    const DataTable = await getCitasRemisiones(idPaciente, dataRow.id);
+    const DataTable = await getRemissionQuotes(idPaciente, dataRow.id);
     console.log("Datatable: ", DataTable);
     setDataTable(DataTable);
   };
@@ -45,17 +46,11 @@ export const ViewQuotes = ({
   const close = () => setOpen(false);
 
   const columns = [
-    // {
-    //   title: "Cita Remisiones",
-    //   dataIndex: "name",
-    //   key: "name",
-    //   render: (text) => {text},
-    // },
     {
-      title: "Fecha Citas",
+      title: "Fecha Cita",
       dataIndex: "Fecha_Cita",
       key: "Fecha_Cita",
-      render: (text) => moment(text).format("DD/MM/YYYY"),
+      render: (text) =><strong>{moment(text).format("DD/MM/YYYY")}</strong>,
     },
     {
       title: "Mes Remision",
@@ -65,7 +60,14 @@ export const ViewQuotes = ({
     {
       title: "Estado",
       dataIndex: "Estado_txt",
-      key: "Estado_txt",
+      render: (text) => (
+        <Tag
+          style={{ width: "100%" }}
+          color={tagStatusRemQuotes[text]?.color}
+        >
+          {text}
+        </Tag>
+      ),
     },
     {
       title: "Especialidad",
@@ -77,11 +79,6 @@ export const ViewQuotes = ({
       dataIndex: "CanalRemision",
       key: "CanalRemision",
     },
-    // {
-    //   title: "Remitente",
-    //   dataIndex: "Remitente_txt",
-    //   key: "Remitente_txt",
-    // },
     {
       title: "Resultado",
       dataIndex: "Resultado",
@@ -401,8 +398,8 @@ export const ViewQuotes = ({
             <div className="row">
               <div style={{ display: "flex", flexDirection: "column" }}>
                 <div className="col-12 col-md-12">
-                  <h4 style={{ fontWeight: "bold", textAlign: "left" }}>
-                    CITAS REMISIONES
+                  <h4 style={{ fontWeight: "bold", textAlign: "left" ,marginTop:"10px"}}>
+                    REMISIONES
                   </h4>
                 </div>
               </div>

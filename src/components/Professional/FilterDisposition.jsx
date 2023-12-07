@@ -161,7 +161,12 @@ export const FilterDisposition = ({
               </Col>
               <Col span={8}>
                 <Form.Item label="Estado" name="status">
-                  <Select defaultValue={1} placeholder="Seleccione un estado" options={status} />
+                  <Select 
+                  defaultValue={1} 
+                  placeholder="Seleccione un estado" 
+                  options={status} 
+                  mode="multiple"
+                  />
                 </Form.Item>
               </Col>
               <Col span={8}>

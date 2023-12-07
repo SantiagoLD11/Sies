@@ -69,7 +69,7 @@ const DetailProfesional = () => {
     professional: [
       {
         key: "1",
-        label: `Información básica`,
+        label: `Información Básica`,
         children: (
           <GeneralInformation
             infoGeneral={infoGeneral}
@@ -208,7 +208,7 @@ const DetailProfesional = () => {
         </div>
       </div>
       <Card
-        style={{ zIndex: 2 }}
+        style={{ zIndex: 1 }}
         extra={
           activeTab === "disposition" ? (
             <>

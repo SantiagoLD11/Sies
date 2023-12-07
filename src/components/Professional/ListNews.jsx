@@ -24,9 +24,8 @@ const ListNews = ({ id, activeKey}) => {
       title: "Fecha de inicio",
       dataIndex: "fecha_inicio",
       key: "fecha_inicio",
-      render: (fecha) => {
-        return moment(fecha).format("DD / MM / YYYY");
-      },
+      render: (text) => <strong>{moment(text).format("DD / MM / YYYY")}</strong>
+      ,
     },
     {
       title: "Fecha final",
@@ -66,16 +65,24 @@ const ListNews = ({ id, activeKey}) => {
       title: "Tipo de agenda",
       dataIndex: "tipo_agenda",
       key: "tipo_agenda",
+      render: (text) =><strong>{text}</strong>,
+      
     },
     {
       title: "Motivo",
       dataIndex: "motivo",
-      key: "motivo",
+      key: "motivo"
     },
     {
       title: "Días Semana",
       dataIndex: "dias_semana",
-      key: "dias_semana",
+      key: "dias_semana"
+    },
+    {
+      title: "Creado Por",
+      dataIndex: "creadoPor",
+      key: "creadoPor",
+      render: (text) =><strong>{text}</strong>,
     },
   ];
   return (

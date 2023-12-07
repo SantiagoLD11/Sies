@@ -63,6 +63,7 @@ export const ViewDetailPlans = ({
   const [fechaActivacion, setFechaActivacion] = useState(null);
   const [fechaMilisegundos, setFechaMilisegundos] = useState(null);
   const [filters, setfilters] = useState(null);
+  const [loading, setLoading] = useState(null);
   const [isOpenPopover, setIsOpenPopover] = useState(false);
   let final_values = null;
 
@@ -85,7 +86,7 @@ export const ViewDetailPlans = ({
   const program = async () => {
     const resp = await validateQuotes(idPaciente);
     if (resp > 0) {
-      const detailsPlans = await triggerProgram(detailPlan);
+      await triggerProgram(detailPlan);
       const resp = await countProgram(detailPlan);
       if (resp == 0) {
         await messageApi.open({
@@ -198,8 +199,9 @@ export const ViewDetailPlans = ({
                       Cancelar
                     </Button>,
                     <Button
-                      //loading={loading}
+                      loading={this.loading}
                       onClick={async () => {
+                        setLoading(true);
                         await actFechaActivacion(detailPlan, fechaMilisegundos);
                         const detailsPlans = await triggerProgram(detailPlan);
                         console.log(detailsPlans);
@@ -217,6 +219,7 @@ export const ViewDetailPlans = ({
                         }
                         getData();
                         setIsOpenPopover(false);
+                        setLoading(false);
                       }}
                       key="submit"
                       type="primary"

@@ -64,6 +64,7 @@ const ListProfesional = () => {
       title: "Apellidos",
       dataIndex: "apellidos",
       key: "apellidos",
+      render: (text) => <strong>{text}</strong>,
     },
     {
       title: "Tipo de documento",
@@ -74,6 +75,7 @@ const ListProfesional = () => {
       title: "Número de documento",
       dataIndex: "numero_documento",
       key: "numero_documento",
+      render: (text) => <strong>{text}</strong>,
     },
     // {
     //   title: "Celular",

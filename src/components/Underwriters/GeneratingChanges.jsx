@@ -1,4 +1,5 @@
 import { React, useEffect, useState } from "react";
+import Swal from "sweetalert2";
 import {
   Select,
   Button,
@@ -108,7 +109,7 @@ export const GeneratingChanges = ({ modalVisible, SetModalVisible }) => {
   const onSubmit = async () => {
     Swal.fire({
       title: "¿Seguro?",
-      text: "Este proceso tiene afectacion en los planes actuales de los pacientes",
+      text: "Este proceso tiene afectacion en los planes actuales de los pacientes!!",
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#3085d6",
@@ -138,6 +139,7 @@ export const GeneratingChanges = ({ modalVisible, SetModalVisible }) => {
               type: "error",
               content: error.response?.data?.message || "error!!",
             });   
+            setLoading(false);
         }
       }
     });

@@ -179,12 +179,13 @@ const UserInformation = () => {
       title: "Nombres",
       dataIndex: "nombres",
       key: "nombres",
-      render: (text) => <a>{text}</a>,
+      render: (text) => <strong>{text}</strong>,
     },
     {
       title: "Apellidos",
       dataIndex: "apellidos",
       key: "apellidos",
+      render: (text) => <strong>{text}</strong>,
     },
     {
       title: "Tipo de documento",
@@ -195,6 +196,7 @@ const UserInformation = () => {
       title: "Número de documento",
       dataIndex: "numero_documento",
       key: "numero_documento",
+      render: (text) => <strong>{text}</strong>,
     },
     // {
     //   title: "Celular",

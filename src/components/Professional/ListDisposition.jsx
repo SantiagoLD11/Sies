@@ -134,10 +134,10 @@ const ListDisposition = ({
       width: "7%",
     },
     {
-      title: "Ciudad",
-      dataIndex: "ciudad",
-      key: "ciudad",
-      width: "13%",
+      title: "Sede",
+      dataIndex: "sede",
+      key: "sede",
+      width: "9%",
     },
     {
       title: "Acciones",
@@ -160,6 +160,7 @@ const ListDisposition = ({
                   <>
                     <Tooltip title={"Bloquear"}>
                       <Button
+                        disabled={data.color == 4 || data.color == 2 || data.color == 3 ? true : false}
                         onClick={async () => {
                           console.log("Sirve", data);
                           setBloqueoEliminar("bloqueo");
@@ -174,6 +175,7 @@ const ListDisposition = ({
                     </Tooltip>
                     <Tooltip title={"Eliminar"}>
                       <Button
+                        disabled={data.color == 4 || data.color == 2 || data.color == 3 ? true : false}
                         onClick={async () => {
                           console.log("Sirve eliminar", data);
                           setBloqueoEliminar("eliminar");
@@ -188,7 +190,7 @@ const ListDisposition = ({
                     </Tooltip>
                     <Tooltip title={"Desbloquear"}>
                       <Button
-                        disabled={data.color == 4 ? true : false}
+                        disabled={data.color == 4 || data.color == 3 || data.color == 1 ? true : false}
                         onClick={async () => {
                           console.log("Sirve desbloquear", data);
                           setBloqueoEliminar("desbloqueo");

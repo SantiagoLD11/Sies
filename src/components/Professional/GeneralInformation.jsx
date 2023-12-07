@@ -25,7 +25,7 @@ const GeneralInformation = ({
             alt="Descripción del icono"
           ></img>
           <div>
-            <div style={{ color: "#8c8c8c" }}>Exámenes Habilitados:</div>
+            <div style={{ color: "#8c8c8c" ,fontWeight: "bold" }}>Exámenes Habilitados:</div>
 
             <ul>
               {examsProfessional?.map((value) => (
@@ -53,7 +53,7 @@ const GeneralInformation = ({
             alt="Descripción del icono"
           ></img>
           <div>
-            <div style={{ color: "#8c8c8c" }}>Sedes Habilitadas:</div>
+            <div style={{ color: "#8c8c8c" ,fontWeight: "bold"}}>Sedes Habilitadas:</div>
             <ul>
               {sedeProfessional?.map((value) => (
                 <li key={value.name}>{value.name || "Sin información"}</li>

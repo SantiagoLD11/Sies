@@ -87,6 +87,17 @@ export const tagStatus4 = {
   },
 };
 
+export const tagStatusRemQuotes = {
+  Creado: {
+    color: "#62a864",
+    text: "Creado",
+  },
+  Procesado: {
+    color: "#00ABC8",
+    text: "Procesado",
+  }
+};
+
 export const tagStatusCPView = {
   Activo: {
     color: "#62a864",

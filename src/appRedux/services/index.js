@@ -279,7 +279,7 @@ export const getSedesProfessional = async (id) => {
   const token = localStorage.getItem("token");
   try {
     let query = encodeURI(
-      `SELECT name FROM Profesional_Sede WHERE R22922868 = ${id}`
+      `SELECT DISTINCT name FROM Profesional_Sede WHERE R22922868 = ${id}`
     );
     const { data } = await httpClient.get(
       `/selectQuery?maxRows=100&query=${query}&sessionId=${token}&output=json`
@@ -302,7 +302,7 @@ export const getExamsProfessional = async (id) => {
   const token = localStorage.getItem("token");
   try {
     let query = encodeURI(
-      `SELECT Tipo_Examen_Txt FROM Profesional_Examen WHERE R22880409 = ${id}`
+      `SELECT DISTINCT Tipo_Examen_Txt FROM Profesional_Examen WHERE R22880409 = ${id}`
     );
     const { data } = await httpClient.get(
       `/selectQuery?maxRows=100&query=${query}&sessionId=${token}&output=json`
@@ -326,7 +326,7 @@ export const getListSedes = async (id) => {
 
   try {
     let query = encodeURI(
-      ` SELECT name,Estado_txt,Id_Gomedisys,codeOffice,SedeTxt,Profesion FROM Profesional_Sede WHERE R22922868 = ${id}`
+      ` SELECT name,Estado_txt,Id_Gomedisys,codeOffice,SedeTxt,Profesion FROM Profesional_Sede WHERE R22922868 = ${id} AND status != 25489016`
     );
     const { data } = await httpClient.get(
       `/selectQuery?maxRows=100&query=${query}&sessionId=${token}&output=json`
@@ -357,7 +357,7 @@ export const getListNews = async (id) => {
   const token = localStorage.getItem("token");
   try {
     let query = encodeURI(
-      `SELECT name,Fecha_Inicio,Fecha_Final,Hora_Inicio,Hora_Final,Tipo_Novedad_Txt,Motivo_txt,Dias_Semana_txt FROM Agenda WHERE R20549543 = ${id}`
+      `SELECT name,Fecha_Inicio,Fecha_Final,Hora_Inicio,Hora_Final,Tipo_Novedad_Txt,Motivo_txt,Dias_Semana_txt,CreadoPor FROM Agenda WHERE R20549543 = ${id}`
     );
     const { data } = await httpClient.get(
       `/selectQuery?maxRows=100&query=${query}&sessionId=${token}&output=json`
@@ -374,6 +374,7 @@ export const getListNews = async (id) => {
         tipo_agenda: value[5],
         motivo: value[6],
         dias_semana: value[7],
+        creadoPor: value[8],
       }));
       console.log("información del servicio", final_data);
       return final_data;
@@ -391,7 +392,7 @@ export const getListExams = async (id) => {
 
   try {
     let query = encodeURI(
-      `SELECT name,Tipo_Examen_Txt,Estado_txt FROM Profesional_Examen WHERE  R22880409 = ${id}`
+      `SELECT name,Tipo_Examen_Txt,Estado_txt FROM Profesional_Examen WHERE R22880409 = ${id} AND status != 25485759`
     );
     const { data } = await httpClient.get(
       `/selectQuery?maxRows=100&query=${query}&sessionId=${token}&output=json`
@@ -496,9 +497,10 @@ export const executePreImg = async (id) => {
 
 export const createBlockDisposition = async (id, values) => {
   const token = localStorage.getItem("token");
+  const client = localStorage.getItem("name");
   try {
     const { data } = await httpClient.get(
-      `/create2?output=json&useIds=true&objName=Agenda&Fecha_Inicio=${values?.fecha_inicio}&Fecha_Final=${values?.fecha_final}&Hora_Inicio=${values?.hora_inicio}&Hora_Final=${values?.hora_final}&Motivo=${values?.motivo}&Tipo_Agenda=${values?.tipo_novedad}&R20549543=${id}&R20666471=${values?.dia_semana}&sessionId=${token}&output=json`
+      `/create2?output=json&useIds=true&objName=Agenda&Fecha_Inicio=${values?.fecha_inicio}&Fecha_Final=${values?.fecha_final}&Hora_Inicio=${values?.hora_inicio}&Hora_Final=${values?.hora_final}&Motivo=${values?.motivo}&Tipo_Agenda=${values?.tipo_novedad}&R20549543=${id}&R20666471=${values?.dia_semana}&CreadoPor=${client}&sessionId=${token}&output=json`
     );
     console.log("valores de la data", data);
     // if (data?.status === "ok") {
@@ -638,9 +640,10 @@ export const createAndDeleteBloqueoMotivo = async ({
   Fecha_Hora_Final,
 }) => {
   const token = localStorage.getItem("token");
+  const client = localStorage.getItem("name");
   try {
     const { data } = await httpClient.get(
-      `/create2?output=json&useIds=true&objName=Agenda&Fecha_Inicio=${Fecha_Hora}&Fecha_Final=${Fecha_Hora_Final}&Hora_Inicio=${Hora}&Hora_Final=${Duracion}&Motivo=${Id}&Tipo_Agenda=${BloqueoEliminar}&R20549543=${IdProfesional}&sessionId=${token}&output=json`
+      `/create2?output=json&useIds=true&objName=Agenda&Fecha_Inicio=${Fecha_Hora}&Fecha_Final=${Fecha_Hora_Final}&Hora_Inicio=${Hora}&Hora_Final=${Duracion}&Motivo=${Id}&Tipo_Agenda=${BloqueoEliminar}&R20549543=${IdProfesional}&CreadoPor=${client}&sessionId=${token}&output=json`
     );
     return data;
   } catch (error) {
@@ -654,7 +657,7 @@ export const listHistoricoBloqueos = async () => {
   console.log("token guardado", token);
   try {
     let query = encodeURI(
-      `SELECT name,Fecha_Inicio,Fecha_Final,Hora_Inicio,Hora_Final,Tipo_Novedad_Txt,Motivo_txt,Dias_Semana_txt FROM Agenda ORDER BY createdAt DESC `
+      `SELECT name,Fecha_Inicio,Fecha_Final,Hora_Inicio,Hora_Final,Tipo_Novedad_Txt,Motivo_txt,Dias_Semana_txt,CreadoPor FROM Agenda ORDER BY createdAt DESC `
     );
     const { data } = await httpClient.get(
       `/selectQuery?maxRows=1000000&query=${query}&sessionId=${token}&output=json`
@@ -671,6 +674,7 @@ export const listHistoricoBloqueos = async () => {
           tipo_novedad: value[5],
           motivo: value[6],
           dias_semana: value[7],
+          creadoPor: value[8]
         };
       });
       return final_data;
@@ -870,19 +874,19 @@ export const listProfessionals = async (name) => {
 export const listHistoricoBloqueosFiltrados = async (type, value) => {
   const token = localStorage.getItem("token");
   const filtros = {
-    Profesional: `SELECT name,Fecha_Inicio,Fecha_Final,Hora_Inicio,Hora_Final,Tipo_Novedad_Txt,Motivo_txt,Estado_txt FROM Agenda WHERE name like ("%${value.profesional}%")`,
-    Motivo: `SELECT name,Fecha_Inicio,Fecha_Final,Hora_Inicio,Hora_Final,Tipo_Novedad_Txt,Motivo_txt,Estado_txt FROM Agenda WHERE Motivo = ${value.motivo}`,
-    Tipo_Novedad: `SELECT name,Fecha_Inicio,Fecha_Final,Hora_Inicio,Hora_Final,Tipo_Novedad_Txt,Motivo_txt,Estado_txt FROM Agenda WHERE Tipo_Agenda = ${value.tipo_novedad}`,
-    Profesional_Motivo: `SELECT name,Fecha_Inicio,Fecha_Final,Hora_Inicio,Hora_Final,Tipo_Novedad_Txt,Motivo_txt,Estado_txt FROM Agenda WHERE name like ("%${value.profesional}%") AND Motivo = ${value.motivo}`,
-    Profesional_Tipo: `SELECT name,Fecha_Inicio,Fecha_Final,Hora_Inicio,Hora_Final,Tipo_Novedad_Txt,Motivo_txt,Estado_txt FROM Agenda WHERE name like ("%${value.profesional}%") AND Tipo_Agenda= ${value.tipo_novedad}`,
-    Motivo_Tipo: `SELECT name,Fecha_Inicio,Fecha_Final,Hora_Inicio,Hora_Final,Tipo_Novedad_Txt,Motivo_txt,Estado_txt FROM Agenda WHERE Tipo_Agenda = ${value.tipo_novedad} AND Motivo = ${value.motivo}`,
-    Profesional_Motivo_Tipo: `SELECT name,Fecha_Inicio,Fecha_Final,Hora_Inicio,Hora_Final,Tipo_Novedad_Txt,Motivo_txt,Estado_txt FROM Agenda WHERE name like ("%${value.profesional}%") AND Motivo = ${value.motivo} AND Tipo_Agenda= ${value.tipo_novedad}`,
+    Profesional: `SELECT name,Fecha_Inicio,Fecha_Final,Hora_Inicio,Hora_Final,Tipo_Novedad_Txt,Motivo_txt,Dias_Semana_txt,CreadoPor FROM Agenda WHERE name like ("%${value.profesional}%")`,
+    Motivo: `SELECT name,Fecha_Inicio,Fecha_Final,Hora_Inicio,Hora_Final,Tipo_Novedad_Txt,Motivo_txt,Dias_Semana_txt,CreadoPor FROM Agenda WHERE Motivo = ${value.motivo}`,
+    Tipo_Novedad: `SELECT name,Fecha_Inicio,Fecha_Final,Hora_Inicio,Hora_Final,Tipo_Novedad_Txt,Motivo_txt,Dias_Semana_txt,CreadoPor FROM Agenda WHERE Tipo_Agenda = ${value.tipo_novedad}`,
+    Profesional_Motivo: `SELECT name,Fecha_Inicio,Fecha_Final,Hora_Inicio,Hora_Final,Tipo_Novedad_Txt,Motivo_txt,Dias_Semana_txt,CreadoPor FROM Agenda WHERE name like ("%${value.profesional}%") AND Motivo = ${value.motivo}`,
+    Profesional_Tipo: `SELECT name,Fecha_Inicio,Fecha_Final,Hora_Inicio,Hora_Final,Tipo_Novedad_Txt,Motivo_txt,Dias_Semana_txt,CreadoPor FROM Agenda WHERE name like ("%${value.profesional}%") AND Tipo_Agenda= ${value.tipo_novedad}`,
+    Motivo_Tipo: `SELECT name,Fecha_Inicio,Fecha_Final,Hora_Inicio,Hora_Final,Tipo_Novedad_Txt,Motivo_txt,Dias_Semana_txt,CreadoPor FROM Agenda WHERE Tipo_Agenda = ${value.tipo_novedad} AND Motivo = ${value.motivo}`,
+    Profesional_Motivo_Tipo: `SELECT name,Fecha_Inicio,Fecha_Final,Hora_Inicio,Hora_Final,Tipo_Novedad_Txt,Motivo_txt,Dias_Semana_txt,CreadoPor FROM Agenda WHERE name like ("%${value.profesional}%") AND Motivo = ${value.motivo} AND Tipo_Agenda= ${value.tipo_novedad}`,
   };
   console.log("token guardado", token);
   try {
     let query = encodeURI(filtros[type]);
     const { data } = await httpClient.get(
-      `/selectQuery?maxRows=1000000&query=${query}ORDER BY createdAt DESC &sessionId=${token}&output=json`
+      `/selectQuery?maxRows=1000000&query=${query} ORDER BY createdAt DESC &sessionId=${token}&output=json`
     );
     if (data.length > 0) {
       console.log("información data", data);
@@ -894,7 +898,8 @@ export const listHistoricoBloqueosFiltrados = async (type, value) => {
         hora_final: value[4],
         tipo_novedad: value[5],
         motivo: value[6],
-        estado: value[7],
+        dias_semana: value[7],
+        creadoPor: value[8]
       }));
       return final_data;
     } else {
@@ -1070,7 +1075,7 @@ export const getIdPatient = async (id) => {
 export const listDays = async () => {
   const token = localStorage.getItem("token");
   try {
-    let query = encodeURI(`SELECT Nombre,id FROM Dia_Semana`);
+    let query = encodeURI(`SELECT Nombre,id FROM Dia_Semana ORDER BY Codigo ASC`);
     const { data } = await httpClient.get(
       `/selectQuery?maxRows=7&query=${query}&sessionId=${token}&output=json`
     );
@@ -1579,7 +1584,7 @@ export const get_info_general_patient = async (id, isDocument = false) => {
       let query = encodeURI(
         isDocument
           ? `SELECT Nombre, Apellido, Tipo_Documento_Txt,Numero_Documento , Celular, Profesion_Txt,id, Rango_Propio FROM Profesional Where Numero_Documento = ${id}`
-          : `SELECT Nombre, Apellido, Tipo_Documento_Txt, Numero_Documento, Celular, Telefono, email, Ciudadtxt, Genero_txt, Fecha_Nacimiento, Direccion, id FROM Candidato Where id = ${id === undefined ? idPac : id
+          : `SELECT Nombre, Apellido, Tipo_Documento_Txt, Numero_Documento, Celular, Telefono, email, Ciudadtxt, Genero_txt, Fecha_Nacimiento, Direccion, id,Asegurador FROM Candidato Where id = ${id === undefined ? idPac : id
           }`
       );
       const { data } = await httpClient.get(
@@ -1608,6 +1613,7 @@ export const get_info_general_patient = async (id, isDocument = false) => {
           direccion: values[10],
           id: values[11],
           edad: edad,
+          asegurador: values[12]
         };
       } else {
         return null;
@@ -3025,27 +3031,31 @@ export const getInfoQuote = async (id) => {
   }
 };
 
-export const getCitasRemisiones = async (id, idcita) => {
+export const getRemissionQuotes = async (id, idcita) => {
   const token = localStorage.getItem("token");
   try {
-    let query = encodeURI(
-      `SELECT name,Fecha_Cita, MesRemision, Estado_txt,Especialidad_txt,CanalRemision,Remitente_txt,Resultado FROM Cita_Remision WHERE R24483667 = ${id} AND R24229378 = ${idcita}`
+    let query = idcita !== null ? encodeURI(
+      `SELECT name,Fecha_Cita,MesRemision,Estado_txt,Especialidad,CanalRemision,Remitente_txt,Resultado FROM Cita_Remision WHERE R24483667 = ${id} AND R24229378 = ${idcita}`
+    ):encodeURI(
+      `SELECT name,Fecha_Cita,MesRemision,Estado_txt,Especialidad,CanalRemision,Remitente_txt,Resultado FROM Cita_Remision WHERE R24483667 = ${id}`
     );
     const { data } = await httpClient.get(
       `/selectQuery?maxRows=10000000&query=${query}&sessionId=${token}&output=json`
     );
     if (data.length > 0) {
-      let values = data[0];
-      return {
-        name: values[0],
-        Fecha_Cita: values[1],
-        MesRemision: values[2],
-        Estado_txt: values[3],
-        Especialidad_txt: values[4],
-        CanalRemision: values[5],
-        Remitente_txt: values[6],
-        Resultado: values[7],
-      };
+      const final_data = data.map((value) => {
+        return {
+          name: value[0],
+          Fecha_Cita: value[1],
+          MesRemision: value[2],
+          Estado_txt: value[3],
+          Especialidad_txt: value[4],
+          CanalRemision: value[5],
+          Remitente_txt: value[6],
+          Resultado: value[7]
+        };
+      });
+      return final_data;
     } else {
       return null;
     }
@@ -3358,7 +3368,7 @@ export const getListExam = async (id) => {
   const token = localStorage.getItem("token");
   try {
     let query = encodeURI(
-      `SELECT Tipo_Examen_Txt, idExamen FROM Profesional_Examen WHERE  R22880409 = ${id}`
+      `SELECT DISTINCT Tipo_Examen_Txt,idExamen FROM Profesional_Examen WHERE R22880409 = ${id}`
     );
     const { data } = await httpClient.get(
       `/selectQuery?maxRows=1000000&query=${query}&sessionId=${token}&output=json`
@@ -3449,7 +3459,7 @@ export const getListPrograma = async (id) => {
 export const getListDispositionFilters = async (final_values, id) => {
   const token = localStorage.getItem("token");
   console.log("values: ", final_values);
-  let query = `SELECT Fecha_Hora, Hora, GROUP_CONCAT(Nombre_Examen SEPARATOR ','), GROUP_CONCAT(DISTINCT Canal_Atencion_txt SEPARATOR '-'), Duracion, Ciudad_txt, R16325243, GROUP_CONCAT(id SEPARATOR ','), Disponible, GROUP_CONCAT(DISTINCT Programa_txt SEPARATOR '-'), GROUP_CONCAT(R17614108 SEPARATOR ','), Color FROM Disponibilidad`;
+  let query = `SELECT Fecha_Hora, Hora, GROUP_CONCAT(Nombre_Examen SEPARATOR ','), GROUP_CONCAT(DISTINCT Canal_Atencion_txt SEPARATOR '-'), Duracion, Sede_Sies, R16325243, GROUP_CONCAT(id SEPARATOR ','), Disponible, GROUP_CONCAT(DISTINCT Programa_txt SEPARATOR '-'), GROUP_CONCAT(R17614108 SEPARATOR ','), Color FROM Disponibilidad`;
   if (final_values) {
     if (
       final_values.date_start !== undefined ||
@@ -3482,14 +3492,14 @@ export const getListDispositionFilters = async (final_values, id) => {
       }
     }
   }
-  query += ` GROUP BY Duracion, Fecha_Hora, R16325243, Ciudad_txt, Hora, Disponible, Color HAVING R16325243 = ${id}`;
+  query += ` GROUP BY Duracion, Fecha_Hora, R16325243, Sede_Sies, Hora, Disponible, Color HAVING R16325243 = ${id}`;
   if (final_values) {
     if (final_values.city !== undefined || final_values.status !== undefined) {
       if (final_values.city) {
-        query += ` AND Ciudad_txt LIKE ("%${final_values.city}%")`;
+        query += ` AND Sede_Sies LIKE ("%${final_values.city}%")`;
       }
       if (final_values.status) {
-        query += ` AND Color = ${final_values.status}`;
+        query += ` AND Color IN(${final_values.status})`;
       }
     }
   }
@@ -3510,7 +3520,7 @@ export const getListDispositionFilters = async (final_values, id) => {
         canal_atencion: value[3],
         duracion: value[4],
         programa: value[9],
-        ciudad: value[5],
+        sede: value[5],
         id: value[8],
         disponibilidad: value[8],
         separator: value[10],
@@ -3530,7 +3540,7 @@ export const triggerProgram = async (id) => {
   const token = localStorage.getItem("token");
   try {
     const { data } = await httpClient.post(
-      `rest/api/runAction?output=json&sessionId=${token}&objName=Plan&id=${id}&actionId=G5fNwcJ2RmOTU05wXZmnkw&output=json`
+      `rest/api/runTrigger?output=json&sessionId=${token}&objName=Plan&id=${id}&triggerId=YQb67mhuQp6jCKIMy0BI6w&output=json`
     );
     return data;
   } catch (error) {

@@ -51,7 +51,7 @@ const CalendarDisposition = ({
   const minTime = new Date();
   minTime.setHours(6, 0, 0, 0);
   const maxTime = new Date();
-  maxTime.setHours(23, 0, 0, 0);
+  maxTime.setHours(23, 58, 0, 0);
 
   const handleOpenPopover = () => {
     // Ocultar el popover
@@ -144,7 +144,7 @@ const CalendarDisposition = ({
                         Programa: <span>{availability?.programa || "-"}</span>
                       </div>
                       <div>
-                        Ciudad: <span>{availability?.ciudad || "-"}</span>
+                        Sede: <span>{availability?.sede || "-"}</span>
                       </div>
                       <div>
                         Examen:{" "}
@@ -174,7 +174,7 @@ const CalendarDisposition = ({
                         <span>{availability?.duracion || "-"} minutos</span>
                       </div>
                       <div className="row">
-                        <Tooltip title={"Bloquear"}>
+                        <Tooltip title={"Bloquear"} disabled={availability.color == 4 || availability.color == 2 || availability.color == 3 ? true : false}>
                           <CloseCircleFilled
                             style={{ cursor: "pointer", width: "33%" }}
                             onClick={async () => {
@@ -188,7 +188,7 @@ const CalendarDisposition = ({
                             }}
                           />
                         </Tooltip>
-                        <Tooltip title={"Eliminar"}>
+                        <Tooltip title={"Eliminar"} disabled={availability.color == 4 || availability.color == 2 || availability.color == 3 ? true : false}>
                           <DeleteFilled
                             style={{ cursor: "pointer", width: "33%" }}
                             onClick={async () => {
@@ -203,7 +203,7 @@ const CalendarDisposition = ({
                           />
                         </Tooltip>
 
-                        <Tooltip title={"Desbloquear"}>
+                        <Tooltip title={"Desbloquear"} disabled={availability.color == 4 || availability.color == 3 || availability.color == 1 ? true : false}>
                           <ExclamationCircleOutlined
                             style={{ cursor: "pointer", width: "33%" }}
                             onClick={async () => {
@@ -223,15 +223,16 @@ const CalendarDisposition = ({
                 </>
               }
             >
+          <Tooltip title={`${tagStatus[availability?.color]?.text}`}>
               <span className="span-calendar-text">
                 <Tag
-                  //style={{ width: "100%", height: "100%" }}
+                  style={{ width: "47%", height: "90%" }}
                   color={tagStatus[availability?.color]?.color}
                   icon={tagStatus[availability?.color]?.icon}
                 >
-                  {tagStatus[availability?.color]?.text}
                 </Tag>
               </span>
+              </Tooltip>
             </Popover>
           </>
         ),

@@ -3,6 +3,7 @@ import { Row, Col, Divider, Button } from "antd";
 import PatientPreferences from "./PatientPreferences";
 import { AffiliationData } from "./AffiliationData";
 import { EditarPaciente } from "../../views/EditarPaciente";
+import AsegudImg from "../../assets/images/IconosMedicos/asegurado.png";
 import moment from "moment";
 import "./stylesPatient.css";
 import {
@@ -70,16 +71,6 @@ const PatientInformation = ({ idPaciente, type, id, activeKey }) => {
             </div>
           </div>
         </Col>
-        {/* <div className="d-flex align-items-center ">
-          <i
-            style={{ fontSize: "40px", margin: "10px" }}
-            className="icon icon-graduation"
-          />{" "}
-          <div>
-            <div style={{ color: "#8c8c8c" }}>Profesión:</div>
-            {infoGeneral?.profesion || "Sin información"}
-          </div>
-        </div> */}
         <Col span={6}>
           <div className="d-flex align-items-center ">
             <MailOutlined style={{ fontSize: "40px", margin: "10px" }} />
@@ -141,6 +132,17 @@ const PatientInformation = ({ idPaciente, type, id, activeKey }) => {
               {moment(infoGeneral?.fechaNacimiento, "ddd MMM DD YYYY").format(
                 "YYYY-MM-DD HH:mm"
               ) || "Sin información"}
+            </div>
+          </div>
+        </Col>
+        <Col span={6}>
+          <div className="d-flex align-items-center ">
+          <img src={AsegudImg} className="icons" alt="Descripción del icono"></img>
+            <div>
+              <div style={{ color: "#8c8c8c", fontWeight: "bold" }}>
+                Asegurador:
+              </div>
+              {infoGeneral?.asegurador || "Sin información"}
             </div>
           </div>
         </Col>

@@ -13,6 +13,7 @@ import { FiltersNotes } from "../components/Patient/FiltersNotes";
 import { CareRoutes } from "../components/Patient/CareRoutes";
 import { Quotes } from "../components/Patient/Quotes";
 import { CalendarQuotes } from "../components/Patient/CalendarQuotes";
+import { RemissionQuotes } from "../components/Patient/RemissionQuotes";
 
 import { icons } from "../constants/icons";
 
@@ -55,7 +56,7 @@ const DetailPatient = () => {
     }
   }, [id]);
   const onChange = (key) => {
-    console.log(key);
+    console.log("Key: "+key);
     setActiveKey(key);
   };
 
@@ -78,17 +79,17 @@ const DetailPatient = () => {
       {
         key: "1",
         label: `Modo Lista`,
-        children: <Quotes id={infoGeneral?.id} activeKey={activeKey} />,
+        children: <Quotes id={id} activeKey={activeKey} />,
       },
       {
         key: "2",
         label: `Modo Calendario`,
-        children: <CalendarQuotes id={infoGeneral?.id} activeKey={activeKey} />,
+        children: <CalendarQuotes id={id} activeKey={activeKey} />,
       },
       {
         key: "3",
         label: `Citas Remisiones`,
-        children: null,
+        children: <RemissionQuotes id={id} activeKey={activeKey} />,
       },
     ],
   };

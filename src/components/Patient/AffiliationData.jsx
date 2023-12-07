@@ -3,6 +3,7 @@ import "./stylesPatient.css";
 import uno from "../../assets/images/IconosMedicos/nivel.png";
 import dos from "../../assets/images/IconosMedicos/comportamiento-del-cliente.png";
 import tres from "../../assets/images/IconosMedicos/estatus-social.png";
+import IngresoImg from "../../assets/images/IconosMedicos/informe-medico.png";
 import { Row, Col } from "antd";
 import { getAffiliationData } from "../../appRedux/services";
 
@@ -59,7 +60,7 @@ export const AffiliationData = ({ id, activeKey }) => {
         </Col>
         <Col span={8}>
           <div className="d-flex align-items-center ">
-            <img src={dos} className="icons" alt="Descripción del icono"></img>
+            <img src={IngresoImg} className="icons" alt="Descripción del icono"></img>
             <div>
               <div style={{ color: "#8c8c8c", fontWeight: "bold" }}>
                 Tipo Ingreso:
