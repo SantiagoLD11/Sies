@@ -1,4 +1,6 @@
 import { httpClient } from "../../util/Api";
+import moment from "moment";
+require("moment-timezone");
 
 export const get_client = async () => {
   const token = localStorage.getItem("token");
@@ -377,6 +379,92 @@ export const getListNews = async (id) => {
         creadoPor: value[8],
       }));
       console.log("información del servicio", final_data);
+      return final_data;
+    } else {
+      return [];
+    }
+  } catch (error) {
+    httpClient.defaults.headers.common["Authorization"] = "";
+    return Promise.reject(error);
+  }
+};
+export const getReportPacientes = async () => {
+  const token = localStorage.getItem("token");
+  try {
+    let query = encodeURI(
+      `SELECT Numero_Documento,name,Telefono,Edad_Paciente,email,Direccion,Ciudadtxt,Genero_txt,Programas_txt,Etiquetas_Administrativa_txt,Etiquetas_Asistencial_txt,Fecha_Nacimiento,Persona_Autorizada_Contacto,Ultima_Actualizacion,Llamar_Como,Horarios_Contacto_txt,Dispositivo_telemedicina_txt,Conexin_a_internet_txt,Canal_Envi_Confirmacion_txt,Profesionales_txt,Horario_Sugerido_Contacto,Nivel_Afiliacion,Tipo_Afiliacin,Regimen_Afiliacion FROM Candidato`
+    );
+    const { data } = await httpClient.get(
+      `/selectQuery?maxRows=100000000&query=${query}&sessionId=${token}&output=json`
+    );
+    console.log("data", data);
+    if (data.length > 0) {
+      console.log("información data", data);
+      const final_data = data.map((value) => {
+        return {
+          numDoc: value[0],
+          name: value[1],
+          celular: value[2],
+          edad: value[3],
+          mail: value[4],
+          direccion: value[5],
+          ciudad: value[6],
+          genero: value[7],
+          programas: value[8],
+          etAdmins: value[9],
+          etAsist: value[10],
+          fnacimiento: value[11],
+          personAuto: value[12],
+          ultmUpdate: value[13],
+          llamarComo: value[14],
+          frajas: value[15],
+          dispoTele: value[16],
+          conexionInternet: value[17],
+          canalConfirmacion: value[18],
+          profesionales: value[19],
+          horarioSugerido: value[20],
+          nAfiliacion: value[21],
+          tAfiliacion: value[22],
+          rAfiliacion: value[23]
+        };
+      });
+      return final_data;
+    } else {
+      return [];
+    }
+  } catch (error) {
+    httpClient.defaults.headers.common["Authorization"] = "";
+    return Promise.reject(error);
+  }
+};
+
+export const getReportNotasAdmin = async () => {
+  const token = localStorage.getItem("token");
+  try {
+    let query = encodeURI(
+      `SELECT Secuencia,Programa_txt,createdAt,CreadoPor,Etiqueta_Administrativa_txt,Nota_Cambio,Etiqueta_Seguimiento_txt,Observacion_Seguimiento,Motivo_Inasistencia_txt,Tabla_Resultados FROM Notas_Administrativas`
+    );
+    const { data } = await httpClient.get(
+      `/selectQuery?maxRows=100000000&query=${query}&sessionId=${token}&output=json`
+    );
+    console.log("data", data);
+    if (data.length > 0) {
+      console.log("información data", data);
+      const final_data = data.map((value) => {
+        return {
+          secuen: value[0],
+          programa: value[1],
+          fechaHoraRegistro: value[2],
+          createdBy: value[3],
+          etAdmin: value[4],
+          noteChange: value[5],
+          etSeguimiento: value[6],
+          observacion_Seguimiento: value[7],
+          motInasis: value[8],
+          tResultados: value[9],
+        }
+
+      });
       return final_data;
     } else {
       return [];
@@ -1118,7 +1206,7 @@ export const getListCanalAtencionfilter = async (canal) => {
   const token = localStorage.getItem("token");
   try {
     let query = encodeURI(
-      `SELECT name,id FROM Canal_Atencion WHERE id IN (${canal})`
+      `SELECT id,name FROM Canal_Atencion WHERE id IN (${canal})`
     );
     const { data } = await httpClient.get(
       `/selectQuery?maxRows=1300&query=${query}&sessionId=${token}&output=json`
@@ -1160,15 +1248,38 @@ export const getListContratoSedesAsync = async (idContrato) => {
   }
 };
 
+export const getListContratoSedes = async (idContrato) => {
+  const token = localStorage.getItem("token");
+  try {
+    let query = encodeURI(
+      `SELECT id,Nombre FROM Contrato_Sede WHERE R18621257 = ${idContrato}`
+    );
+    const { data } = await httpClient.get(
+      `/selectQuery?maxRows=13000&query=${query}&sessionId=${token}&output=json`
+    );
+    if (data.length > 0) {
+      const final_data = data.map((value) => {
+        return { value: value[0], label: value[1] };
+      });
+      return final_data;
+    } else {
+      return [];
+    }
+  } catch (error) {
+    httpClient.defaults.headers.common["Authorization"] = "";
+    return Promise.reject(error);
+  }
+};
+
 export const getListSedesSies = async (idContrato) => {
   const token = localStorage.getItem("token");
   try {
 
     const dataCs = await getListContratoSedesAsync(idContrato);
 
-    if(dataCs.length > 0){
-      console.log("Datos: "+JSON.stringify(dataCs, null, 2));
-      console.log("id Contrato: "+idContrato);
+    if (dataCs.length > 0) {
+      console.log("Datos: " + JSON.stringify(dataCs, null, 2));
+      console.log("id Contrato: " + idContrato);
       let query = encodeURI(
         `SELECT id,name FROM IPS_Afiliada WHERE id IN(${dataCs[0].label})`
       );
@@ -1184,7 +1295,7 @@ export const getListSedesSies = async (idContrato) => {
         return [];
       }
 
-    } else{
+    } else {
       return [];
     }
   } catch (error) {
@@ -1412,8 +1523,8 @@ export const getListEstadio = async () => {
 export const getListSubProgramas = async (id_Programa) => {
   const token = localStorage.getItem("token");
   try {
-    let query = id_Programa !== null ? encodeURI(`SELECT id,name FROM Sub_Programas WHERE R45358267 = ${id_Programa}`) :
-    encodeURI(`SELECT id,name FROM Sub_Programas`);
+    let query = id_Programa !== null ? encodeURI(`SELECT id,name FROM Sub_Programas WHERE R45358267 = ${id_Programa} ORDER BY name ASC`) :
+      encodeURI(`SELECT id,name FROM Sub_Programas`);
     const { data } = await httpClient.get(
       `/selectQuery?maxRows=1000000&query=${query}&sessionId=${token}&output=json`
     );
@@ -1424,6 +1535,30 @@ export const getListSubProgramas = async (id_Programa) => {
       return final_data;
     } else {
       return [];
+    }
+  } catch (error) {
+    httpClient.defaults.headers.common["Authorization"] = "";
+    return Promise.reject(error);
+  }
+};
+
+export const getDurationPrograma = async (id_Programa) => {
+  const token = localStorage.getItem("token");
+  try {
+    let query = encodeURI(`SELECT Duracion FROM Programa WHERE id = ${id_Programa}`);
+    const { data } = await httpClient.get(
+      `/selectQuery?maxRows=1&query=${query}&sessionId=${token}&output=json`
+    );
+    if (data.length > 0) {
+      const duration = data[0][0];
+      // Si la duración es un número válido, se retorna como un entero
+      if (!isNaN(duration)) {
+        return parseInt(duration, 10);
+      } else {
+        return 0;
+      }
+    } else {
+      return 0; 
     }
   } catch (error) {
     httpClient.defaults.headers.common["Authorization"] = "";
@@ -1498,7 +1633,7 @@ export const getListEtiquetasAdmin = async (idPrograma) => {
   const token = localStorage.getItem("token");
   try {
     let query = idPrograma !== null ? encodeURI(`SELECT id,name FROM Etiqueta_Administrativa1 WHERE Programa_txt LIKE ('%${idPrograma}%')`)
-    : encodeURI(`SELECT id,name FROM Etiqueta_Administrativa1`);
+      : encodeURI(`SELECT id,name FROM Etiqueta_Administrativa1`);
     const { data } = await httpClient.get(
       `/selectQuery?maxRows=1000000&query=${query}&sessionId=${token}&output=json`
     );
@@ -2000,7 +2135,7 @@ export const getInfoFilterContratPlans = async (final_values) => {
         final_values.clsBimTrim !== undefined ||
         final_values.genero !== undefined ||
         final_values.bomba !== undefined ||
-        final_values.cnlAtencion !== undefined 
+        final_values.cnlAtencion !== undefined
       ) {
         query += ` WHERE`;
         if (final_values.estadio) {
@@ -2032,7 +2167,7 @@ export const getInfoFilterContratPlans = async (final_values) => {
             final_values.estadio != undefined ||
               final_values.contrato != undefined ||
               final_values.profesion != undefined ||
-              final_values.claseExamen != undefined 
+              final_values.claseExamen != undefined
               ? ` AND R45397404 = ${final_values.subPrograma}`
               : ` R45397404 = ${final_values.subPrograma}`;
         }
@@ -2042,7 +2177,7 @@ export const getInfoFilterContratPlans = async (final_values) => {
               final_values.contrato != undefined ||
               final_values.profesion != undefined ||
               final_values.claseExamen != undefined ||
-              final_values.subPrograma != undefined 
+              final_values.subPrograma != undefined
               ? ` AND R45397437 = ${final_values.etAsistencial}`
               : ` R45397437 = ${final_values.etAsistencial}`;
         }
@@ -2077,7 +2212,7 @@ export const getInfoFilterContratPlans = async (final_values) => {
               final_values.claseExamen != undefined ||
               final_values.subPrograma != undefined ||
               final_values.etAsistencial != undefined ||
-              final_values.etAdmin != undefined  ||
+              final_values.etAdmin != undefined ||
               final_values.sede != undefined
               ? ` AND Estado = ${final_values.state}`
               : ` Estado = ${final_values.state}`;
@@ -2090,7 +2225,7 @@ export const getInfoFilterContratPlans = async (final_values) => {
               final_values.claseExamen != undefined ||
               final_values.subPrograma != undefined ||
               final_values.etAsistencial != undefined ||
-              final_values.etAdmin != undefined  ||
+              final_values.etAdmin != undefined ||
               final_values.sede != undefined ||
               final_values.state != undefined
               ? ` AND R47918753 = ${final_values.tpIngreso}`
@@ -2104,7 +2239,7 @@ export const getInfoFilterContratPlans = async (final_values) => {
               final_values.claseExamen != undefined ||
               final_values.subPrograma != undefined ||
               final_values.etAsistencial != undefined ||
-              final_values.etAdmin != undefined  ||
+              final_values.etAdmin != undefined ||
               final_values.sede != undefined ||
               final_values.state != undefined ||
               final_values.tpIngreso != undefined
@@ -2119,7 +2254,7 @@ export const getInfoFilterContratPlans = async (final_values) => {
               final_values.claseExamen != undefined ||
               final_values.subPrograma != undefined ||
               final_values.etAsistencial != undefined ||
-              final_values.etAdmin != undefined  ||
+              final_values.etAdmin != undefined ||
               final_values.sede != undefined ||
               final_values.state != undefined ||
               final_values.tpIngreso != undefined ||
@@ -2135,12 +2270,12 @@ export const getInfoFilterContratPlans = async (final_values) => {
               final_values.claseExamen != undefined ||
               final_values.subPrograma != undefined ||
               final_values.etAsistencial != undefined ||
-              final_values.etAdmin != undefined  ||
+              final_values.etAdmin != undefined ||
               final_values.sede != undefined ||
               final_values.state != undefined ||
               final_values.tpIngreso != undefined ||
               final_values.clsBimTrim != undefined ||
-              final_values.genero != undefined 
+              final_values.genero != undefined
               ? ` AND R47939456 = ${final_values.bomba}`
               : ` R47939456 = ${final_values.bomba}`;
         }
@@ -2152,12 +2287,12 @@ export const getInfoFilterContratPlans = async (final_values) => {
               final_values.claseExamen != undefined ||
               final_values.subPrograma != undefined ||
               final_values.etAsistencial != undefined ||
-              final_values.etAdmin != undefined  ||
+              final_values.etAdmin != undefined ||
               final_values.sede != undefined ||
               final_values.state != undefined ||
               final_values.tpIngreso != undefined ||
               final_values.clsBimTrim != undefined ||
-              final_values.genero != undefined  ||
+              final_values.genero != undefined ||
               final_values.bomba != undefined
               ? ` AND R47939456 = ${final_values.cnlAtencion}`
               : ` R47939456 = ${final_values.cnlAtencion}`;
@@ -2765,7 +2900,7 @@ export const actualizarRegistroNovedadInformado = async (id) => {
   }
 };
 
-export const inactivarContratoPlan = async (id,idEstado) => {
+export const inactivarContratoPlan = async (id, idEstado) => {
   const token = localStorage.getItem("token");
   try {
     const { data } = await httpClient.get(
@@ -2829,27 +2964,27 @@ export const createPlanContract = async (values) => {
   console.log('llega al servicio');
   try {
     const { data } = await httpClient.get(`/create2?output=json&useIds=true&objName=Contrato_Plan&R18147928=${values?.contrato
-    }&R18147953=${values?.especialidad
-    }&R42695674=${values?.claseExamen || 0
-    }&R19917234=${values?.estadio
-    }&R42695687=${values?.canalAtencion?.join("|")
-    }&Meses=${values?.meses
-    }&Renovacion=${values?.meses
-    }&Duracion_1era_Visita=${values?.firstDuracion
-    }&Duracion_Seguimiento=${values?.duracionSeg
-    }&Mayor_de=${values?.mayor
-    }&Menor_de=${values?.menor
-    }&R44803067=${values?.etAdmin?.join("|")
-    }&R45397437=${values?.etAsitenciales
-    }&R45397404=${values?.subPrograma || 0
-    }&Sexo_al_Nacer=${values?.sexoNacer
-    }&Primera_Vez=${values?.primeraVez || false
-    }&Prerrequisito=${values?.Prerrq || false
-    }&R47939456=${values?.cBomba
-    }&R47939308=${values?.cBimTrim
-    }&R47918753=${values?.tIngreso
-    }&R48813645=${values?.sedesSies?.join("|")
-    }&sessionId=${token}&output=json`)
+      }&R18147953=${values?.especialidad
+      }&R42695674=${values?.claseExamen || 0
+      }&R19917234=${values?.estadio
+      }&R42695687=${values?.canalAtencion?.join("|")
+      }&Meses=${values?.meses
+      }&Renovacion=${values?.meses
+      }&Duracion_1era_Visita=${values?.firstDuracion
+      }&Duracion_Seguimiento=${values?.duracionSeg
+      }&Mayor_de=${values?.mayor
+      }&Menor_de=${values?.menor
+      }&R44803067=${values?.etAdmin?.join("|")
+      }&R45397437=${values?.etAsitenciales
+      }&R45397404=${values?.subPrograma || 0
+      }&Sexo_al_Nacer=${values?.sexoNacer
+      }&Primera_Vez=${values?.primeraVez || false
+      }&Prerrequisito=${values?.Prerrq || false
+      }&R47939456=${values?.cBomba
+      }&R47939308=${values?.cBimTrim
+      }&R47918753=${values?.tIngreso
+      }&R48813645=${values?.sedesSies?.join("|")
+      }&sessionId=${token}&output=json`)
     return data;
   } catch (error) {
     httpClient.defaults.headers.common["Authorization"] = "";
@@ -2860,11 +2995,11 @@ export const createPlanContract = async (values) => {
 export const handleGenerateChanges = async (values) => {
   switch (values.tipoAccion) {
     case 41561613:
-    const resp = ChangesRoutesAddPlanMensuales(values);
-     return resp;
+      const resp = ChangesRoutesAddPlanMensuales(values);
+      return resp;
     case 41381695:
-     const resp2 = ChangesRoutesEditContratoPlan(values);
-     return resp2;
+      const resp2 = ChangesRoutesEditContratoPlan(values);
+      return resp2;
   }
 };
 
@@ -2896,7 +3031,7 @@ export const ChangesRoutesEditContratoPlan = async (values) => {
   try {
     const { data } = await httpClient.get(
       `/create2?output=json&useIds=true&objName=Cambio_Ruta&Tipo_Accion=${values?.tipoAccion
-      }&R41312785=${values?.contratoPlan}&Filtro_Sede=${values?.filtroSede
+      }&R41312785=${values?.contratoPlan}&Filtro_Contrato_Sede=${values?.filtroSede
       }&Mover_Mes_de=${values?.moverMesDe}&Mover_yyy_de=${values?.moverYearDe?.format(
         "YYYY"
       )}&Mover_yyy_a=${values?.moverYearA?.format(
@@ -3036,7 +3171,7 @@ export const getRemissionQuotes = async (id, idcita) => {
   try {
     let query = idcita !== null ? encodeURI(
       `SELECT name,Fecha_Cita,MesRemision,Estado_txt,Especialidad,CanalRemision,Remitente_txt,Resultado FROM Cita_Remision WHERE R24483667 = ${id} AND R24229378 = ${idcita}`
-    ):encodeURI(
+    ) : encodeURI(
       `SELECT name,Fecha_Cita,MesRemision,Estado_txt,Especialidad,CanalRemision,Remitente_txt,Resultado FROM Cita_Remision WHERE R24483667 = ${id}`
     );
     const { data } = await httpClient.get(

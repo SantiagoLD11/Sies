@@ -1,5 +1,5 @@
 import React from "react";
-import {Route, Switch} from "react-router-dom";
+import { Route, Switch } from "react-router-dom";
 
 import asyncComponent from "util/asyncComponent";
 
@@ -41,6 +41,30 @@ const App = () => (
       <Route
         path={`/admin-routes`}
         component={asyncComponent(() => import("../views/AdminRoutes"))}
+      />
+      <Route
+        path={`/informe-pacientes`}
+        component={asyncComponent(() => import("../views/ReportPacientes"))}
+      />
+      <Route
+        path={`/informe-not-admin`}
+        component={asyncComponent(() => import("../views/ReportNotasAdmin"))}
+      />
+      <Route
+        path={`/informe-frecuencias`}
+        component={asyncComponent(() => import("../views/HistoricoBloqueos"))}
+      />
+      <Route
+        path={`/informe-pryec-instal`}
+        component={asyncComponent(() => import("../views/HistoricoBloqueos"))}
+      />
+      <Route
+        path={`/informe-aprob-agenda"`}
+        component={asyncComponent(() => import("../views/HistoricoBloqueos"))}
+      />
+      <Route
+        path={`/informe-agendamiento`}
+        component={asyncComponent(() => import("../views/HistoricoBloqueos"))}
       />
     </Switch>
   </div>

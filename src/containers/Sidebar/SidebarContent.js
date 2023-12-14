@@ -46,7 +46,7 @@ const SidebarContent = ({ sidebarCollapsed, setSidebarCollapsed }) => {
         sidebarCollapsed={sidebarCollapsed}
         setSidebarCollapsed={setSidebarCollapsed}
       />
-      <div className="gx-sidebar-content">
+      <div className="gx-sidebar-content" style={{ fontSize: '1rem', alignItems: "flex-end" }}>
         <div
           className={`gx-sidebar-notifications ${getNoHeaderClass(navStyle)}`}
         >
@@ -119,13 +119,68 @@ const SidebarContent = ({ sidebarCollapsed, setSidebarCollapsed }) => {
             <Menu.SubMenu title={"Informes"}>
               {Administrador_AdminProfesionales && (
                 <Menu.Item key="perfil">
-                  <Link to="/notas-admin">
-                  <span style={{ color: "#FFF", alignItems: "flex-end" }}>
+                  <Link to="/informe-pacientes">
+                    <span style={{ color: "#FFF", alignItems: "flex-end" }}>
+                      <IntlMessages id="Pacientes" />
+                    </span>
+                  </Link>
+                </Menu.Item>
+              )}
+              {Administrador_AdminProfesionales && (
+                <Menu.Item key="perfil">
+                  <Link to="/informe-admon-agenda">
+                    <span style={{ color: "#FFF", alignItems: "flex-end" }}>
+                      <IntlMessages id="Admon Agenda" />
+                    </span>
+                  </Link>
+                </Menu.Item>
+              )}
+              {Administrador_AdminProfesionales && (
+                <Menu.Item key="perfil">
+                  <Link to="/informe-not-admin">
+                    <span style={{ color: "#FFF", alignItems: "flex-end" }}>
                       <IntlMessages id="Notas Administrativas" />
                     </span>
                   </Link>
                 </Menu.Item>
               )}
+              {Administrador_AdminProfesionales && (
+                <Menu.Item key="perfil">
+                  <Link to="/informe-frecuencias">
+                    <span style={{ color: "#FFF", alignItems: "flex-end" }}>
+                      <IntlMessages id="Cumplimiento Frecuencias" />
+                    </span>
+                  </Link>
+                </Menu.Item>
+              )}
+              {Administrador_AdminProfesionales && (
+                <Menu.Item key="perfil">
+                  <Link to="/informe-pryec-instal">
+                    <span style={{ color: "#FFF", alignItems: "flex-end" }}>
+                      <IntlMessages id="Proyeccion Instalada" />
+                    </span>
+                  </Link>
+                </Menu.Item>
+              )}
+              {Administrador_AdminProfesionales && (
+                <Menu.Item key="perfil">
+                  <Link to="/informe-aprob-agenda">
+                    <span style={{ color: "#FFF", alignItems: "flex-end" }}>
+                      <IntlMessages id="Aprovechamiento Agenda" />
+                    </span>
+                  </Link>
+                </Menu.Item>
+              )}
+              {Administrador_AdminProfesionales && (
+                <Menu.Item key="perfil">
+                  <Link to="/informe-agendamiento">
+                    <span style={{ color: "#FFF", alignItems: "flex-end" }}>
+                      <IntlMessages id="Agendamiento" />
+                    </span>
+                  </Link>
+                </Menu.Item>
+              )}
+
             </Menu.SubMenu>
           </Menu>
         </CustomScrollbars>

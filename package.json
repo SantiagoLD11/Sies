@@ -24,6 +24,7 @@
     "cors-anywhere": "^0.4.4",
     "d3-scale": "^3.2.3",
     "draftjs-to-html": "^0.9.1",
+    "file-saver": "^2.0.5",
     "firebase": "^8.2.3",
     "http-proxy-middleware": "^2.0.6",
     "instantsearch.css": "^7.4.5",
@@ -70,7 +71,8 @@
     "slick-carousel": "^1.8.1",
     "sweetalert2": "^11.7.3",
     "url-search-params": "^1.1.0",
-    "victory": "^35.4.6"
+    "victory": "^35.4.6",
+    "xlsx": "^0.18.5"
   },
   "scripts": {
     "start": "react-app-rewired start",

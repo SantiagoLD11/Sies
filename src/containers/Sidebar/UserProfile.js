@@ -16,14 +16,9 @@ const UserProfile = ({ sidebarCollapsed }) => {
     setUser(cliente);
   };
 
-  // useEffect(() => {
-  //   getUser();
-  // }, []);
-
   const onLogoutClick = () => {
-    userSignOut(() => {
-      history.push("/sies");
-    });
+    //  history.replace("/");
+      window.location.href = '/sies';
   };
 
   const userMenuOptions = (

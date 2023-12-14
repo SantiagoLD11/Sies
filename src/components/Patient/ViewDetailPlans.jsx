@@ -63,7 +63,7 @@ export const ViewDetailPlans = ({
   const [fechaActivacion, setFechaActivacion] = useState(null);
   const [fechaMilisegundos, setFechaMilisegundos] = useState(null);
   const [filters, setfilters] = useState(null);
-  const [loading, setLoading] = useState(null);
+  const [loading, setLoading] = useState(false);
   const [isOpenPopover, setIsOpenPopover] = useState(false);
   let final_values = null;
 
@@ -84,6 +84,7 @@ export const ViewDetailPlans = ({
   }, [detailPlans]);
 
   const program = async () => {
+    setLoading(true);
     const resp = await validateQuotes(idPaciente);
     if (resp > 0) {
       await triggerProgram(detailPlan);
@@ -101,7 +102,9 @@ export const ViewDetailPlans = ({
         });
       }
       getData();
+      setLoading(false);
     } else {
+      setLoading(false);
       setIsOpenPopover(true);
     }
   };
@@ -199,7 +202,8 @@ export const ViewDetailPlans = ({
                       Cancelar
                     </Button>,
                     <Button
-                      loading={this.loading}
+                      loading={loading}
+                      disabled={loading}
                       onClick={async () => {
                         setLoading(true);
                         await actFechaActivacion(detailPlan, fechaMilisegundos);
@@ -256,6 +260,8 @@ export const ViewDetailPlans = ({
                 </Modal>
 
                 <Button
+                  loading={loading}
+                  disabled={loading}
                   style={{ margin: "10px", backgroundColor: "#00ABC8", color: "#FFF" }}
                   onClick={program}
                 >
@@ -265,6 +271,8 @@ export const ViewDetailPlans = ({
             ) : null}
             {viewStatus[detailPlans?.Estado_txt]?.Renovar ? (
               <Button
+                loading={loading}
+                disabled={loading}
                 style={{
                   margin: "10px",
                   backgroundColor: "#184F9D",
@@ -298,12 +306,12 @@ export const ViewDetailPlans = ({
               <Button
                 style={{
                   margin: "10px",
-                  backgroundColor: "#2AC6DE",
+                  backgroundColor: "#87999b",
                   color: "#FFF",
                 }}
                 onClick={() => setOpenModalGenerateNoteAdmin(true)}
               >
-                Nota administrativa
+                Nota Administrativa
               </Button>
             ) : null}
             <GenerateNoteAdmin

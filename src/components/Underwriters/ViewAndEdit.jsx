@@ -14,6 +14,7 @@ import {
   ViewContractsPlans,
   getListCanalAtencion,
   getlistSexoNacer,
+  getDurationPrograma,
   updatePlanContract,
   getEditContractsPlans,
 } from "../../appRedux/services";
@@ -111,6 +112,53 @@ export const ViewAndEdit = ({
     form.resetFields();
   };
 
+  const validarInput = () => {
+    const inputValue = form.getFieldValue('meses'); // Obtén el valor actual del campo 'meses' del formulario
+    const numbersArray = inputValue.split(',').map(item => parseInt(item.trim(), 10));
+
+    const duration = getDurationPrograma(options?.idPrograma);  
+  
+    const isValid = numbersArray.every(num => !isNaN(num) && num <= duration);
+
+    const regex = /^[0-9,]*$/;
+    if (regex.test(inputValue)) {
+      form.setFieldsValue({
+        meses: inputValue,
+      });
+    }else{
+      Swal.fire({
+        title: "Oops",
+        text: "Solo es admitido numeros y comas en los meses.. por favor intentar de nuevo",
+        icon: "info",
+      });
+      form.setFieldsValue({
+        meses: "",
+      });
+
+      return false;
+    }
+  
+    if (!isValid) {
+      Swal.fire({
+        title: "No es posible!",
+        text: `El programa tiene una duracion de: ${_durationProgram} meses`,
+        icon: "info",
+      });
+      const filteredNumbers = numbersArray.filter(num => !isNaN(num) && num <= _durationProgram);
+
+      const updatedValue = filteredNumbers.join(',');
+      form.setFieldsValue({
+        meses: updatedValue,
+      });
+      return false;
+    } else {
+      form.setFieldsValue({
+        meses: inputValue,
+      });
+    }
+    return true;
+  };
+
   const closeModal = () => {
     setModalVisible(false);
   };
@@ -183,19 +231,7 @@ export const ViewAndEdit = ({
                     style={{ width: "100%" }}
                     value={dataModEdit._meses}
                     defaultValue={dataModEdit._meses}
-                    onChange={(e) => {
-                      form.setFieldsValue({
-                        meses: inputDate,
-                      });
-                      const value = e.target.value;
-                      const regex = /^[0-9,]*$/;
-                      if (regex.test(value)) {
-                        form.setFieldsValue({
-                          meses: value,
-                        });
-                        setInputDate(value);
-                      }
-                    }}
+                    onBlur={validarInput}
                   />
                 )}
               </Form.Item>

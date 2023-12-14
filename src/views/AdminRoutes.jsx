@@ -12,6 +12,7 @@ import {
   Col,
   Checkbox,
   message,
+  Empty,
 } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import { ContractsPlans } from "../components/AdminRoutesAttention/ContractsPlans";
@@ -32,10 +33,13 @@ import {
   getListEtiquetasAdmin,
   getlistSexoNacer,
   getListEtAsistencial,
+  getDurationPrograma,
 } from "../appRedux/services";
 import { SelectMeses } from "../constants/Months";
 import "../styles/global/customGlobal.css";
 import { GeneratingChanges } from "../components/Underwriters/GeneratingChanges";
+import Swal from "sweetalert2";
+import { isEmpty } from "lodash";
 
 var objForm = null;
 var objForm2 = null;
@@ -50,11 +54,13 @@ const AdminRoutes = () => {
   const [listContrato, setListContrato] = useState(null);
   const [contrato, setContrato] = useState(false);
   const [_idProgram, setProgram] = useState(false);
+  const [_durationProgram, setDurationProgram] = useState(false);
   const [listSubprograma, setSubprograma] = useState(null);
   const [tipoIngresoDefault, setTipoIngresoDefault] = useState(null);
   const [etAsistencialDefault, setetAsistencialDefault] = useState(null);
   const [clBimTrimDefault, setClBimTrimDefault] = useState(null);
   const [clBombaDefault, setClBombaDefault] = useState(null);
+  const [inputDefaultMeses, setInputDefaultMeses] = useState(null);
   const [listEspecialidad, setListEspecialidad] = useState(null);
   const [listClaseExamen, setListClaseExamen] = useState(null);
   const [listCanalAtencion, setListCanalAtencion] = useState(null);
@@ -134,6 +140,51 @@ const AdminRoutes = () => {
     setListClaseExamen(respue);
   };
 
+  const validarInput = () => {
+    const inputValue = form.getFieldValue('meses'); // Obtén el valor actual del campo 'meses' del formulario
+    const numbersArray = inputValue.split(',').map(item => parseInt(item.trim(), 10));
+  
+    const isValid = numbersArray.every(num => !isNaN(num) && num <= _durationProgram);
+
+    const regex = /^[0-9,]*$/;
+    if (regex.test(inputValue)) {
+      form.setFieldsValue({
+        meses: inputValue,
+      });
+    }else{
+      Swal.fire({
+        title: "Oops",
+        text: "Solo es admitido numeros y comas en los meses.. por favor intentar de nuevo",
+        icon: "info",
+      });
+      form.setFieldsValue({
+        meses: "",
+      });
+
+      return false;
+    }
+  
+    if (!isValid) {
+      Swal.fire({
+        title: "No es posible!",
+        text: `El programa tiene una duracion de: ${_durationProgram} meses`,
+        icon: "info",
+      });
+      const filteredNumbers = numbersArray.filter(num => !isNaN(num) && num <= _durationProgram);
+
+      const updatedValue = filteredNumbers.join(',');
+      form.setFieldsValue({
+        meses: updatedValue,
+      });
+      return false;
+    } else {
+      form.setFieldsValue({
+        meses: inputValue,
+      });
+    }
+    return true;
+  };
+
   const openModalCreate = () => {
     setModalVisible(true);
   };
@@ -198,7 +249,12 @@ const AdminRoutes = () => {
     try {
       // Use Ant Design Form's validateFields to validate the form fields
       await form.validateFields();
-      return true; // Form is valid
+      const validMeses = validarInput();
+      if(validMeses){
+        return true; // Form is valid
+      }else{
+        return false;
+      }
     } catch (errorInfo) {
       // Handle validation errors and show error messages
   
@@ -319,7 +375,6 @@ const AdminRoutes = () => {
             },
             {
               name: ["meses"],
-              value: '1,2,3,4,5,6,7,8,9,10,11,12',
             }
           ]}
         >
@@ -346,6 +401,13 @@ const AdminRoutes = () => {
                     }
                     onChange={async (value, options) => {
                       if (options?.idPrograma) {
+                        const duration = await getDurationPrograma(options?.idPrograma);     
+                        const initialInputValue = Array.from({ length: duration }, (_, index) => index + 1).join(',');
+
+                        // Establece la cadena generada como valor inicial del campo de entrada
+                        //setInputDefaultMeses(initialInputValue);
+                        form.setFieldValue("meses", initialInputValue);               
+                        setDurationProgram(duration);
                         const subProgramas = await getListSubProgramas(options?.idPrograma);
                         setSubprograma(subProgramas);
                         const etiquetasAdmin = await getListEtiquetasAdmin(options?.idPrograma);
@@ -415,23 +477,12 @@ const AdminRoutes = () => {
                 </Form.Item>
               </div>
               <div className="col-12 col-md-6">
-                <Form.Item label="Meses" name="meses" rules={[{ required: true, message: 'Campo obligatorio' }]}>
+                <Form.Item label="Meses" name="meses" rules={[{ required: form.getFieldValue('contrato') && listContrato?.length !== 0, message: 'Campo obligatorio' }]}>
                   <Input
                     placeholder="Digite los meses separados por comas"
                     style={{ width: "100%" }}
-                    onChange={(e) => {
-                      form.setFieldsValue({
-                        meses: inputDate,
-                      });
-                      const value = e.target.value;
-                      const regex = /^[0-9,]*$/;
-                      if (regex.test(value)) {
-                        form.setFieldsValue({
-                          meses: value,
-                        });
-                        setInputDate(value);
-                      }
-                    }}
+                    onBlur={validarInput}
+                    disabled={listContrato?.length === 0 || !form.getFieldValue('contrato')}
                   />
                 </Form.Item>
                 <Form.Item label="Duración (1era vez)" name="firstDuracion" rules={[{ required: true, message: 'Campo obligatorio' }]}>

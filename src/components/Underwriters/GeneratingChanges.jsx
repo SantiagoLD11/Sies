@@ -22,8 +22,9 @@ import {
   handleGenerateChanges,
   getListAsegurador,
   getListProgramas,
-  getListSubProgramas,
   getListSede,
+  getListSubProgramas,
+  getListContratoSedes,
   getListContratoPlanes,
 } from "../../appRedux/services";
 import { SelectMeses } from "../../constants/Months";
@@ -93,8 +94,6 @@ export const GeneratingChanges = ({ modalVisible, SetModalVisible }) => {
         setListAsegurador(six);
         four = await getListEstadio();
         setListEstadio(four);
-        five = await getListSede();
-        setListSedes(five);
         two = await getListEspecialidad();
         setListEspecialidad(two);
         break;
@@ -104,6 +103,11 @@ export const GeneratingChanges = ({ modalVisible, SetModalVisible }) => {
   const onChangeEspecialidad = async (value) => {
     const respue = await getListClaseExamen(value);
     setListClaseExamen(respue);
+  };
+
+  const onChangeContrato = async (value) => {
+    const respue = await getListContratoSedes(value);
+    setListSedes(respue);
   };
 
   const onSubmit = async () => {
@@ -199,6 +203,7 @@ export const GeneratingChanges = ({ modalVisible, SetModalVisible }) => {
                     placeholder="Seleccione un contrato plan"
                     style={{ width: "100%" }}
                     options={listContratoPlanes}
+                    onChange={(value) => onChangeContrato(value)}
                     showSearch
                     filterOption={(input, option) =>
                       (option?.label ?? "")
@@ -294,7 +299,7 @@ export const GeneratingChanges = ({ modalVisible, SetModalVisible }) => {
                 </Form.Item>
               ) : null}
               {itemsGeneratingChanges[type].filtroSede ? (
-                <Form.Item label="Filtro Sede" name="filtroSede">
+                <Form.Item label="Filtro Sede" name="filtroSede"> 
                   <Select
                     placeholder="Seleccione un filtro sede"
                     style={{ width: "100%" }}
@@ -305,6 +310,8 @@ export const GeneratingChanges = ({ modalVisible, SetModalVisible }) => {
                         .toLowerCase()
                         .includes(input.toLowerCase())
                     }
+                    disabled={listContratoPlanes?.length === 0 || !form.getFieldValue('contratoPlan')}
+                    
                   />
                 </Form.Item>
               ) : null}

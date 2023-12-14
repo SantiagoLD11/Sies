@@ -130,31 +130,23 @@ const SignIn = () => {
               className="gx-signin-form gx-form-row0"
             >
               <Form.Item
-                initialValue="3022450923"
+               // initialValue="3022450923"
                 rules={[
                   { required: true, message: "The input is not valid E-mail!" },
                 ]}
                 name="email"
               >
-                <Input placeholder="Email" />
+                <Input placeholder="Usuario" />
               </Form.Item>
               <Form.Item
-                initialValue="3022450923"
+               // initialValue="3022450923"
                 rules={[
                   { required: true, message: "Please input your Password!" },
                 ]}
                 name="password"
               >
-                <Input type="password" placeholder="Password" />
+                <Input type="password" placeholder="Contraseña" />
               </Form.Item>
-              {/* <Form.Item>
-                <Checkbox>
-                  <IntlMessages id="appModule.iAccept" />
-                </Checkbox>
-                <span className="gx-signup-form-forgot gx-link">
-                  <IntlMessages id="recupera aquí" />
-                </span>
-              </Form.Item> */}
               <Form.Item>
                 <Button type="primary" className="gx-mb-0" htmlType="submit">
                   <IntlMessages id="app.userAuth.signIn" />
