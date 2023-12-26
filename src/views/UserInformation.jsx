@@ -1,13 +1,4 @@
-import {
-  Button,
-  Card,
-  Form,
-  message,
-  Table,
-  Space,
-  Input,
-  Select,
-  Spin,
+import { Button,Card,Form,message,Table,Space,Input,Select,Spin,
 } from "antd";
 import { useState, useEffect } from "react";
 import {
@@ -47,6 +38,26 @@ const UserInformation = () => {
     setTypeDoc(resp);
   };
 
+  const showLoadingModal = () => {
+    Swal.fire({
+      title: 'Cargando...',
+      text: 'Por favor, espera un momento..',
+      icon:'info',
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+      focusConfirm: false,
+      showConfirmButton: false, // Ocultar el botón de confirmación
+      showCloseButton:false,
+      didOpen: () => {
+        Swal.showLoading(); // Mostrar el ícono de carga
+      }
+    });
+  };
+
+  const hideLoadingModal = () => {
+    Swal.close(); // Cierra el modal de carga de SweetAlert2
+  };
+
   useEffect(() => {
     getDocuments();
   }, []);
@@ -57,10 +68,12 @@ const UserInformation = () => {
     );
     if (values?.nombre?.length >= 3 && numeroDoc === undefined) {
       setLoading(true);
+      showLoadingModal(); // Mostrar el modal de carga al inicio de la operación
       const resp = await list_professionals(numeroDoc, values);
       if (resp.length === 0) {
         await refact(values);
       } else {
+        hideLoadingModal();
         setLoading(false);
         setData(resp);
       }
@@ -72,11 +85,13 @@ const UserInformation = () => {
       });
     } else if (numeroDoc !== undefined && nombre === "") {
       setLoading(true);
+      showLoadingModal(); // Mostrar el modal de carga al inicio de la operación
       const resp = await list_professionals(numeroDoc, values);
       if (resp.length === 0) {
         await refact(values);
       } else {
         setLoading(false);
+        hideLoadingModal();
         setData(resp);
       }
       setDataIntegrarProfesional({
@@ -172,8 +187,6 @@ const UserInformation = () => {
     }
   };
 
-  let fechaUltimaActualizacion;
-
   const columns = [
     {
       title: "Nombres",
@@ -198,11 +211,6 @@ const UserInformation = () => {
       key: "numero_documento",
       render: (text) => <strong>{text}</strong>,
     },
-    // {
-    //   title: "Celular",
-    //   key: "celular",
-    //   dataIndex: "celular",
-    // },
     {
       title: "Profesión",
       dataIndex: "profesion",
@@ -221,6 +229,7 @@ const UserInformation = () => {
           render: (data) => {
             const view = async () => {
               setLoading(true);
+              showLoadingModal();
               try {
                 await TriggerUpdateProfessional(
                   data?.id,
@@ -234,6 +243,7 @@ const UserInformation = () => {
                   data?.numero_documento
                 );
                 setLoading(false);
+                hideLoadingModal();
                 history.push({
                   pathname: `/detail-professional/${data?.id_professional}`,
                   state: { detail: registros },
@@ -247,12 +257,10 @@ const UserInformation = () => {
                     "Error: Actualización Fallida Revise Numero de Documento",
                 });
                 setLoading(false);
+                hideLoadingModal();
                 history.push(`/detail-professional/${data?.id_professional}`);
               }
             };
-            // const cancel = () => {
-            //   history.push(`/detail-professional/${data?.id_professional}`);
-            // };
             return (
               <i
                 style={{ cursor: "pointer" }}
@@ -295,7 +303,6 @@ const UserInformation = () => {
 
   return (
     <>
-      <Spin spinning={loading}>
         {contextHolder}
         <CreateProfesional
           open={openModal}
@@ -315,18 +322,9 @@ const UserInformation = () => {
               Buscar Profesional
             </span>
           }
-          // extra={
-          //   <Button
-          //     style={{ color: "#038fde" }}
-          //     onClick={() => setOpenModal(true)}
-          //   >
-          //     Integrar
-          //   </Button>
-          // }
           actions={[
             <Button
               key="Limpiar"
-              //htmlType="submit"
               onClick={() => {
                 form.resetFields();
                 setDisabledInput(false);
@@ -426,7 +424,6 @@ const UserInformation = () => {
             />
           </Card>
         )}
-      </Spin>
     </>
   );
 };

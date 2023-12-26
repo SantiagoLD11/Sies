@@ -16,6 +16,7 @@ import MainApp from "./MainApp";
 import SignIn from "../SignIn";
 import SignUp from "../SignUp";
 import { setInitUrl } from "../../appRedux/actions";
+import { generateToken } from "../../appRedux/services";
 import Swal from "sweetalert2";
 
 import {
@@ -131,6 +132,41 @@ const App = () => {
   });
 
   useEffect(() => {
+    const handleAlert = () => {
+      // Esta función encapsula la lógica del temporizador
+      const timeout = setTimeout(() => {
+        // Tu lógica para mostrar la alerta aquí
+        Swal.fire({
+          title: 'Tiempo Sesión Caduco!',
+          text: 'Por favor Indica si quieres continuar o salir del aplicativo! Gracias :D',
+          icon: "warning",
+          showConfirmButton: true,
+          confirmButtonColor: "#3085d6",
+          cancelButtonColor: "#d33",
+          cancelButtonText: "Salir",
+          confirmButtonText: "Continuar",
+          showCancelButton: true,
+          allowOutsideClick: false,
+          allowEscapeKey: false,
+          focusConfirm: false,
+        }).then((result) => {
+          if (result.isConfirmed) {
+            generateToken();
+            // Si el usuario elige continuar, llamamos nuevamente a handleAlert después de 60 segundos
+            handleAlert();
+          } else if (result.dismiss === Swal.DismissReason.cancel) {
+            localStorage.removeItem("token");
+            window.location.href = '/sies/signin';
+          }
+        });
+      }, 60 * 60 * 1000); 
+
+      return () => {
+        clearTimeout(timeout);
+        Swal.close();
+      };
+    };
+
     console.log("Imprimiendo usuario de autenticancion: ", authUser);
     console.log("initURL: ", initURL);
     if (!isLoadingUser) {
@@ -138,41 +174,7 @@ const App = () => {
         history.push("/signin");
       } else if (initURL === "" || initURL === "/" || initURL === "/signin") {
         history.push("/profile");
-
-        const timeout = setTimeout(() => {
-          // history.push('/detail-professional/:id');
-          // Aquí puedes realizar la acción que desees después de una hora
-          alert('¡Han pasado 60 minutos desde que iniciaste sesión!');
-          Swal.fire({
-            title: 'Alerta',
-            text: '¡Han pasado 60 segundos!',
-            icon: "warning",
-            showConfirmButton: false,
-            confirmButtonColor: "#3085d6",
-            cancelButtonColor: "#d33",
-            cancelButtonText: "Salir",
-            confirmButtonText: "Ir a Inicio",
-            showCancelButton: true,
-            allowOutsideClick: false, // Evita cerrar haciendo clic fuera de la alerta
-            allowEscapeKey: false, // Evita cerrar presionando la tecla "Esc"
-            focusConfirm: false, // Evita el enfoque automático en el botón
-          }).then((result) => {
-            if (result.isConfirmed) {
-              // El usuario hizo clic en el botón "Confirmar"
-              alert('El usuario confirmó la alerta');
-              // Puedes realizar acciones adicionales aquí
-            } else if (result.dismiss === Swal.DismissReason.cancel) {
-              // El usuario hizo clic en el botón "Cancelar" o cerró la alerta
-              alert('El usuario cerró la alerta');
-              // Puedes realizar acciones adicionales aquí
-            }
-          });
-        }, 60000); // 60 minutos * 60 segundos * 1000 milisegundos
-
-        return () => {
-          clearTimeout(timeout);
-          Swal.close(); // Cerrar la alerta si el componente se desmonta antes de que se muestre la alerta
-        };
+        handleAlert();
       } else {
         history.push(initURL);
       }

@@ -18,7 +18,8 @@ const UserProfile = ({ sidebarCollapsed }) => {
 
   const onLogoutClick = () => {
     //  history.replace("/");
-      window.location.href = '/sies';
+      localStorage.removeItem("token");
+      window.location.href = '/sies/signin';
   };
 
   const userMenuOptions = (

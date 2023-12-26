@@ -111,6 +111,7 @@ export const useProvideAuth = () => {
       .then(({ data }) => {
         if (data.result) {
           fetchSuccess();
+          // localStorage.setItem("token", data.token.access_token);
           httpClient.defaults.headers.common["Authorization"] =
             "Bearer " + data.token.access_token;
           getAuthUser();
@@ -151,6 +152,7 @@ export const useProvideAuth = () => {
       .then(({ data }) => {
         if (data.result) {
           httpClient.defaults.headers.common["Authorization"] = "";
+          //localStorage.removeItem("token");
           setAuthUser(false);
           fetchSuccess();
           if (callbackFun) callbackFun();
@@ -200,21 +202,10 @@ export const useProvideAuth = () => {
     const token = localStorage.getItem("token");
     if (token) {
       httpClient.defaults.headers.common["Authorization"] = "Bearer " + token;
+    }else{
+      httpClient.defaults.headers.common["Authorization"] = "";
     }
-
-    httpClient
-      .post("auth/me")
-      .then(({ data }) => {
-        if (data.user) {
-          setAuthUser(data.user);
-        }
-        setLoadingUser(false);
-      })
-      .catch(function () {
-        //localStorage.removeItem("token");
-        httpClient.defaults.headers.common["Authorization"] = "";
-        setLoadingUser(false);
-      });
+    setLoadingUser(false);
   }, []);
 
   // Return the user object and auth methods

@@ -19,8 +19,28 @@ const ListProfesional = () => {
     onSubmit({ numero_doc: '', nombre: ''});
   }, [])
   
+  const showLoadingModal = () => {
+    Swal.fire({
+      title: 'Cargando...',
+      text: 'Por favor, espera un momento..',
+      icon:'info',
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+      focusConfirm: false,
+      showConfirmButton: false, // Ocultar el botón de confirmación
+      showCloseButton:false,
+      didOpen: () => {
+        Swal.showLoading(); // Mostrar el ícono de carga
+      }
+    });
+  };
+
+  const hideLoadingModal = () => {
+    Swal.close(); // Cierra el modal de carga de SweetAlert2
+  };
 
   const onSubmit = async (values) => {
+    showLoadingModal();
     setLoading(true);
     const resp = await list_professionals(disabledInput.name, values);
     if (resp.length === 0) {
@@ -41,6 +61,7 @@ const ListProfesional = () => {
  
     setLoading(false);
     setData(resp);
+    hideLoadingModal();
   };
 
  
@@ -77,11 +98,6 @@ const ListProfesional = () => {
       key: "numero_documento",
       render: (text) => <strong>{text}</strong>,
     },
-    // {
-    //   title: "Celular",
-    //   key: "celular",
-    //   dataIndex: "celular",
-    // },
     {
       title: "Profesión",
       dataIndex: "profesion",
@@ -98,13 +114,16 @@ const ListProfesional = () => {
           render: (data) => {
             const confirm = async () => {
               try {
+                showLoadingModal();
                 await TriggerUpdateProfessional(data?.numero_documento);
                 messageApi.open({
                   type: 'success',
                   content: 'Actualizado correctamente',
                 });
                 history.push(`/detail-professional/${data?.id_professional}`);
+                hideLoadingModal();
               } catch (error) {
+                hideLoadingModal();
                 messageApi.open({
                   type: 'error',
                   content:  error.response?.data?.message || "error",

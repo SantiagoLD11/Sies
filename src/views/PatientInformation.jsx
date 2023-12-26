@@ -45,15 +45,37 @@ const PatientInformation = () => {
 
   const history = useHistory();
 
+  const showLoadingModal = () => {
+    Swal.fire({
+      title: 'Cargando...',
+      text: 'Por favor, espera un momento..',
+      icon:'info',
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+      focusConfirm: false,
+      showConfirmButton: false, // Ocultar el botón de confirmación
+      showCloseButton:false,
+      didOpen: () => {
+        Swal.showLoading(); // Mostrar el ícono de carga
+      }
+    });
+  };
+
+  const hideLoadingModal = () => {
+    Swal.close(); // Cierra el modal de carga de SweetAlert2
+  };
+
   const onSubmit = async (values) => {
     if (values?.nombre?.length >= 3 && numeroDoc === undefined) {
       setLoading(true);
+      showLoadingModal();
       console.log("que saca: ", values);
       const resp = await list_patients(numeroDoc, values);
       if (resp.length === 0) {
         await refact(values);
       } else {
         setLoading(false);
+        hideLoadingModal();
         setData(resp);
       }
       setDataIntegrarPaciente({
@@ -64,12 +86,14 @@ const PatientInformation = () => {
       });
     } else if (numeroDoc !== undefined && nombre === "") {
       setLoading(true);
+      showLoadingModal();
       console.log("que saca: ", values);
       const resp = await list_patients(numeroDoc, values);
       if (resp.length === 0) {
         await refact(values);
       } else {
         setLoading(false);
+        hideLoadingModal();
         setData(resp);
       }
       setDataIntegrarPaciente({
@@ -114,8 +138,10 @@ const PatientInformation = () => {
       if (result.isConfirmed) {
         setOpenModal(true);
         setLoading(false);
+        hideLoadingModal();
       } else {
         setLoading(false);
+        hideLoadingModal();
       }
     }
   };
@@ -214,11 +240,6 @@ const PatientInformation = () => {
       dataIndex: "nivelAfiliacion",
       key: "nivelAfiliacion",
     },
-    // {
-    //   title: "ID",
-    //   dataIndex: "id",
-    //   key: "id",
-    // },
     {
       title: "Acciones",
       key: "action",
@@ -232,6 +253,7 @@ const PatientInformation = () => {
           render: (data) => {
             const view = async () => {
               setLoading(true);
+              showLoadingModal();
               try {
                 await TriggerUpdatePatient(data?.numero_documento);
                 notificationApi.open({
@@ -240,6 +262,7 @@ const PatientInformation = () => {
                 });
                 const registros = await getConsulta(data?.numero_documento);
                 setLoading(false);
+                hideLoadingModal();
                 history.push({
                   pathname: `/detail-patient/${data?.id}`,
                   state: { detail: registros },
@@ -250,6 +273,7 @@ const PatientInformation = () => {
                   content: error.response?.data?.message || "error",
                 });
                 setLoading(false);
+                hideLoadingModal();
                 history.push(`/detail-patient/${data?.id}`);
               }
             };

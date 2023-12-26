@@ -1,7 +1,5 @@
 import { httpClient } from "../../util/Api";
 import moment from "moment";
-/*
-import {getUrl} from "../../authentication/auth-methods/jwt-auth/index"
 
 export const randomNumberUsers = () => {
   const min = 2;
@@ -12,9 +10,9 @@ export const randomNumberUsers = () => {
   return numeroAleatorio;
 };
 
-export const getUrl = () => {
+export const generateToken = () => {
   const altNumber = randomNumberUsers();
-  return new Promise((resolve, reject) => {
+  return new Promise(() => {
     httpClient
       .get(`login?loginName=sies${altNumber}.portal&password=ImpelTi2023*.&output=json`, { 
         mode: "no-cors",
@@ -22,14 +20,10 @@ export const getUrl = () => {
       .then(async ({ data }) => {
         if (data.status === "ok") {
           localStorage.setItem("token", data.sessionId);
-          console.log(resp);
-          resolve(resp);
-        } else {
-          reject(data.error);
         }
       })
       .catch(function (error) {
-        reject(error.message);
+        console.log('Error: ',error);
       });
   });
 };
@@ -40,7 +34,7 @@ export const validToken = async () => {
   try {
     if (!token) {
       console.log('El token no está definido o está vacío');
-      await getUrl();
+      await generateToken();
       return true;
       } else {
         console.log('El token existe en el almacenamiento local:', token);
@@ -52,7 +46,7 @@ export const validToken = async () => {
     return false;
   }
 }
-*/
+
 
 export const get_client = async () => {
   const token = localStorage.getItem("token");
@@ -121,7 +115,7 @@ export const list_professionals = async (documento, value) => {
 };
 
 export const list_documents = async () => {
-  //await validToken();
+  await validToken();
   const token = localStorage.getItem("token");
   try {
     const { data } = await httpClient.get(
