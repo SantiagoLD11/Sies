@@ -128,15 +128,6 @@ const SidebarContent = ({ sidebarCollapsed, setSidebarCollapsed }) => {
               )}
               {Administrador_AdminProfesionales && (
                 <Menu.Item key="perfil">
-                  <Link to="/informe-admon-agenda">
-                    <span style={{ color: "#FFF", alignItems: "flex-end" }}>
-                      <IntlMessages id="Admon Agenda" />
-                    </span>
-                  </Link>
-                </Menu.Item>
-              )}
-              {Administrador_AdminProfesionales && (
-                <Menu.Item key="perfil">
                   <Link to="/informe-not-admin">
                     <span style={{ color: "#FFF", alignItems: "flex-end" }}>
                       <IntlMessages id="Notas Administrativas" />

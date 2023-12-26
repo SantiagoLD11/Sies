@@ -81,7 +81,7 @@ export const CreateNote = ({ open, setOpen, idPaciente, getData }) => {
     Json.Servicios = values.servicio?.join("|");
     for (let valor of listPlanRutaAtencion) {
       if (valor.value === values.Plan_ruta) {
-        Json.Plan_Ruta_txt = valor.label;
+        Json.Plan_Ruta_txt = valor.value;
       }
     }
     Json.Nota_cambio_etiqueta_administrativa =

@@ -12,42 +12,53 @@ require("moment-timezone");
 const ReportNotasAdmin = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [tableResults,setTableResults] = useState([]);
 
   const onSubmit = async () => {
     setLoading(true);
-    const resp = await getReportNotasAdmin();
-    convertirStringArreglo();
-    setLoading(false);
-    setData(resp);
+    try {
+      const resp = await getReportNotasAdmin();
+      console.log('Respuesta de getReportNotasAdmin:', resp); // Verifica la respuesta recibida
+      setData(resp);
+      setLoading(false);
+    } catch (error) {
+      console.error('Error al obtener los datos:', error);
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
-    onSubmit();
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        const resp = await getReportNotasAdmin();
+        console.log('Respuesta de getReportNotasAdmin:', resp); // Verifica la respuesta recibida
+        setData(resp);
+        setLoading(false);
+      } catch (error) {
+        console.error('Error al obtener los datos:', error);
+        setLoading(false);
+      }
+    };
+  
+    fetchData();
   }, []);
 
-  const convertirStringArreglo = () => {
-    const numeros = data.tResultados.split(",");
-    const array = [];
-
-    for (let i = 0; i < numeros.length; i += 2) {
-      
-      const dataElement = numeros[i].split("-");
-      const my = dataElement[0];
-      const servicio = dataElement[1];
-      const resultado = numeros[i + 1];
-      const objeto = { mesYear: my,servicio: servicio, resultado: resultado };
-      array.push(objeto);
-    }
-
-    setTableResults(array);
-  };
 
   const columns = [
     {
       title: (
         <span style={{ backgroundColor: "#184F9D", color: "#fff" }}>
-          Documento
+          Documento Paciente
+        </span>
+      ),
+      dataIndex: "numDoc",
+      key: "numDoc",
+      render: (text) => <strong>{text}</strong>,
+    },
+    {
+      title: (
+        <span style={{ backgroundColor: "#184F9D", color: "#fff" }}>
+          Nro. Nota
         </span>
       ),
       dataIndex: "secuen",
@@ -71,6 +82,17 @@ const ReportNotasAdmin = () => {
       ),
       dataIndex: "fechaHoraRegistro",
       key: "fechaHoraRegistro",
+      render: (text) =><strong>{moment(text).format("DD/MM/YYYY")}</strong>,
+    },
+    {
+      title: (
+        <span style={{ backgroundColor: "#184F9D", color: "#fff" }}>
+          Hora Registro
+        </span>
+      ),
+      dataIndex: "fechaHoraRegistro",
+      key: "fechaHoraRegistro",
+      render: (text) =><strong>{moment(text).format("HH:mm a")}</strong>,
     },
     {
       title: (
@@ -89,6 +111,7 @@ const ReportNotasAdmin = () => {
       ),
       dataIndex: "etAdmin",
       key: "etAdmin",
+      render: (text) => <strong>{text}</strong>,
     },
     {
       title: (
@@ -128,42 +151,40 @@ const ReportNotasAdmin = () => {
     }
   ];
 
-  // Bucle para agregar las columnas repetitivas
-  tableResults.forEach((objeto, index) => {
-  columns.push(
-    {
-      title: (
-        <span style={{ backgroundColor: "#184F9D", color: "#fff" }}>
-          {`Mes/Año Plan Mensual #${index + 1}`}
-        </span>
-      ),
-      dataIndex: `mesYear_${index}`,
-      key: `mesYear_${index}`,
-    },
-    {
-      title: (
-        <span style={{ backgroundColor: "#184F9D", color: "#fff" }}>
-          {`Servicio/Plan Mensual #${index + 1}`}
-        </span>
-      ),
-      dataIndex: `servicio_${index}`,
-      key: `servicio_${index}`,
-    },
-    {
-      title: (
-        <span style={{ backgroundColor: "#184F9D", color: "#fff" }}>
-          {`Resultado de Contacto #${index + 1}`}
-        </span>
-      ),
-      dataIndex: `resultado_${index}`,
-      key: `resultado_${index}`,
-      render: (text) => text, // Puedes aplicar el renderizado que necesites aquí
-    }
-  );
-});
-
-// Mostrar el resultado
-console.log(columns);
+  for (let index = 0; index < 7; index++) {
+    columns.push(
+      {
+        title: (
+          <span style={{ backgroundColor: "#184F9D", color: "#fff" }}>
+            {`Mes/Año Plan Mensual #${index + 1}`}
+          </span>
+        ),
+        dataIndex: `mesYear_${index + 1}`,
+        key: `mesYear_${index + 1}`,
+      },
+      {
+        title: (
+          <span style={{ backgroundColor: "#184F9D", color: "#fff" }}>
+            {`Servicio/Plan Mensual #${index + 1}`}
+          </span>
+        ),
+        dataIndex: `servicio_${index + 1}`,
+        key: `servicio_${index + 1}`,
+        render: (text) => <strong>{text}</strong>,
+      },
+      {
+        title: (
+          <span style={{ backgroundColor: "#184F9D", color: "#fff" }}>
+            {`Resultado de Contacto #${index + 1}`}
+          </span>
+        ),
+        dataIndex: `resultado_${index + 1}`,
+        key: `resultado_${index + 1}`,
+        render: (text) => text, // Puedes aplicar el renderizado que necesites aquí
+      }
+    );
+    
+  }
 
   const downloadExcel = () => {
     const fileType = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
@@ -180,7 +201,6 @@ console.log(columns);
     const excelFile = new Blob([excelBuffer], { type: fileType });
     saveAs(excelFile, `Informe Pacientes-${stringDate}` + fileExtension);
   };
-
 
   return (
     <>

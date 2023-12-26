@@ -50,7 +50,7 @@ const SignIn = () => {
     }
   }, [accounts]);
 
-  const onFinishFailed = (errorInfo) => {};
+  const onFinishFailed = (errorInfo) => { };
 
   const onFinish = (values) => {
     userLogin(values);
@@ -119,9 +119,9 @@ const SignIn = () => {
             </div>
           </div>
           <div className="gx-app-login-content">
-          {/* <AdminRoutes /> */}
-          {/* <BlockDisposition id={1} setDataImported={false} /> */}
-          <GeneratingChanges modalVisible={false}  />
+            {/* <AdminRoutes /> */}
+            {/* <BlockDisposition id={1} setDataImported={false} /> */}
+            <GeneratingChanges modalVisible={false} />
             <Form
               initialValues={{ remember: true }}
               name="basic"
@@ -130,7 +130,7 @@ const SignIn = () => {
               className="gx-signin-form gx-form-row0"
             >
               <Form.Item
-               // initialValue="3022450923"
+                // initialValue="3022450923"
                 rules={[
                   { required: true, message: "The input is not valid E-mail!" },
                 ]}
@@ -139,7 +139,7 @@ const SignIn = () => {
                 <Input placeholder="Usuario" />
               </Form.Item>
               <Form.Item
-               // initialValue="3022450923"
+                // initialValue="3022450923"
                 rules={[
                   { required: true, message: "Please input your Password!" },
                 ]}
@@ -152,7 +152,7 @@ const SignIn = () => {
                   <IntlMessages id="app.userAuth.signIn" />
                 </Button>
                 <Button className="gx-mb-0" onClick={() => loginAzure()}>
-                  <img src={svgMicrosoft} alt="logoMicrosoft" width="20" height="20"/>
+                  <img src={svgMicrosoft} alt="logoMicrosoft" width="20" height="20" />
                   <span style={{ marginLeft: '5px' }}>Ingresa con Microsoft</span>
                 </Button>
                 {/* <span><IntlMessages id="app.userAuth.or"/></span> <Link to="/signup"><IntlMessages

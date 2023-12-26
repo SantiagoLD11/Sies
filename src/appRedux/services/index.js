@@ -1,6 +1,58 @@
 import { httpClient } from "../../util/Api";
 import moment from "moment";
-require("moment-timezone");
+/*
+import {getUrl} from "../../authentication/auth-methods/jwt-auth/index"
+
+export const randomNumberUsers = () => {
+  const min = 2;
+  const max = 60;
+  // Generar un número aleatorio en el rango especificado
+  const numeroAleatorio = Math.floor(Math.random() * (max - min + 1)) + min;
+
+  return numeroAleatorio;
+};
+
+export const getUrl = () => {
+  const altNumber = randomNumberUsers();
+  return new Promise((resolve, reject) => {
+    httpClient
+      .get(`login?loginName=sies${altNumber}.portal&password=ImpelTi2023*.&output=json`, { 
+        mode: "no-cors",
+      })
+      .then(async ({ data }) => {
+        if (data.status === "ok") {
+          localStorage.setItem("token", data.sessionId);
+          console.log(resp);
+          resolve(resp);
+        } else {
+          reject(data.error);
+        }
+      })
+      .catch(function (error) {
+        reject(error.message);
+      });
+  });
+};
+
+export const validToken = async () => {
+  // Obtener el valor almacenado en localStorage para la clave "token"
+  const token = localStorage.getItem("token");
+  try {
+    if (!token) {
+      console.log('El token no está definido o está vacío');
+      await getUrl();
+      return true;
+      } else {
+        console.log('El token existe en el almacenamiento local:', token);
+        return false;
+      }
+    // Realizar acciones con la URL generada...
+  } catch (error) {
+    console.error('Error al obtener la Token:', error);
+    return false;
+  }
+}
+*/
 
 export const get_client = async () => {
   const token = localStorage.getItem("token");
@@ -69,6 +121,7 @@ export const list_professionals = async (documento, value) => {
 };
 
 export const list_documents = async () => {
+  //await validToken();
   const token = localStorage.getItem("token");
   try {
     const { data } = await httpClient.get(
@@ -388,6 +441,35 @@ export const getListNews = async (id) => {
     return Promise.reject(error);
   }
 };
+
+export const getUltimaAtencionPaciente = async (idPaciente,dateCita) => {
+  const token = localStorage.getItem("token");
+  const inicioMes = moment(dateCita).startOf('month').valueOf();
+  const finMes = moment(dateCita).endOf('month').valueOf();
+  try {
+    let query = encodeURI(
+      `SELECT MAX(Fecha_Cita) FROM Consulta WHERE Doc_Paciente = ${idPaciente} AND Fecha_Cita BETWEEN ${inicioMes} AND ${finMes}`
+    );
+    const { data } = await httpClient.get(
+      `/selectQuery?maxRows=1&query=${query}&sessionId=${token}&output=json`
+    );
+    console.log("data", data);
+    if (data.length > 0) {
+      console.log("información data", data);
+      const final_data = data.map((value) => ({
+        date: value[0],
+      }));
+      console.log("información del servicio", final_data);
+      return final_data;
+    } else {
+      return [];
+    }
+  } catch (error) {
+    httpClient.defaults.headers.common["Authorization"] = "";
+    return Promise.reject(error);
+  }
+};
+
 export const getReportPacientes = async () => {
   const token = localStorage.getItem("token");
   try {
@@ -442,7 +524,7 @@ export const getReportNotasAdmin = async () => {
   const token = localStorage.getItem("token");
   try {
     let query = encodeURI(
-      `SELECT Secuencia,Programa_txt,createdAt,CreadoPor,Etiqueta_Administrativa_txt,Nota_Cambio,Etiqueta_Seguimiento_txt,Observacion_Seguimiento,Motivo_Inasistencia_txt,Tabla_Resultados FROM Notas_Administrativas`
+      `SELECT Secuencia,Programa_txt,createdAt,CreadoPor,Etiqueta_Administrativa_txt,Nota_Cambio,Etiqueta_Seguimiento_txt,Observacion_Seguimiento,Motivo_Inasistencia_txt,Mes_Year_Plan_Mensual_1,Servicio_Plan_Mensual_1,Resultado_de_Contacto_1,Mes_Year_Plan_Mensual_2,Servicio_Plan_Mensual_2,Resultado_de_Contacto_2,Mes_Year_Plan_Mensual_3,Servicio_Plan_Mensual_3,Resultado_de_Contacto_3,Mes_Year_Plan_Mensual_4,Servicio_Plan_Mensual_4,Resultado_de_Contacto_4,Mes_Year_Plan_Mensual_5,Servicio_Plan_Mensual_5,Resultado_de_Contacto_5,Mes_Year_Plan_Mensual_6,Servicio_Plan_Mensual_6,Resultado_de_Contacto_6,Mes_Year_Plan_Mensual_7,Servicio_Plan_Mensual_7,Resultado_de_Contacto_7,Numero_Documento FROM Notas_Administrativas`
     );
     const { data } = await httpClient.get(
       `/selectQuery?maxRows=100000000&query=${query}&sessionId=${token}&output=json`
@@ -461,7 +543,119 @@ export const getReportNotasAdmin = async () => {
           etSeguimiento: value[6],
           observacion_Seguimiento: value[7],
           motInasis: value[8],
-          tResultados: value[9],
+          mesYear_1: value[9],
+          servicio_1:value[10],
+          resultado_1:value[11],
+          mesYear_2: value[12],
+          servicio_2:value[13],
+          resultado_2:value[14],
+          mesYear_3: value[15],
+          servicio_3:value[16],
+          resultado_3:value[17],
+          mesYear_4: value[18],
+          servicio_4:value[19],
+          resultado_4:value[20],
+          mesYear_5: value[21],
+          servicio_5:value[22],
+          resultado_5:value[23],
+          mesYear_6: value[24],
+          servicio_6:value[25],
+          resultado_6:value[26],
+          mesYear_7: value[27],
+          servicio_7:value[28],
+          resultado_7:value[29],
+          numDoc:value[30],
+        }
+
+      });
+      return final_data;
+    } else {
+      return [];
+    }
+  } catch (error) {
+    httpClient.defaults.headers.common["Authorization"] = "";
+    return Promise.reject(error);
+  }
+};
+
+export const getReportAprovAgenda = async () => {
+  const token = localStorage.getItem("token");
+  try {
+    let query = encodeURI(
+      `SELECT Documento_Profesional,Nombre_Profesional,Nombre_Examen,Sede_Sies,createdAt,Fecha_Hora,CreadoPor,Color,Duracion,Motivo_Bloqueo,Doc_Paciente,Nombre_Paciente,Estado_Cita,Fecha_Cancelacion,Motivo_Cancelacion,Franja,Especialidad,Programa FROM Disponibilidad WHERE Color != 4 `
+    );
+    const { data } = await httpClient.get(
+      `/selectQuery?maxRows=100000000&query=${query}&sessionId=${token}&output=json`
+    );
+    console.log("data", data);
+    if (data.length > 0) {
+      console.log("información data", data);
+      const final_data = data.map((value) => {
+        return {
+          numDocProf: value[0],
+          nameProf: value[1],
+          nameExam: value[2],
+          sedeSies: value[3],
+          createdAt: value[4],
+          fechaHora: value[5],
+          createdBy: value[6],
+          state: value[7],
+          duration: value[8],
+          motBloc:value[9],
+          numDocPac:value[10],
+          namePac: value[11],
+          stateCita:value[12],
+          dateCancel:value[13],
+          motCancel:value[14],
+          franja: value[15],
+          especialidad:value[16],
+          programa:value[17]
+        }
+
+      });
+      return final_data;
+    } else {
+      return [];
+    }
+  } catch (error) {
+    httpClient.defaults.headers.common["Authorization"] = "";
+    return Promise.reject(error);
+  }
+};
+
+export const getReportAgendamiento= async () => {
+  const token = localStorage.getItem("token");
+  try {
+    let query = encodeURI(
+      `SELECT Doc_Paciente,Paciente_txt,Profesional_txt,documentProfessional,startDate,nameExam,Estado_Txt,CreadoPor,createdAt,cancelBy,Fecha_Cancelacion,Motivo_Cancelacin_txt,Asegurador,codeContract,codePlan,Franja,nameOffice,Especialidad_txt,Canal_Atencion_txt,Programa FROM Consulta `
+    );
+    const { data } = await httpClient.get(
+      `/selectQuery?maxRows=1000000000&query=${query}&sessionId=${token}&output=json`
+    );
+    console.log("data", data);
+    if (data.length > 0) {
+      console.log("información data", data);
+      const final_data = data.map((value) => {
+        return {
+          numDocPac: value[0],
+          nameProf: value[1],
+          nameExam: value[2],
+          sedeSies: value[3],
+          createdAt: value[4],
+          fechaHora: value[5],
+          createdBy: value[6],
+          state: value[7],
+          duration: value[8],
+          motBloc:value[9],
+          numDocPac:value[10],
+          namePac: value[11],
+          stateCita:value[12],
+          dateCancel:value[13],
+          motCancel:value[14],
+          franja: value[15],
+          especialidad:value[16],
+          programa:value[17]
+          //utlAten:getUltimaAtencionPaciente(value[0],value[4])
         }
 
       });
@@ -821,7 +1015,7 @@ export const getEditContractsPlans = async (id) => {
   console.log("token guardado", token);
   try {
     let query = encodeURI(
-      `SELECT name,Sexo_al_Nacer,Sexo_al_Nacer_txt,Meses,Mayor_de,Menor_de,Duracion_Seguimiento,Duracion_1era_Visita,Canal_Atencion_txt FROM Contrato_Plan WHERE id = ${id}`
+      `SELECT name,Sexo_al_Nacer,Sexo_al_Nacer_txt,Meses,Mayor_de,Menor_de,Duracion_Seguimiento,Duracion_1era_Visita,Canal_Atencion_txt,R45971946 FROM Contrato_Plan WHERE id = ${id}`
     );
     const { data } = await httpClient.get(
       `/selectQuery?maxRows=2&query=${query}&sessionId=${token}&output=json`
@@ -838,7 +1032,8 @@ export const getEditContractsPlans = async (id) => {
         Menor_de: values[5],
         Duracion_Seguimiento: values[6],
         Duracion_1era_Visita: values[7],
-        Canales_ids: values[8] != null ? values[8].split(",").map(Number) : null
+        Canales_ids: values[8] != null ? values[8].split(",").map(Number) : null,
+        idPrograma: values[9]
       };
       return final_data;
     } else {
@@ -1409,11 +1604,11 @@ export const getListEspecialidad = async () => {
   }
 };
 
-export const getListEspecialidadPertinencia = async () => {
+export const getListEspecialidadPertinencia = async (idPrograma) => {
   const token = localStorage.getItem("token");
   try {
     let query = encodeURI(
-      `SELECT DISTINCT R45323002,Profesion_txt FROM Pertinencia_Administrativa`
+      `SELECT DISTINCT R45323002,Profesion_txt FROM Pertinencia_Administrativa WHERE R45225326 = ${idPrograma}`
     );
     const { data } = await httpClient.get(
       `/selectQuery?maxRows=1000000&query=${query}&sessionId=${token}&output=json`
@@ -1476,11 +1671,11 @@ export const getListClaseExamen = async (id) => {
   }
 };
 
-export const getListClaseExamenPertinencia = async (id) => {
+export const getListClaseExamenPertinencia = async (id,idProgram) => {
   const token = localStorage.getItem("token");
   try {
     let query = encodeURI(
-      `SELECT DISTINCT R45225364,Clase_Examen_txt FROM Pertinencia_Administrativa WHERE R45323002 = ${id}`
+      `SELECT DISTINCT R45225364,Clase_Examen_txt FROM Pertinencia_Administrativa WHERE R45225326 = ${idProgram} AND R45323002 = ${id}`
     );
     const { data } = await httpClient.get(
       `/selectQuery?maxRows=1000000&query=${query}&sessionId=${token}&output=json`
@@ -2942,6 +3137,7 @@ export const cancelarCita = async (json) => {
 export const createNotes = async (id, values, json) => {
   const token = localStorage.getItem("token");
   const idPac = localStorage.getItem("idPaciente");
+  const nameUser = localStorage.getItem("name");
   try {
     const { data } = await httpClient.get(
       `/create2?output=json&useIds=true&objName=Notas_Administrativas&R40261478=${id === undefined ? idPac : id
@@ -2950,7 +3146,7 @@ export const createNotes = async (id, values, json) => {
       }&R41388823=${values?.Etiqueta_administrativa}&Observacion_Seguimiento=${json?.Observacion_seguimiento
       }&Nota_Cambio=${json?.Nota_cambio_etiqueta_administrativa
       }&Plan_Ruta_txt=${json?.Plan_Ruta_txt}&Tabla_Resultados=${values?.Tabla_Resultados
-      }&sessionId=${token}&output=json`
+      }&CreadoPor=${nameUser}&sessionId=${token}&output=json`
     );
     return data;
   } catch (error) {
@@ -3084,9 +3280,10 @@ export const createPertinencia = async (id, values) => {
 
 export const createNotesForm2 = async (id, values, json) => {
   const token = localStorage.getItem("token");
+  const nameUser = localStorage.getItem("name");
   try {
     const { data } = await httpClient.get(
-      `/create2?output=json&useIds=true&objName=Notas_Administrativas&R40261478=${id}&R40261931=${values?.Etiqueta_seguimiento}&R40263239=${values?.Motivo_inasistencia}&R41388823=${values?.Etiqueta_administrativa}&Observacion_Seguimiento=${json?.Observacion_seguimiento}&Nota_Cambio=${json?.Nota_cambio_etiqueta_administrativa}&Plan_Ruta_txt=${json?.Plan_Ruta_txt}&Tabla_Resultados=${values?.Tabla_Resultados}&sessionId=${token}&output=json`
+      `/create2?output=json&useIds=true&objName=Notas_Administrativas&R40261478=${id}&R40261931=${values?.Etiqueta_seguimiento}&R40263239=${values?.Motivo_inasistencia}&R41388823=${values?.Etiqueta_administrativa}&Observacion_Seguimiento=${json?.Observacion_seguimiento}&Nota_Cambio=${json?.Nota_cambio_etiqueta_administrativa}&Plan_Ruta_txt=${json?.Plan_Ruta_txt}&Tabla_Resultados=${values?.Tabla_Resultados}&CreadoPor=${nameUser}&sessionId=${token}&output=json`
     );
     return data;
   } catch (error) {

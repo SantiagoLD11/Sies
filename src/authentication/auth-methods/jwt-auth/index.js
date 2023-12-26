@@ -21,12 +21,21 @@ export const useProvideAuth = () => {
     setLoading(false);
     setError(error);
   };
+  const randomNumberUsers = () => {
+    const min = 2;
+    const max = 60;
+    // Generar un número aleatorio en el rango especificado
+    const numeroAleatorio = Math.floor(Math.random() * (max - min + 1)) + min;
+
+    return numeroAleatorio;
+  };
 
   const getUrl = () => {
+    const altNumber = randomNumberUsers();
     return new Promise((resolve, reject) => {
       fetchStart();
       httpClient
-        .get("login?loginName=sies.portal&password=portal.sies&output=json", {
+        .get(`login?loginName=sies${altNumber}.portal&password=ImpelTi2023*.&output=json`, { 
           mode: "no-cors",
         })
         .then(async ({ data }) => {
@@ -73,10 +82,11 @@ export const useProvideAuth = () => {
   };
 
   const userLogin = (user, callbackFun) => {
+    const altNumber = randomNumberUsers();
     fetchStart();
     // setAuthUser({});
     httpClient
-      .get("login?loginName=sies.portal&password=portal.sies&output=json", {
+      .get(`login?loginName=sies${altNumber}.portal&password=ImpelTi2023*.&output=json`, {
         mode: "no-cors",
       })
       .then(({ data }) => {
@@ -101,7 +111,6 @@ export const useProvideAuth = () => {
       .then(({ data }) => {
         if (data.result) {
           fetchSuccess();
-          // localStorage.setItem("token", data.token.access_token);
           httpClient.defaults.headers.common["Authorization"] =
             "Bearer " + data.token.access_token;
           getAuthUser();
@@ -142,7 +151,6 @@ export const useProvideAuth = () => {
       .then(({ data }) => {
         if (data.result) {
           httpClient.defaults.headers.common["Authorization"] = "";
-          localStorage.removeItem("token");
           setAuthUser(false);
           fetchSuccess();
           if (callbackFun) callbackFun();
@@ -203,7 +211,7 @@ export const useProvideAuth = () => {
         setLoadingUser(false);
       })
       .catch(function () {
-        localStorage.removeItem("token");
+        //localStorage.removeItem("token");
         httpClient.defaults.headers.common["Authorization"] = "";
         setLoadingUser(false);
       });

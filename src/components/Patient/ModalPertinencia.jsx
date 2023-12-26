@@ -40,7 +40,7 @@ export const ModalPertinencia = ({
   useEffect(async () => {
     if (isModalPertinencia) {
       form.setFieldValue("duracion", duracion);
-      const listProf = await getListEspecialidadPertinencia();
+      const listProf = await getListEspecialidadPertinencia(idPrograma);
       setListProfesiones(listProf);
       const listCanales = await getListCanalAtencion();
       setListCanales(listCanales);
@@ -54,7 +54,7 @@ export const ModalPertinencia = ({
   };
 
   const onChangeProfesion = async (val) => {
-    const listClaseExamen = await getListClaseExamenPertinencia(val);
+    const listClaseExamen = await getListClaseExamenPertinencia(val,idPrograma);
     setListClaseExamen(listClaseExamen);
   };
 

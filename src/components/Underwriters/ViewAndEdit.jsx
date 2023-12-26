@@ -19,6 +19,7 @@ import {
   getEditContractsPlans,
 } from "../../appRedux/services";
 import { SelectMeses } from "../../constants/Months";
+import Swal from "sweetalert2";
 
 export const ViewAndEdit = ({
   modalVisible,
@@ -41,7 +42,8 @@ export const ViewAndEdit = ({
     _menor: "",
     _mayor: "",
     _firstDuracion: "",
-    _duracionSeg: ""
+    _duracionSeg: "",
+    _idPrograma: ""
   });
 
   useEffect(async () => {
@@ -70,6 +72,7 @@ export const ViewAndEdit = ({
             _mayor: getDataEdit.Mayor_de,
             _firstDuracion: getDataEdit.Duracion_1era_Visita,
             _duracionSeg: getDataEdit.Duracion_Seguimiento,
+            _idPrograma: getDataEdit.idPrograma,
           };
 
           setDataModEdit(objEdit);
@@ -112,11 +115,11 @@ export const ViewAndEdit = ({
     form.resetFields();
   };
 
-  const validarInput = () => {
+  const validarInput = async () => {
     const inputValue = form.getFieldValue('meses'); // Obtén el valor actual del campo 'meses' del formulario
     const numbersArray = inputValue.split(',').map(item => parseInt(item.trim(), 10));
 
-    const duration = getDurationPrograma(options?.idPrograma);  
+    const duration = await getDurationPrograma(dataModEdit?._idPrograma);  
   
     const isValid = numbersArray.every(num => !isNaN(num) && num <= duration);
 
@@ -141,10 +144,10 @@ export const ViewAndEdit = ({
     if (!isValid) {
       Swal.fire({
         title: "No es posible!",
-        text: `El programa tiene una duracion de: ${_durationProgram} meses`,
+        text: `El programa tiene una duracion de: ${duration} meses`,
         icon: "info",
       });
-      const filteredNumbers = numbersArray.filter(num => !isNaN(num) && num <= _durationProgram);
+      const filteredNumbers = numbersArray.filter(num => !isNaN(num) && num <= duration);
 
       const updatedValue = filteredNumbers.join(',');
       form.setFieldsValue({

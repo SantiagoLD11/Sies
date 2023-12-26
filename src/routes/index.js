@@ -59,12 +59,12 @@ const App = () => (
         component={asyncComponent(() => import("../views/HistoricoBloqueos"))}
       />
       <Route
-        path={`/informe-aprob-agenda"`}
-        component={asyncComponent(() => import("../views/HistoricoBloqueos"))}
+        path={`/informe-aprob-agenda`}
+        component={asyncComponent(() => import("../views/ReportAprovAgenda"))}
       />
       <Route
         path={`/informe-agendamiento`}
-        component={asyncComponent(() => import("../views/HistoricoBloqueos"))}
+        component={asyncComponent(() => import("../views/ReportAgendamiento"))}
       />
     </Switch>
   </div>
