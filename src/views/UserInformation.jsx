@@ -6,6 +6,8 @@ import {
   TriggerUpdateProfessional,
   list_documents,
   getConsultaProfessionals,
+  showLoadingModal,
+  hideLoadingModal,
 } from "../appRedux/services";
 import Swal from "sweetalert2";
 import CreateProfesional from "./CreateProfesional";
@@ -38,26 +40,6 @@ const UserInformation = () => {
     setTypeDoc(resp);
   };
 
-  const showLoadingModal = () => {
-    Swal.fire({
-      title: 'Cargando...',
-      text: 'Por favor, espera un momento..',
-      icon:'info',
-      allowOutsideClick: false,
-      allowEscapeKey: false,
-      focusConfirm: false,
-      showConfirmButton: false, // Ocultar el botón de confirmación
-      showCloseButton:false,
-      didOpen: () => {
-        Swal.showLoading(); // Mostrar el ícono de carga
-      }
-    });
-  };
-
-  const hideLoadingModal = () => {
-    Swal.close(); // Cierra el modal de carga de SweetAlert2
-  };
-
   useEffect(() => {
     getDocuments();
   }, []);
@@ -66,14 +48,30 @@ const UserInformation = () => {
     console.log(
       `Valores: ${nombre}, ${tipoDoc}, ${numeroDoc}, "valor: ",${values?.nombre}`
     );
-    if (values?.nombre?.length >= 3 && numeroDoc === undefined) {
+    if (!values.tipo_doc && values?.nombre?.length == 0) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: 'El campo tipo de documento es requerido',
+      });
+      return; // Detener el envío del formulario si el campo está vacío
+    }
+  
+    // Verifica si el campo "numero_doc" está vacío
+    if (!values.numero_doc && values?.nombre?.length == 0) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: 'El campo número de documento es requerido',
+      });
+      return; // Detener el envío del formulario si el campo está vacío
+    }
+    if (values?.nombre?.length >= 3 && !numeroDoc) {
       setLoading(true);
-      showLoadingModal(); // Mostrar el modal de carga al inicio de la operación
       const resp = await list_professionals(numeroDoc, values);
       if (resp.length === 0) {
         await refact(values);
       } else {
-        hideLoadingModal();
         setLoading(false);
         setData(resp);
       }
@@ -85,13 +83,11 @@ const UserInformation = () => {
       });
     } else if (numeroDoc !== undefined && nombre === "") {
       setLoading(true);
-      showLoadingModal(); // Mostrar el modal de carga al inicio de la operación
       const resp = await list_professionals(numeroDoc, values);
       if (resp.length === 0) {
         await refact(values);
       } else {
         setLoading(false);
-        hideLoadingModal();
         setData(resp);
       }
       setDataIntegrarProfesional({
@@ -136,8 +132,10 @@ const UserInformation = () => {
       if (result.isConfirmed) {
         setOpenModal(true);
         setLoading(false);
+        hideLoadingModal();
       } else {
         setLoading(false);
+        hideLoadingModal();
       }
     }
   };
@@ -155,14 +153,15 @@ const UserInformation = () => {
         const Var = target.value;
         onSubmit({ nombre: Var });
         setNombre(Var);
-        setNumeroDoc(undefined);
+        setNumeroDoc("");
         setTipoDoc("");
+       // form.resetFields(['numero_doc', 'tipo_doc']);
       }
       if (target.name === "tipo_doc") {
         const Var = target.value;
-        setTipoDoc(Var);
+        setTipoDoc(form.getFieldValue("tipo_doc"));
         setNombre("");
-        setNumeroDoc(undefined);
+        setNumeroDoc(form.getFieldValue("numero_doc"));
       }
       setDisabledInput({ name: target.name });
       if (
@@ -174,7 +173,7 @@ const UserInformation = () => {
         setDisabledButton(true);
       }
     } else {
-      setNumeroDoc(undefined);
+      setNumeroDoc("");
       setDisabledInput(false);
       setDisabledButton(true);
     }
@@ -303,6 +302,7 @@ const UserInformation = () => {
 
   return (
     <>
+     <Spin spinning={loading}>
         {contextHolder}
         <CreateProfesional
           open={openModal}
@@ -315,6 +315,7 @@ const UserInformation = () => {
         />
         <Card
           headStyle={{ background: "#184F9D" }}
+          style={{boxShadow: '1px 4px 8px 0 rgba(0,0,0,0.2)'}}
           title={
             <span
               style={{ fontWeight: "bold", fontSize: "18px", color: "#FFF" }}
@@ -380,6 +381,9 @@ const UserInformation = () => {
                     label="Tipo"
                     name="tipo_doc"
                     style={{ width: "15%" }}
+                    rules={[
+                      { required: !form.getFieldValue("numero_doc"), message: '¡Por favor, selecciona el tipo de documento!' },
+                    ]}
                   >
                     <Select
                       onChange={(value) => {
@@ -397,6 +401,9 @@ const UserInformation = () => {
                     label="Número de documento"
                     name="numero_doc"
                     style={{ width: "85%" }}
+                    rules={[
+                      { required: !form.getFieldValue("tipo_doc"), message: '¡Por favor, ingresa el número de documento!' },
+                    ]}
                   >
                     <Input
                       onChange={changeNumber}
@@ -424,6 +431,7 @@ const UserInformation = () => {
             />
           </Card>
         )}
+        </Spin>
     </>
   );
 };

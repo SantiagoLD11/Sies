@@ -29,6 +29,8 @@ import {
   getListSede,
   getListBimTrim,
   getListBomba,
+  showLoadingModal,
+  hideLoadingModal,
 } from "../../appRedux/services";
 import { ViewAndEdit } from "../Underwriters/ViewAndEdit";
 import {
@@ -64,8 +66,10 @@ export const ContractsPlans = ({ activeKey }) => {
 
   const getData = async () => {
     setLoading(true);
+    showLoadingModal();
     const resp = await getListContractsPlans();
     setLoading(false);
+    hideLoadingModal();
     setData(resp);
     const respu = await getListEstadio();
     setListEstadio(respu);
@@ -139,8 +143,10 @@ export const ContractsPlans = ({ activeKey }) => {
           await inactivarContratoPlan(id, 44189580);
           Swal.fire("El Contrato Plan fue Activado");
           setLoading(true);
+          showLoadingModal();
           const resp = await getListContractsPlans();
           setLoading(false);
+          hideLoadingModal();
           setData(resp);
           onSubmit(resp);
         }
@@ -538,8 +544,10 @@ export const ContractsPlans = ({ activeKey }) => {
                   onClick={() => {
                     form.resetFields();
                     setLoading(true);
+                    showLoadingModal();
                     getData();
                     setLoading(false);
+                    hideLoadingModal();
                   }}
                 >
                   Limpiar Filtros

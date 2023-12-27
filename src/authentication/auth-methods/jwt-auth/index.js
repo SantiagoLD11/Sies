@@ -23,7 +23,7 @@ export const useProvideAuth = () => {
   };
   const randomNumberUsers = () => {
     const min = 2;
-    const max = 60;
+    const max = 80;
     // Generar un número aleatorio en el rango especificado
     const numeroAleatorio = Math.floor(Math.random() * (max - min + 1)) + min;
 
@@ -202,10 +202,20 @@ export const useProvideAuth = () => {
     const token = localStorage.getItem("token");
     if (token) {
       httpClient.defaults.headers.common["Authorization"] = "Bearer " + token;
-    }else{
-      httpClient.defaults.headers.common["Authorization"] = "";
     }
-    setLoadingUser(false);
+    httpClient
+      .post("auth/me")
+      .then(({ data }) => {
+        if (data.user) {
+          setAuthUser(data.user);
+        }
+        setLoadingUser(false);
+      })
+      .catch(function () {
+        //localStorage.removeItem("token");
+        httpClient.defaults.headers.common["Authorization"] = "";
+        setLoadingUser(false);
+      });
   }, []);
 
   // Return the user object and auth methods

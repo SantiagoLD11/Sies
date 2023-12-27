@@ -5,6 +5,8 @@ import {
   listDocumentsPatients,
   getConsulta,
   actualizarRegistroNovedadInformado,
+  showLoadingModal,
+  hideLoadingModal,
 } from "../appRedux/services";
 import {
   Button,
@@ -45,37 +47,33 @@ const PatientInformation = () => {
 
   const history = useHistory();
 
-  const showLoadingModal = () => {
-    Swal.fire({
-      title: 'Cargando...',
-      text: 'Por favor, espera un momento..',
-      icon:'info',
-      allowOutsideClick: false,
-      allowEscapeKey: false,
-      focusConfirm: false,
-      showConfirmButton: false, // Ocultar el botón de confirmación
-      showCloseButton:false,
-      didOpen: () => {
-        Swal.showLoading(); // Mostrar el ícono de carga
-      }
-    });
-  };
-
-  const hideLoadingModal = () => {
-    Swal.close(); // Cierra el modal de carga de SweetAlert2
-  };
-
   const onSubmit = async (values) => {
-    if (values?.nombre?.length >= 3 && numeroDoc === undefined) {
+    if (!values.tipo_doc && values?.nombre?.length == 0) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: 'El campo tipo de documento es requerido',
+      });
+      return; // Detener el envío del formulario si el campo está vacío
+    }
+  
+    // Verifica si el campo "numero_doc" está vacío
+    if (!values.numero_doc && values?.nombre?.length == 0) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: 'El campo número de documento es requerido',
+      });
+      return; // Detener el envío del formulario si el campo está vacío
+    }
+    if (values?.nombre?.length >= 3 && !numeroDoc) {
       setLoading(true);
-      showLoadingModal();
       console.log("que saca: ", values);
       const resp = await list_patients(numeroDoc, values);
       if (resp.length === 0) {
         await refact(values);
       } else {
         setLoading(false);
-        hideLoadingModal();
         setData(resp);
       }
       setDataIntegrarPaciente({
@@ -86,14 +84,12 @@ const PatientInformation = () => {
       });
     } else if (numeroDoc !== undefined && nombre === "") {
       setLoading(true);
-      showLoadingModal();
       console.log("que saca: ", values);
       const resp = await list_patients(numeroDoc, values);
       if (resp.length === 0) {
         await refact(values);
       } else {
         setLoading(false);
-        hideLoadingModal();
         setData(resp);
       }
       setDataIntegrarPaciente({
@@ -160,14 +156,15 @@ const PatientInformation = () => {
         const Var = target.value;
         onSubmit({ nombre: Var });
         setNombre(Var);
-        setNumeroDoc(undefined);
+        setNumeroDoc("");
         setTipoDoc("");
+       // form.resetFields(['numero_doc', 'tipo_doc']);
       }
       if (target.name === "tipo_doc") {
         const Var = target.value;
-        setTipoDoc(Var);
+        setTipoDoc(form.getFieldValue("tipo_doc"));
         setNombre("");
-        setNumeroDoc(undefined);
+        setNumeroDoc(form.getFieldValue("numero_doc"));
       }
       setDisabledInput({ name: target.name });
       if (
@@ -179,7 +176,7 @@ const PatientInformation = () => {
         setDisabledButton(true);
       }
     } else {
-      setNumeroDoc(undefined);
+      setNumeroDoc("");
       setDisabledInput(false);
       setDisabledButton(true);
     }
@@ -252,8 +249,8 @@ const PatientInformation = () => {
           width: "5%",
           render: (data) => {
             const view = async () => {
-              setLoading(true);
               showLoadingModal();
+              setLoading(true);
               try {
                 await TriggerUpdatePatient(data?.numero_documento);
                 notificationApi.open({
@@ -337,6 +334,7 @@ const PatientInformation = () => {
         />
         <Card
           headStyle={{ background: "#184F9D" }}
+          style={{boxShadow: '1px 4px 8px 0 rgba(0,0,0,0.2)'}}
           title={
             <span
               style={{ fontWeight: "bold", fontSize: "18px", color: "#FFF" }}
@@ -344,14 +342,6 @@ const PatientInformation = () => {
               Buscar Paciente
             </span>
           }
-          // extra={
-          //   <Button
-          //     style={{ color: "#038fde" }}
-          //     onClick={() => setOpenModal(true)}
-          //   >
-          //     Integrar
-          //   </Button>
-          // }
           actions={[
             <Button
               key="Limpiar"
@@ -416,6 +406,9 @@ const PatientInformation = () => {
                     label="Tipo"
                     name="tipo_doc"
                     style={{ width: "15%" }}
+                    rules={[
+                      { required: !form.getFieldValue("numero_doc"), message: '¡Por favor, selecciona el tipo de documento!' },
+                    ]}
                   >
                     <Select
                       onChange={(value) => {
@@ -433,6 +426,9 @@ const PatientInformation = () => {
                     label="Número de documento"
                     name="numero_doc"
                     style={{ width: "85%" }}
+                    rules={[
+                      { required: !form.getFieldValue("tipo_doc"), message: '¡Por favor, ingresa el número de documento!' },
+                    ]}
                   >
                     <Input
                       onChange={changeNumber}

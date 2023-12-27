@@ -225,7 +225,6 @@ const ListProfesional = () => {
               <Form.Item
                 label="Nombre"
                 name="nombre"
-                // rules={[{ required: true, message: "Campo obligatorio" }]}
               >
                 <Input
                   onChange={on_change}

@@ -21,6 +21,7 @@ import {
 import moment from "moment";
 import { ViewDetailPlans } from "./ViewDetailPlans";
 import { tagStatus4 } from "../../constants/Tags";
+import Swal from "sweetalert2";
 
 export const CareRoutes = ({ id, getInfo }) => {
   const [data, setData] = useState([]);
@@ -46,9 +47,33 @@ export const CareRoutes = ({ id, getInfo }) => {
   const [notificationApi, contextHolderNoti] = notification.useNotification();
 
   const getData = async () => {
+    setLoading(true);
+    showLoadingModal();
     const resp = await getCareRoutes(id);
     setData(resp);
     console.log("data rutas atencion", resp);
+    setLoading(false);
+    hideLoadingModal();
+  };
+
+  const showLoadingModal = () => {
+    Swal.fire({
+      title: 'Cargando...',
+      text: 'Por favor, espera un momento..',
+      icon:'info',
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+      focusConfirm: false,
+      showConfirmButton: false, // Ocultar el botón de confirmación
+      showCloseButton:false,
+      didOpen: () => {
+        Swal.showLoading(); // Mostrar el ícono de carga
+      }
+    });
+  };
+
+  const hideLoadingModal = () => {
+    Swal.close(); // Cierra el modal de carga de SweetAlert2
   };
 
   useEffect(() => {
@@ -58,11 +83,15 @@ export const CareRoutes = ({ id, getInfo }) => {
   }, []);
 
   const getDataPlains = async () => {
+    setLoading(true);
+    showLoadingModal();
     const detailsPlans = await getViewDetailPlans(detailPlan);
     setDetailPlans(detailsPlans);
     const infPlans = await getInfPlans(detailPlan);
     setListInfoPlans(infPlans);
     console.log("Array de arrays pro: ", infPlans);
+    setLoading(false);
+    hideLoadingModal();
   };
 
   useEffect(() => {
@@ -140,16 +169,11 @@ export const CareRoutes = ({ id, getInfo }) => {
       align: "center",
       render: (data) => {
         return (
-          // <Tooltip
-          //   trigger="click"
-          //   placement="top"
-          //   color="#ffff"
-          //   title={
-          //     <>
           <Tooltip title={"Ver"}>
             <Button
               onClick={async () => {
                 setLoading(true);
+                showLoadingModal();
                 console.log("Sirve ver", data);
                 await TriggerBeforeViewRoutes(data.id);
                 await TriggerLaboratoriesViewRoutes(data.id);
@@ -175,18 +199,12 @@ export const CareRoutes = ({ id, getInfo }) => {
                 setDetailPlan(data.id);
                 setOpenModalViewPlans(true);
                 setLoading(false);
+                hideLoadingModal();
               }}
             >
               <EyeOutlined />
             </Button>
           </Tooltip>
-          //     </>
-          //   }
-          // >
-          //   <Button>
-          //     <DownSquareOutlined />
-          //   </Button>
-          // </Tooltip>
         );
       },
     },

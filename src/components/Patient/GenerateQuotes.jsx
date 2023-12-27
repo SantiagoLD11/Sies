@@ -37,6 +37,8 @@ import {
   getListProfesionalesWithProfesion,
   actualizarFiltrosPlanesXProfesionales,
   validateIntegration,
+  showLoadingModal,
+  hideLoadingModal,
 } from "../../appRedux/services";
 import moment from "moment";
 import "../../styles/global/customGlobal.css";
@@ -138,6 +140,7 @@ export const GenerateQuotes = ({
 
   const update = async () => {
     setLoading2(true);
+    showLoadingModal();
     const resp = await actFranja(idPaciente, horarioAgendamiento);
     console.log(resp);
     if (resp?.status === "fail") {
@@ -166,6 +169,7 @@ export const GenerateQuotes = ({
       });
     }
     setLoading2(false);
+    hideLoadingModal();
     setModalVisible(false);
   };
 
@@ -280,6 +284,7 @@ export const GenerateQuotes = ({
   const submitFin = async () => {
     if (current === 0) {
       setLoading(true);
+      showLoadingModal();
       const mes = form.getFieldValue("mes");
       const ano = form.getFieldValue("ano")?.format("YYYY");
       const fecha = form.getFieldValue("fecha")?.format("YYYY-MM-DD");
@@ -288,10 +293,12 @@ export const GenerateQuotes = ({
       setObjeto(Final_values);
       await stepOne(Final_values);
       setLoading(false);
+      hideLoadingModal();
       next();
       console.log("final_values actualizado:", final_values);
     } else if (current === 1) {
       setLoading(true);
+      showLoadingModal();
       let DesErrors = [];
       for (const item of selectedItems) {
         await triggerQuotes(item.id);
@@ -311,6 +318,7 @@ export const GenerateQuotes = ({
         console.log(DesErrors);
       } else {
         setLoading(false);
+        hideLoadingModal();
         next();
       }
     } else if (current === 2) {
@@ -346,6 +354,7 @@ export const GenerateQuotes = ({
       }
       value.Tabla_Resultados = resultado.slice(0, -1);
       setLoading(true);
+      showLoadingModal();
       const resp = await createNotes(idPaciente, value, Json);
       console.log("Crear Nota: ", resp);
       if (resp?.status === "fail") {
@@ -362,6 +371,7 @@ export const GenerateQuotes = ({
         });
       }
       setLoading(false);
+      hideLoadingModal();
       setOpenModalGenerateQuotes(false);
       setCurrent(0);
       form.resetFields();
@@ -401,6 +411,7 @@ export const GenerateQuotes = ({
   const continueListErrors = () => {
     //Swal.fire("GG");
     setLoading(false);
+    hideLoadingModal();
     setIsListErrors(false);
     next();
   };
@@ -410,6 +421,7 @@ export const GenerateQuotes = ({
     setSelectedItems([]);
     await getPreferences(objeto);
     setLoading(false);
+    hideLoadingModal();
     setIsListErrors(false);
   };
 

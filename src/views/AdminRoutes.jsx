@@ -34,6 +34,8 @@ import {
   getlistSexoNacer,
   getListEtAsistencial,
   getDurationPrograma,
+  showLoadingModal,
+  hideLoadingModal
 } from "../appRedux/services";
 import { SelectMeses } from "../constants/Months";
 import "../styles/global/customGlobal.css";
@@ -224,6 +226,7 @@ const AdminRoutes = () => {
   const onSubmit = async (values) => {
     console.log(values);
     setLoading(true);
+    showLoadingModal();
     const resp = await createPlanContract(values);
     if (resp?.status === "fail") {
       console.log("Actualizar: ", resp);
@@ -238,6 +241,7 @@ const AdminRoutes = () => {
         content: "Se ha creado correctamente",
       });
     }
+    hideLoadingModal();
     setLoading(false);
     closeModalCreate();
     setCurrent(current - 1);
@@ -272,6 +276,7 @@ const AdminRoutes = () => {
       <Button
         onClick={async () => {
           setLoading(true);
+          showLoadingModal();
           const resp = await triggerUpdateDates();
           console.log(resp);
           if (resp?.status === "fail") {
@@ -286,6 +291,7 @@ const AdminRoutes = () => {
             });
           }
           setLoading(false);
+          hideLoadingModal();
         }}
         loading={loading}
       >

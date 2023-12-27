@@ -138,7 +138,7 @@ const App = () => {
         // Tu lógica para mostrar la alerta aquí
         Swal.fire({
           title: 'Tiempo Sesión Caduco!',
-          text: 'Por favor Indica si quieres continuar o salir del aplicativo! Gracias :D',
+          text: 'Por favor Indica si quieres continuar o salir del aplicativo! Gracias.',
           icon: "warning",
           showConfirmButton: true,
           confirmButtonColor: "#3085d6",

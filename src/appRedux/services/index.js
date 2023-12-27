@@ -1,13 +1,34 @@
 import { httpClient } from "../../util/Api";
 import moment from "moment";
+import Swal from "sweetalert2";
 
 export const randomNumberUsers = () => {
   const min = 2;
-  const max = 60;
+  const max = 80;
   // Generar un número aleatorio en el rango especificado
   const numeroAleatorio = Math.floor(Math.random() * (max - min + 1)) + min;
 
   return numeroAleatorio;
+};
+
+export const showLoadingModal = () => {
+  Swal.fire({
+    title: 'Cargando...',
+    text: 'Por favor, espera un momento..',
+    icon:'info',
+    allowOutsideClick: false,
+    allowEscapeKey: false,
+    focusConfirm: false,
+    showConfirmButton: false, // Ocultar el botón de confirmación
+    showCloseButton:false,
+    didOpen: () => {
+      Swal.showLoading(); // Mostrar el ícono de carga
+    }
+  });
+};
+
+export const hideLoadingModal = () => {
+  Swal.close(); // Cierra el modal de carga de SweetAlert2
 };
 
 export const generateToken = () => {
