@@ -23,6 +23,7 @@ export const EditarPaciente = ({
     Celular: "",
     Tel: "",
     Ciudad: "",
+    idCiudad:"",
     Email: "",
   });
 
@@ -35,10 +36,10 @@ export const EditarPaciente = ({
   }, [open]);
 
   const getPaciente = async () => {
-    const infoPaciente = await getInfoGeneralPacient(idPaciente);
-    setPaciente(infoPaciente);
     const listaCiudades = await listCiudades();
     setListaCiudades(listaCiudades);
+    const infoPaciente = await getInfoGeneralPacient(idPaciente);
+    setPaciente(infoPaciente);
   };
 
   const onFinish = async (values) => {
@@ -49,7 +50,7 @@ export const EditarPaciente = ({
       await updatePatient(idPaciente, values);
       await messageApi.open({
         type: "success",
-        content: "Paciente Actualizado Correctamente",
+        content: "Se ha actualizado el paciente correctamente.",
       });
       close();
     } catch (error) {
@@ -58,22 +59,6 @@ export const EditarPaciente = ({
         content: error.response?.data?.message,
       });
     }
-
-    // const resp = await updatePatient(idPaciente, values);
-    // console.log("actualizar paciente: ", resp);
-    // if (resp?.status === "fail") {
-    //   console.log("Actualizar: ", resp);
-    //   await messageApi.open({
-    //     type: "error",
-    //     content: resp?.message || "error",
-    //   });
-    // }
-    // if (resp?.status === "ok") {
-    //   await messageApi.open({
-    //     type: "success",
-    //     content: "Se ha editado correctamente el paciente",
-    //   });
-    // }
     setLoading(false);
     setIsActualizar(true);
     setOpen(false);
@@ -109,14 +94,8 @@ export const EditarPaciente = ({
             form="basic"
             loading={loading}
             style={{ backgroundColor: "#00ABC8", color: "#FFF" }}
-            // onClick={() => onFinish}
-            disabled={
-              //form.isFieldsTouched(false) ||
-              form.getFieldsError().filter(({ errors }) => errors.length)
-                .length > 0
-            }
           >
-            Actualizar
+            Guardar
           </Button>,
         ]}
       >
@@ -143,7 +122,7 @@ export const EditarPaciente = ({
             },
             {
               name: ["ciudad"],
-              value: paciente?.Ciudad || "",
+              value: paciente?.idCiudad || "",
             },
             {
               name: ["email"],

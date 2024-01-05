@@ -186,7 +186,7 @@ const DetailProfesional = () => {
             </div>
           </div>
         </div>
-        <div
+        {/* <div
           className="gx-profile-banner-bottom"
           style={{ width: "10%", alignItems: "flex-end" }}
         >
@@ -205,7 +205,7 @@ const DetailProfesional = () => {
               Editar
             </span>
           </span>
-        </div>
+        </div>*/}
       </div>
       <Card
         style={{ zIndex: 1 }}

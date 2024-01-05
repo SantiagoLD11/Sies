@@ -106,6 +106,7 @@ export const GeneratingChanges = ({ modalVisible, SetModalVisible }) => {
   };
 
   const onChangeContrato = async (value) => {
+    setListSedes(null);
     const respue = await getListContratoSedes(value);
     setListSedes(respue);
   };
@@ -203,7 +204,7 @@ export const GeneratingChanges = ({ modalVisible, SetModalVisible }) => {
                     placeholder="Seleccione un contrato plan"
                     style={{ width: "100%" }}
                     options={listContratoPlanes}
-                    onChange={(value) => onChangeContrato(value)}
+                    onChange={(value, option) => onChangeContrato(option.idContrato)}
                     showSearch
                     filterOption={(input, option) =>
                       (option?.label ?? "")
@@ -310,7 +311,7 @@ export const GeneratingChanges = ({ modalVisible, SetModalVisible }) => {
                         .toLowerCase()
                         .includes(input.toLowerCase())
                     }
-                    disabled={listContratoPlanes?.length === 0 || !form.getFieldValue('contratoPlan')}
+                    //disabled={listContratoPlanes?.length === 0 || !form.getFieldValue('contratoPlan')}
                     
                   />
                 </Form.Item>

@@ -62,6 +62,13 @@ const ReportAprovAgenda = () => {
     return renderedText;
   };
 
+  const renderTextOrEmpty = (text) => {
+    if (text === null || text === undefined || text === '') {
+      return <strong>Sin Cita</strong>;
+    }
+    return <strong>{text}</strong>;
+  };
+
   const calculateDaysDifference = (createdAt, fechaDisponibilidad) => {
     const createdDate = moment(createdAt);
     const availabilityDate = moment(fechaDisponibilidad);
@@ -177,7 +184,7 @@ const ReportAprovAgenda = () => {
       ),
       dataIndex: "duration",
       key: "duration",
-      render: (text) => text+' Min',
+      render: (text) => text + ' Min',
     },
     {
       title: (
@@ -187,6 +194,7 @@ const ReportAprovAgenda = () => {
       ),
       dataIndex: "motBloc",
       key: "motBloc",
+      render: (text) => renderTextOrEmpty(text),
     },
     {
       title: (
@@ -196,6 +204,7 @@ const ReportAprovAgenda = () => {
       ),
       dataIndex: "numDocPac",
       key: "numDocPac",
+      render: (text) => renderTextOrEmpty(text),
     },
     {
       title: (
@@ -205,6 +214,7 @@ const ReportAprovAgenda = () => {
       ),
       dataIndex: "namePac",
       key: "namePac",
+      render: (text) => renderTextOrEmpty(text),
     },
     {
       title: (
@@ -214,6 +224,7 @@ const ReportAprovAgenda = () => {
       ),
       dataIndex: "stateCita",
       key: "stateCita",
+      render: (text) => renderTextOrEmpty(text),
     },
     {
       title: (
@@ -223,7 +234,13 @@ const ReportAprovAgenda = () => {
       ),
       dataIndex: "dateCancel",
       key: "dateCancel",
-      render: (text) => <strong>{moment(text).format("DD/MM/YYYY HH:mm a")}</strong>,
+      render: (text) => {
+        if (text && moment(text).isValid()) {
+          return <strong>{moment(text).format("DD/MM/YYYY HH:mm a")}</strong>;
+        } else {
+          return <strong>Sin Cita</strong>;
+        }
+      },
     },
     {
       title: (
@@ -233,6 +250,7 @@ const ReportAprovAgenda = () => {
       ),
       dataIndex: "motCancel",
       key: "motCancel",
+      render: (text) => renderTextOrEmpty(text),
     },
     {
       title: (
@@ -242,6 +260,7 @@ const ReportAprovAgenda = () => {
       ),
       dataIndex: "franja",
       key: "franja",
+      render: (text) => renderTextOrEmpty(text),
     },
     {
       title: (
@@ -253,7 +272,7 @@ const ReportAprovAgenda = () => {
       key: "differenceInDays",
       render: (text, record) => {
         const difference = calculateDaysDifference(record.createdAt, record.fechaHora);
-        return <strong>{"Dias : "+difference}</strong>;
+        return <strong>{"Dias : " + difference}</strong>;
       },
     },
     {
@@ -284,7 +303,7 @@ const ReportAprovAgenda = () => {
       key: "differenceInDays",
       render: (text, record) => {
         const difference = calculateDaysDifference(record.dateCancel, record.fechaHora);
-        return <strong>{"Dias : "+difference}</strong>;
+        return <strong>{"Dias : " + difference}</strong>;
       },
     }
   ];
@@ -302,7 +321,7 @@ const ReportAprovAgenda = () => {
     const stringDate = date.getDay() + '/' + (date.getMonth() + 1) + "/" + date.getFullYear();
 
     const excelFile = new Blob([excelBuffer], { type: fileType });
-    saveAs(excelFile, `Informe Pacientes-${stringDate}` + fileExtension);
+    saveAs(excelFile, `Aprovechamiento Agenda-${stringDate}` + fileExtension);
   };
 
   return (

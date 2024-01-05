@@ -159,7 +159,7 @@ const App = () => {
             window.location.href = '/sies/signin';
           }
         });
-      }, 60 * 60 * 1000); 
+      }, 2 * 60 * 60 * 1000); 
 
       return () => {
         clearTimeout(timeout);

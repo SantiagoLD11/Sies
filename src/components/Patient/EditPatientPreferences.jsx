@@ -135,16 +135,17 @@ export const EditPatientPreferences = ({
           <Button
             key="button-actualizar"
             htmlType="submit"
-            form="basic"
+            form="basic2"
             loading={loading}
+            style={{ backgroundColor: "#00ABC8", color: "#FFF" }}
           >
             Guardar
           </Button>,
         ]}
       >
         <Form
-          id="basic"
-          name="basic"
+          id="basic2"
+          name="basic2"
           onFinish={onFinish}
           autoComplete="off"
           layout="vertical"
@@ -256,15 +257,6 @@ export const EditPatientPreferences = ({
               </Form.Item>
             </div>
           </div>
-          <Button
-            Style="display: none;"
-            id="your-form-submit"
-            type="primary"
-            htmlType="submit"
-            loading={loading}
-          >
-            Actualizar
-          </Button>
         </Form>
       </Modal>
     </>

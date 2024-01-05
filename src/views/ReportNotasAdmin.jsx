@@ -199,7 +199,7 @@ const ReportNotasAdmin = () => {
     const stringDate = date.getDay() +'/'+ (date.getMonth()+1) +"/"+ date.getFullYear();
 
     const excelFile = new Blob([excelBuffer], { type: fileType });
-    saveAs(excelFile, `Informe Pacientes-${stringDate}` + fileExtension);
+    saveAs(excelFile, `Reporte Notas Administrativas-${stringDate}` + fileExtension);
   };
 
   return (

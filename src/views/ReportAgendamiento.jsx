@@ -69,6 +69,13 @@ const ReportAgendamiento = () => {
     return differenceInDays;
   };
 
+  const renderTextOrEmpty = (text) => {
+    if (text === null || text === undefined || text === '') {
+      return <strong>Sin información</strong>;
+    }
+    return {text};
+  };
+
 
   const columns = [
     {
@@ -77,9 +84,9 @@ const ReportAgendamiento = () => {
           Documento Paciente
         </span>
       ),
-      dataIndex: "numDocProf",
-      key: "numDocProf",
-      render: (text) => <strong>{text}</strong>,
+      dataIndex: "numDocPac",
+      key: "numDocPac",
+      render: (text) => renderTextOrEmpty(text),
     },
     {
       title: (
@@ -87,9 +94,9 @@ const ReportAgendamiento = () => {
           Nombre Paciente
         </span>
       ),
-      dataIndex: "nameProf",
-      key: "nameProf",
-      render: (text) => <strong>{text}</strong>,
+      dataIndex: "namePac",
+      key: "namePac",
+      render: (text) => renderTextOrEmpty(text),
     },
     {
       title: (
@@ -97,8 +104,9 @@ const ReportAgendamiento = () => {
           Nombre Profesional
         </span>
       ),
-      dataIndex: "nameExam",
-      key: "nameExam",
+      dataIndex: "nameProf",
+      key: "nameProf",
+      render: (text) => renderTextOrEmpty(text),
     },
     {
       title: (
@@ -106,8 +114,9 @@ const ReportAgendamiento = () => {
           Documento Profesional
         </span>
       ),
-      dataIndex: "sedeSies",
-      key: "sedeSies",
+      dataIndex: "numDocProf",
+      key: "numDocProf",
+      render: (text) => renderTextOrEmpty(text),
     },
     {
       title: (
@@ -115,8 +124,8 @@ const ReportAgendamiento = () => {
           Fecha Cita
         </span>
       ),
-      dataIndex: "createdAt",
-      key: "createdAt",
+      dataIndex: "dateCita",
+      key: "dateCita",
       render: (text) => <strong>{moment(text).format("DD/MM/YYYY")}</strong>,
     },
     {
@@ -125,8 +134,8 @@ const ReportAgendamiento = () => {
           Hora Cita
         </span>
       ),
-      dataIndex: "createdAt",
-      key: "createdAt",
+      dataIndex: "dateCita",
+      key: "dateCita",
       render: (text) => <strong>{moment(text).format("HH:mm a")}</strong>,
     },
     {
@@ -135,9 +144,9 @@ const ReportAgendamiento = () => {
           Examen
         </span>
       ),
-      dataIndex: "fechaHora",
-      key: "fechaHora",
-      render: (text) => <strong>{moment(text).format("DD/MM/YYYY")}</strong>,
+      dataIndex: "nameExam",
+      key: "nameExam",
+      render: (text) => renderTextOrEmpty(text),
     },
     {
       title: (
@@ -145,9 +154,9 @@ const ReportAgendamiento = () => {
           Estado
         </span>
       ),
-      dataIndex: "fechaHora",
-      key: "fechaHora",
-      render: (text) => <strong>{moment(text).format("HH:mm a")}</strong>,
+      dataIndex: "state",
+      key: "state",
+      render: (text) => renderTextOrEmpty(text),
     },
     {
       title: (
@@ -157,6 +166,7 @@ const ReportAgendamiento = () => {
       ),
       dataIndex: "createdBy",
       key: "createdBy",
+      render: (text) => renderTextOrEmpty(text),
     },
     {
       title: (
@@ -164,10 +174,15 @@ const ReportAgendamiento = () => {
          Fecha/Hora Creacion
         </span>
       ),
-      dataIndex: "state",
-      key: "state",
-      render: (text) => <strong>{renderState(text)
-      }</strong>,
+      dataIndex: "createdAt",
+      key: "createdAt",
+      render: (text) => {
+        if (text && moment(text).isValid()) {
+          return <strong>{moment(text).format("DD/MM/YYYY HH:mm a")}</strong>;
+        } else {
+          return <strong>Sin Informacion</strong>;
+        }
+      },
     },
     {
       title: (
@@ -175,9 +190,9 @@ const ReportAgendamiento = () => {
           Cancelado Por
         </span>
       ),
-      dataIndex: "duration",
-      key: "duration",
-      render: (text) => text+' Min',
+      dataIndex: "cancelBy",
+      key: "cancelBy",
+      render: (text) => renderTextOrEmpty(text),
     },
     {
       title: (
@@ -185,8 +200,15 @@ const ReportAgendamiento = () => {
           Fecha/Hora Cancelacion
         </span>
       ),
-      dataIndex: "motBloc",
-      key: "motBloc",
+      dataIndex: "dateCancel",
+      key: "dateCancel",
+      render: (text) => {
+        if (text && moment(text).isValid()) {
+          return <strong>{moment(text).format("DD/MM/YYYY HH:mm a")}</strong>;
+        } else {
+          return <strong>Sin Informacion</strong>;
+        }
+      },
     },
     {
       title: (
@@ -194,8 +216,9 @@ const ReportAgendamiento = () => {
           Motivo Cancelacion
         </span>
       ),
-      dataIndex: "numDocPac",
-      key: "numDocPac",
+      dataIndex: "motCancel",
+      key: "motCancel",
+      render: (text) => renderTextOrEmpty(text),
     },
     {
       title: (
@@ -203,8 +226,19 @@ const ReportAgendamiento = () => {
           Entidad
         </span>
       ),
-      dataIndex: "namePac",
-      key: "namePac",
+      dataIndex: "asegurador",
+      key: "asegurador",
+      render: (text) => renderTextOrEmpty(text),
+    },
+    {
+      title: (
+        <span style={{ backgroundColor: "#184F9D", color: "#fff" }}>
+          Contrato
+        </span>
+      ),
+      dataIndex: "codeContrac",
+      key: "codeContrac",
+      render: (text) => renderTextOrEmpty(text),
     },
     {
       title: (
@@ -212,8 +246,15 @@ const ReportAgendamiento = () => {
           Mes
         </span>
       ),
-      dataIndex: "stateCita",
-      key: "stateCita",
+      dataIndex: "dateCita",
+      key: "dateCita",
+      render: (text) => {
+        if (text && moment(text).isValid()) {
+          return <strong>{moment(text).format("MMMM")}</strong>;
+        } else {
+          return <strong>Sin Informacion</strong>;
+        }
+      },
     },
     {
       title: (
@@ -221,9 +262,9 @@ const ReportAgendamiento = () => {
           Franja Horaria
         </span>
       ),
-      dataIndex: "dateCancel",
-      key: "dateCancel",
-      render: (text) => <strong>{moment(text).format("DD/MM/YYYY HH:mm a")}</strong>,
+      dataIndex: "franja",
+      key: "franja",
+      render: (text) => renderTextOrEmpty(text),
     },
     {
       title: (
@@ -231,8 +272,15 @@ const ReportAgendamiento = () => {
           Dia
         </span>
       ),
-      dataIndex: "motCancel",
-      key: "motCancel",
+      dataIndex: "dateCita",
+      key: "dateCita",
+      render: (text) => {
+        if (text && moment(text).isValid()) {
+          return <strong>{moment(text).format("DD")}</strong>;
+        } else {
+          return <strong>Sin Informacion</strong>;
+        }
+      },
     },
     {
       title: (
@@ -240,8 +288,9 @@ const ReportAgendamiento = () => {
           Sede
         </span>
       ),
-      dataIndex: "franja",
-      key: "franja",
+      dataIndex: "sede",
+      key: "sede",
+      render: (text) => renderTextOrEmpty(text),
     },
     {
       title: (
@@ -249,12 +298,9 @@ const ReportAgendamiento = () => {
           Especialidad
         </span>
       ),
-      dataIndex: "createdAt",
-      key: "differenceInDays",
-      render: (text, record) => {
-        const difference = calculateDaysDifference(record.createdAt, record.fechaHora);
-        return <strong>{"Dias : "+difference}</strong>;
-      },
+      dataIndex: "profesion",
+      key: "profesion",
+      render: (text) => renderTextOrEmpty(text),
     },
     {
       title: (
@@ -262,8 +308,9 @@ const ReportAgendamiento = () => {
           Canal
         </span>
       ),
-      dataIndex: "especialidad",
-      key: "especialidad",
+      dataIndex: "cnlAtencion",
+      key: "cnlAtencion",
+      render: (text) => renderTextOrEmpty(text),
     },
     {
       title: (
@@ -273,6 +320,7 @@ const ReportAgendamiento = () => {
       ),
       dataIndex: "programa",
       key: "programa",
+      render: (text) => renderTextOrEmpty(text),
     },
     {
       title: (
@@ -280,11 +328,15 @@ const ReportAgendamiento = () => {
           Asiste Cita
         </span>
       ),
-      dataIndex: "dateCancel",
-      key: "differenceInDays",
+      dataIndex: "state",
+      key: "state",
       render: (text, record) => {
-        const difference = calculateDaysDifference(record.dateCancel, record.fechaHora);
-        return <strong>{"Dias : "+difference}</strong>;
+        if (text === 'Asistida') {
+          return <strong>Si</strong>;
+        } else {
+          // Aquí puedes manejar otros estados si es necesario
+          return <strong>No</strong>;
+        }
       },
     },
     {
@@ -293,8 +345,9 @@ const ReportAgendamiento = () => {
           Fecha Ultima Cita
         </span>
       ),
-      dataIndex: "programa",
-      key: "programa",
+      dataIndex: "inasisDesc",
+      key: "inasisDesc",
+      render: (text) => renderTextOrEmpty(text),
     },
     {
       title: (
@@ -302,8 +355,9 @@ const ReportAgendamiento = () => {
           Ultima Atencion Especialidad
         </span>
       ),
-      dataIndex: "programa",
-      key: "programa",
+      dataIndex: "inasisDesc",
+      key: "inasisDesc",
+      render: (text) => renderTextOrEmpty(text),
     },
     {
       title: (
@@ -311,8 +365,9 @@ const ReportAgendamiento = () => {
           Soporte Inasistencia
         </span>
       ),
-      dataIndex: "programa",
-      key: "programa",
+      dataIndex: "inasisDesc",
+      key: "inasisDesc",
+      render: (text) => renderTextOrEmpty(text),
     }
   ];
 
@@ -329,7 +384,7 @@ const ReportAgendamiento = () => {
     const stringDate = date.getDay() + '/' + (date.getMonth() + 1) + "/" + date.getFullYear();
 
     const excelFile = new Blob([excelBuffer], { type: fileType });
-    saveAs(excelFile, `Informe Pacientes-${stringDate}` + fileExtension);
+    saveAs(excelFile, `Reporte Agendamiento-${stringDate}` + fileExtension);
   };
 
   return (

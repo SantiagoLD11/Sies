@@ -188,6 +188,7 @@ const CalendarDisposition = ({
                             }}
                           />
                         </Tooltip>
+                        {/*
                         <Tooltip title={"Eliminar"} disabled={availability.color == 4 || availability.color == 2 || availability.color == 3 ? true : false}>
                           <DeleteFilled
                             style={{ cursor: "pointer", width: "33%" }}
@@ -202,7 +203,7 @@ const CalendarDisposition = ({
                             }}
                           />
                         </Tooltip>
-
+                         */}
                         <Tooltip title={"Desbloquear"} disabled={availability.color == 4 || availability.color == 3 || availability.color == 1 ? true : false}>
                           <ExclamationCircleOutlined
                             style={{ cursor: "pointer", width: "33%" }}
@@ -223,15 +224,15 @@ const CalendarDisposition = ({
                 </>
               }
             >
-          <Tooltip title={`${tagStatus[availability?.color]?.text}`}>
-              <span className="span-calendar-text">
-                <Tag
-                  style={{ width: "47%", height: "90%" }}
-                  color={tagStatus[availability?.color]?.color}
-                  icon={tagStatus[availability?.color]?.icon}
-                >
-                </Tag>
-              </span>
+              <Tooltip title={`${tagStatus[availability?.color]?.text}`}>
+                <span className="span-calendar-text">
+                  <Tag
+                    style={{ width: "47%", height: "90%" }}
+                    color={tagStatus[availability?.color]?.color}
+                    icon={tagStatus[availability?.color]?.icon}
+                  >
+                  </Tag>
+                </span>
               </Tooltip>
             </Popover>
           </>

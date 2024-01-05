@@ -52,11 +52,11 @@ const App = () => (
       />
       <Route
         path={`/informe-frecuencias`}
-        component={asyncComponent(() => import("../views/HistoricoBloqueos"))}
+        component={asyncComponent(() => import("../views/ReportCumpFrecuencias"))}
       />
       <Route
         path={`/informe-pryec-instal`}
-        component={asyncComponent(() => import("../views/HistoricoBloqueos"))}
+        component={asyncComponent(() => import("../views/ReportProvInstall"))}
       />
       <Route
         path={`/informe-aprob-agenda`}

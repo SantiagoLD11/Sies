@@ -173,7 +173,7 @@ const ListDisposition = ({
                         <CloseCircleFilled />
                       </Button>
                     </Tooltip>
-                    <Tooltip title={"Eliminar"}>
+                    {/*<Tooltip title={"Eliminar"}>
                       <Button
                         disabled={data.color == 4 || data.color == 2 || data.color == 3 ? true : false}
                         onClick={async () => {
@@ -187,7 +187,7 @@ const ListDisposition = ({
                       >
                         <DeleteFilled />
                       </Button>
-                    </Tooltip>
+                    </Tooltip> */}
                     <Tooltip title={"Desbloquear"}>
                       <Button
                         disabled={data.color == 4 || data.color == 3 || data.color == 1 ? true : false}

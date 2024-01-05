@@ -78,39 +78,51 @@ export const CreateNote = ({ open, setOpen, idPaciente, getData }) => {
   }, [valueRutaAtencion]);
 
   const onFinish = async (values) => {
-    Json.Servicios = values.servicio?.join("|");
-    for (let valor of listPlanRutaAtencion) {
-      if (valor.value === values.Plan_ruta) {
-        Json.Plan_Ruta_txt = valor.value;
+
+    try {
+      const values = await form.validateFields(); // Validar los campos del formulario
+      // Lógica para guardar los datos
+      console.log("Campos validados:", values);
+      Json.Servicios = values.servicio?.join("|");
+      for (let valor of listPlanRutaAtencion) {
+        if (valor.value === values.Plan_ruta) {
+          Json.Plan_Ruta_txt = valor.value;
+        }
       }
+      Json.Nota_cambio_etiqueta_administrativa =
+        values.Nota_cambio_etiqueta_administrativa == undefined
+          ? ""
+          : values.Nota_cambio_etiqueta_administrativa;
+      Json.Observacion_seguimiento =
+        values.Observación_seguimiento == undefined
+          ? ""
+          : values.Observación_seguimiento;
+      setIsLoading(true);
+      const resp = await createNotes(idPaciente, values, Json);
+      console.log("actualizar preferencias: ", resp);
+      if (resp?.status === "fail") {
+        console.log("Actualizar: ", resp);
+        await messageApi.open({
+          type: "error",
+          content: resp?.message || "error",
+        });
+      }
+      if (resp?.status === "ok") {
+        await messageApi.open({
+          type: "success",
+          content: "Se ha creado correctamente la nota",
+        });
+      }
+      setIsLoading(false);
+      getData(idPaciente);
+      close();
+    } catch (error) {
+
+      console.error("Error de validación:", error);
+      message.error("Por favor complete todos los campos obligatorios");
+
     }
-    Json.Nota_cambio_etiqueta_administrativa =
-      values.Nota_cambio_etiqueta_administrativa == undefined
-        ? ""
-        : values.Nota_cambio_etiqueta_administrativa;
-    Json.Observacion_seguimiento =
-      values.Observación_seguimiento == undefined
-        ? ""
-        : values.Observación_seguimiento;
-    setIsLoading(true);
-    const resp = await createNotes(idPaciente, values, Json);
-    console.log("actualizar preferencias: ", resp);
-    if (resp?.status === "fail") {
-      console.log("Actualizar: ", resp);
-      await messageApi.open({
-        type: "error",
-        content: resp?.message || "error",
-      });
-    }
-    if (resp?.status === "ok") {
-      await messageApi.open({
-        type: "success",
-        content: "Se ha creado correctamente la nota",
-      });
-    }
-    setIsLoading(false);
-    close();
-    getData(idPaciente);
+
   };
 
   const close = () => {
@@ -161,15 +173,18 @@ export const CreateNote = ({ open, setOpen, idPaciente, getData }) => {
           fields={[
             {
               name: ["Etiqueta_seguimiento"],
+              rules:[{ required: true, message: "Campo obligatorio" }],
             },
             {
               name: ["Resultado_contacto"],
+              rules:[{ required: true, message: "Campo obligatorio" }],
             },
             {
               name: ["Motivo_inasistencia"],
             },
             {
               name: ["Etiqueta_administrativa"],
+              rules:[{ required: true, message: "Campo obligatorio" }],
             },
             {
               name: ["Plan_ruta"],

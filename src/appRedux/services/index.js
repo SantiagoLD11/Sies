@@ -349,14 +349,14 @@ export const getSedesProfessional = async (id) => {
   const token = localStorage.getItem("token");
   try {
     let query = encodeURI(
-      `SELECT DISTINCT name FROM Profesional_Sede WHERE R22922868 = ${id}`
+      `SELECT DISTINCT name,codeOffice FROM Profesional_Sede WHERE R22922868 = ${id}`
     );
     const { data } = await httpClient.get(
       `/selectQuery?maxRows=100&query=${query}&sessionId=${token}&output=json`
     );
     if (data.length > 0) {
       const final_data = data.map((value) => ({
-        name: value[0],
+        name: value[0], id:value[1],
       }));
       return final_data;
     } else {
@@ -535,6 +535,89 @@ export const getReportPacientes = async () => {
   }
 };
 
+export const getReportCumpFrecuencs = async () => {
+  const token = localStorage.getItem("token");
+  try {
+    let query = encodeURI(
+      `SELECT Numero_Documento,Plan,Programa,Nombre,Fecha_Ingreso,Asegurador,Sede,Etiq_Admin,Etiq_Asist,Tratamiento,Linea_Pago,Requerimiento_Especialidad,Ejecutado_Especialidad,Agendamiento_Especialidad,Total_Especialidad,Cumplimiento_Especialidad,Cantidad_Seguimiento_Admin,Cumplimiento_Contrato,Porcentaje_Cumplimiento FROM Cumplimiento_Frecuencia`
+    );
+    const { data } = await httpClient.get(
+      `/selectQuery?maxRows=10000000&query=${query}&sessionId=${token}&output=json`
+    );
+    console.log("data", data);
+    if (data.length > 0) {
+      console.log("información data", data);
+      const final_data = data.map((value) => {
+        return {
+          numDoc: value[0],
+          plan: value[1],
+          program: value[2],
+          name: value[3],
+          dateIngreso: value[4],
+          asegurador: value[5],
+          sede: value[6],
+          etiqAdmin: value[7],
+          etiqAsis: value[8],
+          tratamiento: value[9],
+          lineaPago: value[10],
+          reqeEspecialidad: value[11],
+          ejecEspecialidad: value[12],
+          agenEspecialidad: value[13],
+          totEspecialidad: value[14],
+          cumpEspecialidad: value[15],
+          cantSeguimientos: value[16],
+          cumpContrato: value[17],
+          porcCumplimiento: value[18]
+        };
+      });
+      return final_data;
+    } else {
+      return [];
+    }
+  } catch (error) {
+    httpClient.defaults.headers.common["Authorization"] = "";
+    return Promise.reject(error);
+  }
+};
+
+export const getReportProvInstall = async () => {
+  const token = localStorage.getItem("token");
+  try {
+    let query = encodeURI(
+      `SELECT Sede,Programa,SubPrograma,Especialidad,Canal_Atencion,Mes_Calendario,Cupos_Req_Netos,Cupos_Req_Pendientes,Cupos_Hab_Netos,Cupos_Hab_Pendientes,Proyeccion_Neta,Proyeccion_Pendiente FROM ProyDispCapac_Instalada`
+    );
+    const { data } = await httpClient.get(
+      `/selectQuery?maxRows=10000000&query=${query}&sessionId=${token}&output=json`
+    );
+    console.log("data", data);
+    if (data.length > 0) {
+      console.log("información data", data);
+      const final_data = data.map((value) => {
+        return {
+          sede: value[0],
+          programa: value[1],
+          subPrograma: value[2],
+          especialidad: value[3],
+          cnlAtencion: value[4],
+          mesCal: value[5],
+          cupsReqNetos: value[6],
+          cupsReqPend: value[7],
+          cupsHabNetos: value[8],
+          cupsHabPendientes: value[9],
+          proyecNeta: value[10],
+          proyectPendiente: value[11],
+        };
+      });
+      return final_data;
+    } else {
+      return [];
+    }
+  } catch (error) {
+    httpClient.defaults.headers.common["Authorization"] = "";
+    return Promise.reject(error);
+  }
+};
+
 export const getReportNotasAdmin = async () => {
   const token = localStorage.getItem("token");
   try {
@@ -642,7 +725,7 @@ export const getReportAgendamiento= async () => {
   const token = localStorage.getItem("token");
   try {
     let query = encodeURI(
-      `SELECT Doc_Paciente,Paciente_txt,Profesional_txt,documentProfessional,startDate,nameExam,Estado_Txt,CreadoPor,createdAt,cancelBy,Fecha_Cancelacion,Motivo_Cancelacin_txt,Asegurador,codeContract,codePlan,Franja,nameOffice,Especialidad_txt,Canal_Atencion_txt,Programa FROM Consulta `
+      `SELECT Doc_Paciente,Paciente_txt,Profesional_txt,documentProfessional,startDate,nameExam,Estado_Txt,CreadoPor,createdAt,cancelBy,Fecha_Cancelacion,Motivo_Cancelacin_txt,Asegurador,codeContract,codePlan,Franja,nameOffice,Especialidad_txt,Canal_Atencion_txt,Programa,Cancel_Descripcion FROM Consulta `
     );
     const { data } = await httpClient.get(
       `/selectQuery?maxRows=1000000000&query=${query}&sessionId=${token}&output=json`
@@ -653,24 +736,26 @@ export const getReportAgendamiento= async () => {
       const final_data = data.map((value) => {
         return {
           numDocPac: value[0],
-          nameProf: value[1],
-          nameExam: value[2],
-          sedeSies: value[3],
-          createdAt: value[4],
-          fechaHora: value[5],
-          createdBy: value[6],
-          state: value[7],
-          duration: value[8],
-          motBloc:value[9],
-          numDocPac:value[10],
-          namePac: value[11],
-          stateCita:value[12],
-          dateCancel:value[13],
-          motCancel:value[14],
-          franja: value[15],
-          especialidad:value[16],
-          programa:value[17]
-          //utlAten:getUltimaAtencionPaciente(value[0],value[4])
+          namePac: value[1],
+          nameProf: value[2],
+          numDocProf: value[3],
+          dateCita: value[4],
+          nameExam: value[5],
+          state: value[6],
+          createdBy: value[7],
+          createdAt: value[8],
+          cancelBy:value[9],
+          dateCancel:value[10],
+          motCancel:value[11],
+          asegurador: value[12],
+          codeContrac:value[13],
+          codePlan : value[14],
+          franja:value[15],
+          sede:value[16],
+          profesion:value[17],
+          cnlAtencion:value[18],
+          programa:value[19],
+          inasisDesc:value[20]
         }
 
       });
@@ -1280,7 +1365,7 @@ export const getInfoGeneralPacient = async (id, isDocument = false) => {
   const token = localStorage.getItem("token");
   try {
     let query = encodeURI(
-      `SELECT Direccion,email,Ciudadtxt,Celular,Telefono FROM Candidato WHERE id= ${id}`
+      `SELECT Direccion,email,Ciudadtxt,Celular,Telefono,R15049289 FROM Candidato WHERE id= ${id}`
     );
     const { data } = await httpClient.get(
       `/selectQuery?maxRows=1&query=${query}&sessionId=${token}&output=json`
@@ -1293,7 +1378,7 @@ export const getInfoGeneralPacient = async (id, isDocument = false) => {
         Ciudad: values[2],
         Celular: values[3],
         Tel: values[4],
-        id: values[5],
+        idCiudad:values[5]
       };
     } else {
       return null;
@@ -1319,7 +1404,23 @@ export const updatePatient = async (id, values) => {
       return Promise.reject(error);
     });
   console.log("data ", data);
-  //return data;
+};
+
+export const updateSedeProfesional = async (id,idSede) => {
+  const token = localStorage.getItem("token");
+  const { data } = await httpClient
+    .get(
+      `updateRecord?output=json&objName=Profesional&id=${id}&Filtro_Sede=${idSede}&sessionId=${token}&output=json`
+    )
+    .then((response) => {
+      console.log("resp ", response);
+      return response;
+    })
+    .catch(async (error) => {
+      console.log("error ", Promise.reject(error));
+      return Promise.reject(error);
+    });
+  console.log("data ", data);
 };
 
 export const TriggerUpdatePatient = async (id) => {
@@ -1580,13 +1681,13 @@ export const getListContrato = async () => {
 export const getListContratoPlanes = async () => {
   const token = localStorage.getItem("token");
   try {
-    let query = encodeURI(`SELECT id,name FROM Contrato_Plan`);
+    let query = encodeURI(`SELECT id,name,R18147928 FROM Contrato_Plan`);
     const { data } = await httpClient.get(
       `/selectQuery?maxRows=1000000&query=${query}&sessionId=${token}&output=json`
     );
     if (data.length > 0) {
       const final_data = data.map((value) => {
-        return { value: value[0], label: value[1] };
+        return { value: value[0], label: value[1],idContrato: value[2] };
       });
       return final_data;
     } else {
@@ -2182,7 +2283,7 @@ export const updateEditPatientPreferences = async (id, values, Json) => {
   const token = localStorage.getItem("token");
   try {
     const { data } = await httpClient.get(
-      `/rest/api/updateRecord?output=json&objName=Candidato&id=${id}&R40686379=${values.horarios}&R40686349=${Json.profesionales}&sessionId=${token}&output=json`
+      `/rest/api/updateRecord?output=json&objName=Candidato&id=${id}&R40686379=&R40686349=&sessionId=${token}&output=json`
     );
     if (data.status === "ok") {
       console.log("retornar data");
@@ -3165,8 +3266,17 @@ export const createNotes = async (id, values, json) => {
     );
     return data;
   } catch (error) {
-    httpClient.defaults.headers.common["Authorization"] = "";
-    return Promise.reject(error);
+    if (error.response && error.response.data) {
+      const errorMessage = error.response.data.message;
+      console.log("Error:", errorMessage);
+      return error.response.data;
+      // Aquí puedes hacer lo que necesites con el mensaje de error
+      // Por ejemplo, puedes mostrarlo al usuario o manejarlo de otra manera
+    } else {
+      console.log("Error desconocido:", error);
+      httpClient.defaults.headers.common["Authorization"] = "";
+      return error;
+    }
   }
 };
 
@@ -3223,10 +3333,10 @@ export const ChangesRoutesAddPlanMensuales = async (values) => {
       }&Filtro_Sede=${values?.filtroSede}&Filtro_Estadio=${values?.estadio
       }&SubPrograma=${values?.subPrograma}&Filtro_Asegurador=${values?.filtroAsegurador
       }&R45175677=${values?.canalAtencion?.join("|")}&Filtro_Profesion=${values?.profesion
-      }&R45175661=${values?.claseExamen}&Mover_yyy_de=${values?.years?.format(
+      }&R45175661=${values?.claseExamen}&Mover_yyy_a=${values?.years?.format(
         "YYYY"
       )
-      }&Meses=${values?.meses?.join(",")}
+      }&Mover_Mes_a=${values?.meses?.join(",")}
       &CreadoPor=${user}&sessionId=${token}&output=json`
     );
     return data;
@@ -4559,6 +4669,30 @@ export const getListInfoPlansFilter = async (final_values, id) => {
     }
   } catch (error) {
     httpClient.defaults.headers.common["Authorization"] = "";
+    return Promise.reject(error);
+  }
+};
+
+export const TriggerReportCumpFrecuencs = async () => {
+  const token = localStorage.getItem("token");
+  try {
+    const { data } = await httpClient.get(
+      `/runTrigger?sessionId=${token}&id=21685719&triggerId=bqD-oLefQJG-P-wBHtC07Q&output=json`
+    );
+    return data;
+  } catch (error) {
+    return Promise.reject(error);
+  }
+};
+
+export const TriggerReportProvInstall = async () => {
+  const token = localStorage.getItem("token");
+  try {
+    const { data } = await httpClient.get(
+      `/runTrigger?sessionId=${token}&id=21685719&triggerId=dYF8pYBXSUqcaRK74_Z-tw&output=json`
+    );
+    return data;
+  } catch (error) {
     return Promise.reject(error);
   }
 };
