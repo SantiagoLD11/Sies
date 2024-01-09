@@ -33,6 +33,16 @@ const ListProfesional = () => {
     {
       title: (
         <span style={{ backgroundColor: "#184F9D", color: "#fff" }}>
+          Fecha/Hora Creacion
+        </span>
+      ),
+      dataIndex: "creadoEn",
+      key: "creadoEn",
+      render: (text) => moment(text).format("DD/MM/YYYY HH:mm a"),
+    },
+    {
+      title: (
+        <span style={{ backgroundColor: "#184F9D", color: "#fff" }}>
           Fecha inicio
         </span>
       ),

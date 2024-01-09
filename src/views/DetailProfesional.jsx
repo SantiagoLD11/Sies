@@ -1,4 +1,4 @@
-import { Avatar, Card, Tabs, notification } from "antd";
+import { Avatar, Card, Tabs, notification,Button } from "antd";
 import React, { useEffect, useState } from "react";
 import { useHistory, useLocation, useParams } from "react-router-dom";
 // import bootstrap from 'bootstrap'
@@ -15,6 +15,9 @@ import ListDisposition from "../components/Professional/ListDisposition";
 import CalendarDisposition from "../components/Professional/CalendarDisposition";
 import BlockDisposition from "./blockDisposition";
 import { QuotesProfessional } from "../components/Professional/QuotesProfessional";
+import { CloudDownloadOutlined, ReloadOutlined } from "@ant-design/icons";
+import * as XLSX from 'xlsx';
+import { saveAs } from 'file-saver';
 
 const DetailProfesional = () => {
   const { id } = useParams();
@@ -40,6 +43,22 @@ const DetailProfesional = () => {
       location?.state?.type === "numero_document" ? true : false
     );
     setInfoGeneral(resp);
+  };
+
+  const downloadExcel = () => {
+    const fileType = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
+    const fileExtension = '.xlsx';
+
+    const ws = XLSX.utils.json_to_sheet(dataImported);
+    const wb = { Sheets: { 'data': ws }, SheetNames: ['data'] };
+    const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+
+    const date = new Date();
+
+    const stringDate = date.getDay() + '/' + (date.getMonth() + 1) + "/" + date.getFullYear();
+
+    const excelFile = new Blob([excelBuffer], { type: fileType });
+    saveAs(excelFile, `Reporte Disponibilidades-${stringDate}` + fileExtension);
   };
 
   useEffect(() => {
@@ -212,6 +231,11 @@ const DetailProfesional = () => {
         extra={
           activeTab === "disposition" ? (
             <>
+              <Button onClick={downloadExcel}
+                style={{ backgroundColor: "#ffffff", color: "#000000" }}>
+                <CloudDownloadOutlined />
+                Descargar
+              </Button>
               <ModalDisposition
                 id={infoGeneral?.id}
                 rango={infoGeneral?.rango_propio}

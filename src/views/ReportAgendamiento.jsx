@@ -71,9 +71,9 @@ const ReportAgendamiento = () => {
 
   const renderTextOrEmpty = (text) => {
     if (text === null || text === undefined || text === '') {
-      return <strong>Sin información</strong>;
+      return <>Sin información</>;
     }
-    return {text};
+    return <strong>{text}</strong>;
   };
 
 
@@ -345,8 +345,8 @@ const ReportAgendamiento = () => {
           Fecha Ultima Cita
         </span>
       ),
-      dataIndex: "inasisDesc",
-      key: "inasisDesc",
+      dataIndex: "ultFechaPac",
+      key: "ultFechaPac",
       render: (text) => renderTextOrEmpty(text),
     },
     {
@@ -355,8 +355,8 @@ const ReportAgendamiento = () => {
           Ultima Atencion Especialidad
         </span>
       ),
-      dataIndex: "inasisDesc",
-      key: "inasisDesc",
+      dataIndex: "ultFechaPacEspc",
+      key: "ultFechaPacEspc",
       render: (text) => renderTextOrEmpty(text),
     },
     {

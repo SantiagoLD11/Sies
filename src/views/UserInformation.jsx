@@ -1,5 +1,5 @@
 import {
-  Button, Card, Form, message, Table, Space, Input, Select, Spin,Tooltip
+  Button, Card, Form, message, Table, Space, Input, Select, Spin, Tooltip
 } from "antd";
 import { useState, useEffect } from "react";
 import {
@@ -10,7 +10,9 @@ import {
   showLoadingModal,
   hideLoadingModal,
   updateSedeProfesional,
-  getSedesProfessional
+  getSedesProfessional,
+  updateGeneralProfessional,
+  runActionImportDispo
 } from "../appRedux/services";
 import Swal from "sweetalert2";
 import CreateProfesional from "./CreateProfesional";
@@ -220,25 +222,27 @@ const UserInformation = () => {
       key: "profesion",
     },
     {
-      title: "Acciones",
+      title: "Visualizar",
       key: "action",
       align: "center",
+      fixed: "right",
       render: (data) => {
-        const view = async () => {
-          Swal.fire({
-            title: "Importacion Cupos",
-            text: "Por favor indicar que tipo de importacion desea realizar!",
-            icon: "question",
-            showCancelButton: true,
-            confirmButtonColor: "#3085d6",
-            cancelButtonColor: "#d33",
-            confirmButtonText: "General",
-            cancelButtonText: "Filtrar Sede",
-          }).then(async (result) => {
-            if (result.isConfirmed) {
-              setLoading(true);
-              showLoadingModal();
-              try {
+        try {
+          const view = async () => {
+            Swal.fire({
+              title: "Importacion Cupos",
+              text: "Por favor indicar que tipo de importacion desea realizar!",
+              icon: "question",
+              showCancelButton: true,
+              allowOutsideClick: false,
+              confirmButtonColor: "#3085d6",
+              cancelButtonColor: "#d33",
+              confirmButtonText: "General",
+              cancelButtonText: "Filtrar Sede",
+            }).then(async (result) => {
+              if (result.isConfirmed) {
+                setLoading(true);
+                showLoadingModal();
                 await TriggerUpdateProfessional(
                   data?.id,
                   data?.id_professional
@@ -256,103 +260,121 @@ const UserInformation = () => {
                   pathname: `/detail-professional/${data?.id_professional}`,
                   state: { detail: registros },
                 });
-              } catch (error) {
-                console.log("error: ", error);
-                await messageApi.open({
-                  type: "error",
-                  content:
-                    error.response?.data?.message ||
-                    "Error: Actualización Fallida Revise Numero de Documento",
+
+              } else if (result.isDismissed) {
+                setLoading(true);
+                showLoadingModal();
+
+                await updateGeneralProfessional(
+                  data?.id
+                );
+                messageApi.open({
+                  type: "success",
+                  content: "Actualizado correctamente",
                 });
+
+                const sedesResp = await getSedesProfessional(data?.id_professional);
+
+                let boolConfirm = false;
+
                 setLoading(false);
                 hideLoadingModal();
-                history.push(`/detail-professional/${data?.id_professional}`);
-              }
-            } else if (result.isDismissed) {
 
-              const sedesResp = await getSedesProfessional(data?.id_professional);
-
-              let boolConfirm = false;
-
-              const selectedValue = await Swal.fire({
-                title: "Importacion Cupos",
-                input: "select",
-                inputPlaceholder: "Seleccione una Sede",
-                allowOutsideClick: false,
-                inputOptions: sedesResp.reduce((acc, sede) => {
-                  acc[sede.id] = sede.name;
-                  return acc;
-                }, {}),
-                showCancelButton: true,
-                confirmButtonText: "Importar",
-                showLoaderOnConfirm: true,
-              }).then((result) => {
-                if (result.isConfirmed) {
-                  boolConfirm = true;
-                  console.log("Es confirmado " + result.value);
-                  return result.value;
-                }
-                Swal.close();
-              });
-              console.log(selectedValue);
-              if (selectedValue && boolConfirm) {
-                const selectedSede = sedesResp.find((sede) => sede.id === selectedValue);
-                console.log('ID seleccionado:', selectedSede.id);
-                console.log('Nombre seleccionado:', selectedSede.name);
-                try {
-                  setLoading(true);
-                  showLoadingModal();
-                  try {
-                   await updateSedeProfesional(data?.id_professional, selectedSede.id);
-                   await TriggerUpdateProfessional(
-                      data?.id,
-                      data?.id_professional
-                    );
-                    messageApi.open({
-                      type: "success",
-                      content: "Actualizado correctamente",
-                    });
-                    const registros = await getConsultaProfessionals(
-                      data?.numero_documento
-                    );
-                    setLoading(false);
-                    hideLoadingModal();
-                    history.push({
-                      pathname: `/detail-professional/${data?.id_professional}`,
-                      state: { detail: registros },
-                    });
-                  } catch (error) {
-                    console.log("error: ", error);
-                    await messageApi.open({
-                      type: "error",
-                      content:
-                        error.response?.data?.message ||
-                        "Error: Actualización Fallida Revise Numero de Documento",
-                    });
-                    setLoading(false);
-                    hideLoadingModal();
-                    history.push(`/detail-professional/${data?.id_professional}`);
+                const selectedValue = await Swal.fire({
+                  title: "Importacion Cupos",
+                  input: "select",
+                  inputPlaceholder: "Seleccione una Sede",
+                  inputOptions: sedesResp.reduce((acc, sede) => {
+                    acc[sede.value] = sede.label;
+                    return acc;
+                  }, {}),
+                  showCancelButton: true,
+                  confirmButtonText: "Importar",
+                  showLoaderOnConfirm: true,
+                }).then((result) => {
+                  if (result.isConfirmed) {
+                    boolConfirm = true;
+                    console.log("Es confirmado " + result.value);
+                    return result.value;
                   }
+                  Swal.close();
+                });
+                console.log(selectedValue);
+                if (selectedValue && boolConfirm) {
+                  const selectedSede = sedesResp.find((sede) => sede.value === selectedValue);
+                  console.log('ID seleccionado:', selectedSede.value);
+                  console.log('Nombre seleccionado:', selectedSede.label);
+                  try {
+                    setLoading(true);
+                    showLoadingModal();
+                    try {
+                      await updateSedeProfesional(data?.id_professional, selectedSede.value);
+                      await runActionImportDispo(
+                        data?.id_professional
+                      );
+                      messageApi.open({
+                        type: "success",
+                        content: "Actualizado correctamente",
+                      });
+                      const registros = await getConsultaProfessionals(
+                        data?.numero_documento
+                      );
+                      setLoading(false);
+                      hideLoadingModal();
+                      history.push({
+                        pathname: `/detail-professional/${data?.id_professional}`,
+                        state: { detail: registros },
+                      });
+                    } catch (error) {
+                      console.log("error: ", error);
+                      await messageApi.open({
+                        type: "error",
+                        content:
+                          error.response?.data?.message ||
+                          "Error: Actualización Fallida Revise Numero de Documento",
+                      });
+                      const registros = await getConsultaProfessionals(
+                        data?.numero_documento
+                      );
+                      setLoading(false);
+                      hideLoadingModal();
+                      history.push({
+                        pathname: `/detail-professional/${data?.id_professional}`,
+                        state: { detail: registros },
+                      });
+                    }
 
-                } catch (error) {
-                  Swal.showValidationMessage(`
+                  } catch (error) {
+                    Swal.showValidationMessage(`
                         Request failed: ${error}
                       `);
+                  }
                 }
               }
-            }
-          });
+            });
 
-        };
-        return (
-          <Tooltip title={"Ver"}>
-                      <Button
-          onClick={view}
-        >
-          <EyeOutlined />
-        </Button>
-          </Tooltip>
-        );
+          };
+          return (
+            <Tooltip title={"Ver"}>
+              <Button
+                onClick={view}
+              >
+                <EyeOutlined />
+              </Button>
+            </Tooltip>
+          );
+        } catch (error) {
+          console.log("error: ", error);
+          messageApi.open({
+            type: "error",
+            content:
+              error.response?.data?.message ||
+              "Error: Actualización Fallida Revise Numero de Documento",
+          });
+          setLoading(false);
+          hideLoadingModal();
+          history.push(`/detail-professional/${data?.id_professional}`);
+        }
       },
 
       /*

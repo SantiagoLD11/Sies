@@ -1,3 +1,4 @@
+import { result } from "lodash";
 import { httpClient } from "../../util/Api";
 import moment from "moment";
 import Swal from "sweetalert2";
@@ -15,12 +16,12 @@ export const showLoadingModal = () => {
   Swal.fire({
     title: 'Cargando...',
     text: 'Por favor, espera un momento..',
-    icon:'info',
+    icon: 'info',
     allowOutsideClick: false,
     allowEscapeKey: false,
     focusConfirm: false,
     showConfirmButton: false, // Ocultar el botón de confirmación
-    showCloseButton:false,
+    showCloseButton: false,
     didOpen: () => {
       Swal.showLoading(); // Mostrar el ícono de carga
     }
@@ -35,7 +36,7 @@ export const generateToken = () => {
   const altNumber = randomNumberUsers();
   return new Promise(() => {
     httpClient
-      .get(`login?loginName=sies${altNumber}.portal&password=ImpelTi2023*.&output=json`, { 
+      .get(`login?loginName=sies${altNumber}.portal&password=ImpelTi2023*.&output=json`, {
         mode: "no-cors",
       })
       .then(async ({ data }) => {
@@ -44,7 +45,7 @@ export const generateToken = () => {
         }
       })
       .catch(function (error) {
-        console.log('Error: ',error);
+        console.log('Error: ', error);
       });
   });
 };
@@ -57,10 +58,10 @@ export const validToken = async () => {
       console.log('El token no está definido o está vacío');
       await generateToken();
       return true;
-      } else {
-        console.log('El token existe en el almacenamiento local:', token);
-        return false;
-      }
+    } else {
+      console.log('El token existe en el almacenamiento local:', token);
+      return false;
+    }
     // Realizar acciones con la URL generada...
   } catch (error) {
     console.error('Error al obtener la Token:', error);
@@ -349,14 +350,14 @@ export const getSedesProfessional = async (id) => {
   const token = localStorage.getItem("token");
   try {
     let query = encodeURI(
-      `SELECT DISTINCT name,codeOffice FROM Profesional_Sede WHERE R22922868 = ${id}`
+      `SELECT DISTINCT codeOffice,name FROM Profesional_Sede WHERE R22922868 = ${id}`
     );
     const { data } = await httpClient.get(
       `/selectQuery?maxRows=100&query=${query}&sessionId=${token}&output=json`
     );
     if (data.length > 0) {
       const final_data = data.map((value) => ({
-        name: value[0], id:value[1],
+        value: value[0], label: value[1],
       }));
       return final_data;
     } else {
@@ -427,7 +428,7 @@ export const getListNews = async (id) => {
   const token = localStorage.getItem("token");
   try {
     let query = encodeURI(
-      `SELECT name,Fecha_Inicio,Fecha_Final,Hora_Inicio,Hora_Final,Tipo_Novedad_Txt,Motivo_txt,Dias_Semana_txt,CreadoPor FROM Agenda WHERE R20549543 = ${id}`
+      `SELECT name,Fecha_Inicio,Fecha_Final,Hora_Inicio,Hora_Final,Tipo_Novedad_Txt,Motivo_txt,Dias_Semana_txt,CreadoPor,createdAt FROM Agenda WHERE R20549543 = ${id}`
     );
     const { data } = await httpClient.get(
       `/selectQuery?maxRows=100&query=${query}&sessionId=${token}&output=json`
@@ -445,6 +446,7 @@ export const getListNews = async (id) => {
         motivo: value[6],
         dias_semana: value[7],
         creadoPor: value[8],
+        creadoEn: value[9]
       }));
       console.log("información del servicio", final_data);
       return final_data;
@@ -457,7 +459,7 @@ export const getListNews = async (id) => {
   }
 };
 
-export const getUltimaAtencionPaciente = async (idPaciente,dateCita) => {
+export const getUltimaAtencionPaciente = async (idPaciente, dateCita) => {
   const token = localStorage.getItem("token");
   const inicioMes = moment(dateCita).startOf('month').valueOf();
   const finMes = moment(dateCita).endOf('month').valueOf();
@@ -642,27 +644,27 @@ export const getReportNotasAdmin = async () => {
           observacion_Seguimiento: value[7],
           motInasis: value[8],
           mesYear_1: value[9],
-          servicio_1:value[10],
-          resultado_1:value[11],
+          servicio_1: value[10],
+          resultado_1: value[11],
           mesYear_2: value[12],
-          servicio_2:value[13],
-          resultado_2:value[14],
+          servicio_2: value[13],
+          resultado_2: value[14],
           mesYear_3: value[15],
-          servicio_3:value[16],
-          resultado_3:value[17],
+          servicio_3: value[16],
+          resultado_3: value[17],
           mesYear_4: value[18],
-          servicio_4:value[19],
-          resultado_4:value[20],
+          servicio_4: value[19],
+          resultado_4: value[20],
           mesYear_5: value[21],
-          servicio_5:value[22],
-          resultado_5:value[23],
+          servicio_5: value[22],
+          resultado_5: value[23],
           mesYear_6: value[24],
-          servicio_6:value[25],
-          resultado_6:value[26],
+          servicio_6: value[25],
+          resultado_6: value[26],
           mesYear_7: value[27],
-          servicio_7:value[28],
-          resultado_7:value[29],
-          numDoc:value[30],
+          servicio_7: value[28],
+          resultado_7: value[29],
+          numDoc: value[30],
         }
 
       });
@@ -699,15 +701,15 @@ export const getReportAprovAgenda = async () => {
           createdBy: value[6],
           state: value[7],
           duration: value[8],
-          motBloc:value[9],
-          numDocPac:value[10],
+          motBloc: value[9],
+          numDocPac: value[10],
           namePac: value[11],
-          stateCita:value[12],
-          dateCancel:value[13],
-          motCancel:value[14],
+          stateCita: value[12],
+          dateCancel: value[13],
+          motCancel: value[14],
           franja: value[15],
-          especialidad:value[16],
-          programa:value[17]
+          especialidad: value[16],
+          programa: value[17]
         }
 
       });
@@ -721,7 +723,68 @@ export const getReportAprovAgenda = async () => {
   }
 };
 
-export const getReportAgendamiento= async () => {
+export const getGruopByMaxCitasPacEspc = async () => {
+  const token = localStorage.getItem("token");
+  try {
+    let query = encodeURI(
+      `SELECT MAX(Fecha_Cita),Doc_Paciente,Especialidad_txt,Year,Mes FROM Consulta WHERE status = 18100665 GROUP BY Doc_Paciente,Especialidad_txt,Year,Mes`
+    );
+    const { data } = await httpClient.get(
+      `/selectQuery?maxRows=1000000000&query=${query}&sessionId=${token}&output=json`
+    );
+    console.log("data", data);
+    if (data.length > 0) {
+      console.log("información data", data);
+      const final_data = data.map((value) => {
+        return {
+          dateCita: value[0],
+          numDoc: value[1],
+          profesion: value[2],
+          year: value[3],
+          month: value[4]
+        }
+      });
+      return final_data;
+    } else {
+      return [];
+    }
+  } catch (error) {
+    httpClient.defaults.headers.common["Authorization"] = "";
+    return Promise.reject(error);
+  }
+};
+
+export const getGruopByMaxCitasPac = async () => {
+  const token = localStorage.getItem("token");
+  try {
+    let query = encodeURI(
+      `SELECT MAX(Fecha_Cita),Doc_Paciente,Year,Mes FROM Consulta WHERE status = 18100665 GROUP BY Doc_Paciente,Year,Mes`
+    );
+    const { data } = await httpClient.get(
+      `/selectQuery?maxRows=1000000000&query=${query}&sessionId=${token}&output=json`
+    );
+    console.log("data", data);
+    if (data.length > 0) {
+      console.log("información data", data);
+      const final_data = data.map((value) => {
+        return {
+          dateCita: value[0],
+          numDoc: value[1],
+          year: value[2],
+          month: value[3]
+        }
+      });
+      return final_data;
+    } else {
+      return [];
+    }
+  } catch (error) {
+    httpClient.defaults.headers.common["Authorization"] = "";
+    return Promise.reject(error);
+  }
+};
+
+export const getReportAgendamiento = async () => {
   const token = localStorage.getItem("token");
   try {
     let query = encodeURI(
@@ -732,8 +795,24 @@ export const getReportAgendamiento= async () => {
     );
     console.log("data", data);
     if (data.length > 0) {
-      console.log("información data", data);
+      const maxCitasPacEspc = await getGruopByMaxCitasPacEspc(); // Obtener datos de getGruopByMaxCitasPacEspc
+      const maxCitasPac = await getGruopByMaxCitasPac(); // Obtener datos de getGruopByMaxCitasPac
       const final_data = data.map((value) => {
+        // Encuentra las fechas según los criterios del paciente y la especialidad
+        const ultFechaPacEspc = maxCitasPacEspc.find(
+          (item) =>
+            item.numDoc == value[0] && item.year == moment(value[4]).format('YYYY')&& item.month == moment(value[4]).format('M') &&
+            item.profesion == value[17]
+        );
+
+        // Encuentra las fechas según los criterios solo del paciente
+        const ultFechaPac = maxCitasPac.find(
+          (item) =>
+            item.numDoc == value[0] && item.year == moment(value[4]).format('YYYY')&& item.month == moment(value[4]).format('M')
+        );
+
+        console.log(value[0].trim() +" "+ moment(value[4]).format('YYYY') +" "+ moment(value[4]).format('M') +" "+
+        value[17].trim() +" Fecha PacEspac "+ ultFechaPacEspc +" Fecha PacMes "+ ultFechaPac);
         return {
           numDocPac: value[0],
           namePac: value[1],
@@ -744,18 +823,20 @@ export const getReportAgendamiento= async () => {
           state: value[6],
           createdBy: value[7],
           createdAt: value[8],
-          cancelBy:value[9],
-          dateCancel:value[10],
-          motCancel:value[11],
+          cancelBy: value[9],
+          dateCancel: value[10],
+          motCancel: value[11],
           asegurador: value[12],
-          codeContrac:value[13],
-          codePlan : value[14],
-          franja:value[15],
-          sede:value[16],
-          profesion:value[17],
-          cnlAtencion:value[18],
-          programa:value[19],
-          inasisDesc:value[20]
+          codeContrac: value[13],
+          codePlan: value[14],
+          franja: value[15],
+          sede: value[16],
+          profesion: value[17],
+          cnlAtencion: value[18],
+          programa: value[19],
+          inasisDesc: value[20],
+          ultFechaPacEspc: ultFechaPacEspc ? ultFechaPacEspc.dateCita : null,
+          ultFechaPac: ultFechaPac ? ultFechaPac.dateCita : null
         }
 
       });
@@ -835,19 +916,17 @@ export const updateDisposition = async (
   id,
   fecha_inicio,
   fecha_final,
-  rango
+  rango, fsede
 ) => {
   const token = localStorage.getItem("token");
+  const name = localStorage.getItem("name");
   try {
     const { data } = await httpClient.get(
-      `/updateRecord?output=json&objName=Profesional&id=${id}&Fecha_Inicio=${fecha_inicio}&Fecha_Final=${fecha_final}&Rango_Propio=${rango}&sessionId=${token}&output=json`
+      `/updateRecord?output=json&objName=Profesional&id=${id}&Fecha_Inicio=${fecha_inicio}&Fecha_Final=${fecha_final}&Rango_Propio=${rango}&Filtro_Sede=${fsede}&nameUser=${name}&sessionId=${token}&output=json`
     );
     if (data.status === "ok") {
-      await executePreImg(id);
-      const result = await httpClient.get(
-        `/runTrigger?sessionId=${token}&id=${id}&triggerId=UjS7Y7fzTzmiWEUsdDcZjA&output=json`
-      );
-      console.log("retornar data");
+      const result = await runActionImportDispo(id);
+      console.log("Prueba" + result);
       return result.data;
     } else {
       return null;
@@ -968,6 +1047,36 @@ export const TriggerUpdateProfessional = async (id, idProfRun) => {
   }
 };
 
+export const updateGeneralProfessional = async (id) => {
+  const token = localStorage.getItem("token");
+  try {
+    const { data } = await httpClient.get(
+      `/runTrigger?sessionId=${token}&id=${id}&triggerId=N7yboGaWSOCWMY8V83cUMw&output=json`
+    );
+    if (data.status === "ok") {
+      const result = await httpClient.get(
+        `/runTrigger?sessionId=${token}&id=${id}&triggerId=ILteAO_nRDm-hqXtqKYIOg&output=json`
+      );
+    }
+    return data;
+  } catch (error) {
+    return Promise.reject(error);
+  }
+};
+
+export const runActionImportDispo = async (idProfRun) => {
+  const token = localStorage.getItem("token");
+  try {
+    const result = await httpClient.post(
+      `rest/api/runAction?output=json&sessionId=${token}&objName=Profesional&id=${idProfRun}&actionId=GeJtoIj1QDa3phIpPMGFBw&output=json`
+    );
+
+    return result;
+  } catch (error) {
+    return Promise.reject(error);
+  }
+};
+
 export const getIdProfessional = async (id) => {
   const token = localStorage.getItem("token");
   try {
@@ -1039,7 +1148,7 @@ export const listHistoricoBloqueos = async () => {
   console.log("token guardado", token);
   try {
     let query = encodeURI(
-      `SELECT name,Fecha_Inicio,Fecha_Final,Hora_Inicio,Hora_Final,Tipo_Novedad_Txt,Motivo_txt,Dias_Semana_txt,CreadoPor FROM Agenda ORDER BY createdAt DESC `
+      `SELECT name,Fecha_Inicio,Fecha_Final,Hora_Inicio,Hora_Final,Tipo_Novedad_Txt,Motivo_txt,Dias_Semana_txt,CreadoPor,createdAt FROM Agenda ORDER BY createdAt DESC `
     );
     const { data } = await httpClient.get(
       `/selectQuery?maxRows=1000000&query=${query}&sessionId=${token}&output=json`
@@ -1056,7 +1165,8 @@ export const listHistoricoBloqueos = async () => {
           tipo_novedad: value[5],
           motivo: value[6],
           dias_semana: value[7],
-          creadoPor: value[8]
+          creadoPor: value[8],
+          creadoEn: value[9]
         };
       });
       return final_data;
@@ -1378,7 +1488,7 @@ export const getInfoGeneralPacient = async (id, isDocument = false) => {
         Ciudad: values[2],
         Celular: values[3],
         Tel: values[4],
-        idCiudad:values[5]
+        idCiudad: values[5]
       };
     } else {
       return null;
@@ -1406,11 +1516,12 @@ export const updatePatient = async (id, values) => {
   console.log("data ", data);
 };
 
-export const updateSedeProfesional = async (id,idSede) => {
+export const updateSedeProfesional = async (id, idSede) => {
   const token = localStorage.getItem("token");
+  const name = localStorage.getItem("name");
   const { data } = await httpClient
     .get(
-      `updateRecord?output=json&objName=Profesional&id=${id}&Filtro_Sede=${idSede}&sessionId=${token}&output=json`
+      `updateRecord?output=json&objName=Profesional&id=${id}&Filtro_Sede=${idSede}&nameUser=${name}&sessionId=${token}&output=json`
     )
     .then((response) => {
       console.log("resp ", response);
@@ -1687,7 +1798,7 @@ export const getListContratoPlanes = async () => {
     );
     if (data.length > 0) {
       const final_data = data.map((value) => {
-        return { value: value[0], label: value[1],idContrato: value[2] };
+        return { value: value[0], label: value[1], idContrato: value[2] };
       });
       return final_data;
     } else {
@@ -1787,7 +1898,7 @@ export const getListClaseExamen = async (id) => {
   }
 };
 
-export const getListClaseExamenPertinencia = async (id,idProgram) => {
+export const getListClaseExamenPertinencia = async (id, idProgram) => {
   const token = localStorage.getItem("token");
   try {
     let query = encodeURI(
@@ -1869,7 +1980,7 @@ export const getDurationPrograma = async (id_Programa) => {
         return 0;
       }
     } else {
-      return 0; 
+      return 0;
     }
   } catch (error) {
     httpClient.defaults.headers.common["Authorization"] = "";

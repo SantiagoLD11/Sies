@@ -80,7 +80,7 @@ export default function BlockDisposition({ id, setDataImported }) {
         <span>Bloquear disponibilidades</span>
       </span> */}
       <Button
-        style={{ background: "#BDCA44", color: "#FFF" }}
+        style={{ background: "#5b5c4d", color: "#FFF" }}
         onClick={showModal}
       >
         Generar Novedad

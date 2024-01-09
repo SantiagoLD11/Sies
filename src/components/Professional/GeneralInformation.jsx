@@ -56,7 +56,7 @@ const GeneralInformation = ({
             <div style={{ color: "#8c8c8c" ,fontWeight: "bold"}}>Sedes Habilitadas:</div>
             <ul>
               {sedeProfessional?.map((value) => (
-                <li key={value.name}>{value.name || "Sin información"}</li>
+                <li key={value.label}>{value.label || "Sin información"}</li>
               ))}
             </ul>
           </div>

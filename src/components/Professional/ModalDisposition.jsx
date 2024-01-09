@@ -5,12 +5,15 @@ import {
   message,
   Modal,
   notification,
+  Form,
+  Select
 } from "antd";
 import moment from "moment";
 import React, { useEffect, useState } from "react";
 import {
   updateDisposition,
   listAlertsImportDisp,
+  getSedesProfessional
 } from "../../appRedux/services";
 
 const ModalDisposition = ({ id, rango, setDataImported, numeroDocumento }) => {
@@ -18,6 +21,8 @@ const ModalDisposition = ({ id, rango, setDataImported, numeroDocumento }) => {
   const [loading, setLoading] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
   const [rango_propio, setRango_propio] = useState(false);
+  const [sedesProf, setSedesProf] = useState(false);
+  const [form] = Form.useForm();
   const [valuesDate, setValuesDate] = useState({
     fecha_inicio: "",
     fecha_final: "",
@@ -27,10 +32,16 @@ const ModalDisposition = ({ id, rango, setDataImported, numeroDocumento }) => {
     return [...Array(6).keys()];
   }
 
+  const get_lists = async () => {
+    const sedes = await getSedesProfessional(id);
+    setSedesProf(sedes);
+  };
+
   useEffect(() => {
     console.log(rango);
-    setRango_propio(rango === 1 ? true : false);
-  }, [rango]);
+    setRango_propio(true);
+    get_lists();
+  }, []);
 
   const [messageApi, contextHolder] = message.useMessage();
 
@@ -48,8 +59,11 @@ const ModalDisposition = ({ id, rango, setDataImported, numeroDocumento }) => {
         id,
         valuesDate.fecha_inicio,
         valuesDate.fecha_final,
-        rango_propio ? 1 : 0
+        1,
+        form.getFieldValue("fSede") == null || form.getFieldValue("fSede") == undefined ? "" : form.getFieldValue("fSede")
+
       );
+      console.log("pRUEBA"+resp);
       if (resp.status === "fail") {
         await messageApi.open({
           type: "error",
@@ -88,6 +102,7 @@ const ModalDisposition = ({ id, rango, setDataImported, numeroDocumento }) => {
     setLoading(false);
     setDataImported(true);
     setValuesDate({ fecha_inicio: null, fecha_final: null });
+    form.resetFields();
     close();
   };
 
@@ -117,6 +132,7 @@ const ModalDisposition = ({ id, rango, setDataImported, numeroDocumento }) => {
           </Button>,
           <Button
             key="button-actualizar"
+            type="primary"
             loading={loading}
             onClick={update_disposition}
           >
@@ -124,39 +140,96 @@ const ModalDisposition = ({ id, rango, setDataImported, numeroDocumento }) => {
           </Button>,
         ]}
       >
-        <div className="row">
-          <div className="col-12 mb-3">
-            <Checkbox checked={rango_propio} onChange={onChange}>
-              Rango propio
-            </Checkbox>
-          </div>
-          <div className="col">
-            <div className="mb-2">
-              <label htmlFor="fecha-inicio">Fecha Inicio</label>
+        <Form
+          name="basic"
+          layout="vertical"
+          autoComplete="off"
+          form={form}
+        >
+          <div className="row">
+            {/*
+              <div className="col-12 mb-3">
+              <Form.Item
+                name="checkRP"
+              >
+                <Checkbox checked={rango_propio} onChange={onChange}>
+                  Rango propio
+                </Checkbox>
+              </Form.Item>
             </div>
-            <DatePicker
-              showTime={{ format: "HH:mm" }}
-              format="YYYY-MM-DD HH:mm"
-              onOk={(value) => onOk(value, "fecha_inicio")}
-              style={{ width: "100%" }}
-              // value={valuesDate?.fecha_inicio}
-              disabledHours={disabledHours}
-            />
-          </div>
-          <div className="col">
-            <div className="mb-2">
-              <label htmlFor="fecha-final">Fecha Final</label>
+            */}
+            <div className="col">
+              <Form.Item
+                name="fInicio"
+                label="Fecha Inicio"
+                rules={[{ required: true, message: "Campo obligatorio" }]}
+              >
+                <DatePicker
+                  disabledDate={(current) => {
+                    const today = moment().startOf('day');
+                    if (form.getFieldValue('fFinal')) {
+                      const fechaFinal = new Date(form.getFieldValue('fFinal'));
+                      return current && (current < today || current > fechaFinal.setDate(fechaFinal.getDate()));
+                    }
+                    return current && current < today;
+                  }}
+                  showTime={{ format: "HH:mm" }}
+                  format="YYYY-MM-DD HH:mm"
+                  onOk={(value) => onOk(value, "fecha_inicio")}
+                  style={{ width: "100%" }}
+                  // value={valuesDate?.fecha_inicio}
+                  disabledHours={disabledHours}
+                />
+              </Form.Item>
             </div>
-            <DatePicker
-              showTime={{ format: "HH:mm" }}
-              format="YYYY-MM-DD HH:mm"
-              onOk={(value) => onOk(value, "fecha_final")}
-              style={{ width: "100%" }}
-              // value={valuesDate?.fecha_final}
-              disabledHours={disabledHours}
-            />
+            <div className="col">
+              <Form.Item
+                name="fFinal"
+                label="Fecha Final"
+                rules={[{ required: true, message: "Campo obligatorio" }]}
+              >
+                <DatePicker
+                  disabledDate={(current) => {
+                    const today = moment().startOf('day');
+                    if (form.getFieldValue('fInicio')) {
+                      const fechaInicio = new Date(form.getFieldValue('fInicio'));
+                      return current && (current < today || current < fechaInicio.setDate(fechaInicio.getDate()));
+                    }
+                    return current && current < today;
+                  }}
+                  showTime={{ format: "HH:mm" }}
+                  format="YYYY-MM-DD HH:mm"
+                  onOk={(value) => onOk(value, "fecha_final")}
+                  style={{ width: "100%" }}
+                  // value={valuesDate?.fecha_final}
+                  disabledHours={disabledHours}
+                />
+              </Form.Item>
+            </div>
           </div>
-        </div>
+          <div className="row">
+
+            <div className="col">
+              <Form.Item
+                label="Filtro Sede"
+                name="fSede"
+              >
+                <Select
+                  className="w-100"
+                  showSearch
+                  placeholder="Selecciona una Sede"
+                  optionFilterProp="children"
+                  filterOption={(input, option) =>
+                    (option?.label ?? "")
+                      .toLowerCase()
+                      .includes(input.toLowerCase())
+                  }
+                  options={sedesProf}
+                />
+              </Form.Item>
+            </div>
+          </div>
+        </Form>
       </Modal>
     </>
   );

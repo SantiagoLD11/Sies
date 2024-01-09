@@ -238,7 +238,7 @@ const ReportAprovAgenda = () => {
         if (text && moment(text).isValid()) {
           return <strong>{moment(text).format("DD/MM/YYYY HH:mm a")}</strong>;
         } else {
-          return <strong>Sin Cita</strong>;
+          return <strong>No Aplica</strong>;
         }
       },
     },
@@ -250,7 +250,13 @@ const ReportAprovAgenda = () => {
       ),
       dataIndex: "motCancel",
       key: "motCancel",
-      render: (text) => renderTextOrEmpty(text),
+      render: (text) => {
+        if (text ) {
+          return <strong>{text}</strong>;
+        } else {
+          return <strong>No Aplica</strong>;
+        }
+      },
     },
     {
       title: (
@@ -272,7 +278,7 @@ const ReportAprovAgenda = () => {
       key: "differenceInDays",
       render: (text, record) => {
         const difference = calculateDaysDifference(record.createdAt, record.fechaHora);
-        return <strong>{"Dias : " + difference}</strong>;
+        return <strong>{difference}</strong>;
       },
     },
     {
@@ -303,7 +309,7 @@ const ReportAprovAgenda = () => {
       key: "differenceInDays",
       render: (text, record) => {
         const difference = calculateDaysDifference(record.dateCancel, record.fechaHora);
-        return <strong>{"Dias : " + difference}</strong>;
+        return <strong>{difference||"No Aplica"}</strong>;
       },
     }
   ];
