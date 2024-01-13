@@ -50,7 +50,7 @@ export const RouteChangeHistory = ({ activeKey }) => {
 
   const columns = [
     {
-      title: "Fecha",
+      title: "Fecha Creacion",
       dataIndex: "name",
       key: "name",
       render: (text) => <strong>{text}</strong>,

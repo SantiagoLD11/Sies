@@ -229,22 +229,96 @@ const UserInformation = () => {
       render: (data) => {
         try {
           const view = async () => {
-            Swal.fire({
+            setLoading(true);
+            showLoadingModal();
+            await updateGeneralProfessional(
+              data?.id
+            );
+            const sedesResp = await getSedesProfessional(data?.id_professional);
+            setLoading(false);
+            hideLoadingModal();
+            let boolConfirm = false;
+             const selectedValue = await Swal.fire({
               title: "Importacion Cupos",
-              text: "Por favor indicar que tipo de importacion desea realizar!",
+              text: "Por favor indicar que tipo de importacion desea realizar,si es para una unica sede aplicar filtro!",
               icon: "question",
               showCancelButton: true,
               allowOutsideClick: false,
-              confirmButtonColor: "#3085d6",
+              input: "select",
+              inputPlaceholder: "Seleccione una Sede(Opcional)",
+              inputOptions: sedesResp.reduce((acc, sede) => {
+                acc[sede.value] = sede.label;
+                return acc;
+              }, {}),
+              confirmButtonColor: "#038fde",
               cancelButtonColor: "#d33",
-              confirmButtonText: "General",
-              cancelButtonText: "Filtrar Sede",
+              confirmButtonText: "Importar",
+              cancelButtonText: "Cancelar",
             }).then(async (result) => {
               if (result.isConfirmed) {
+                boolConfirm = true;
+                console.log("Es confirmado " + result.value);
+                return result.value;
+              }else{
+                Swal.close();
+              }
+            });
+
+            if (selectedValue && boolConfirm) {
+              const selectedSede = sedesResp.find((sede) => sede.value === selectedValue);
+              console.log('ID seleccionado:', selectedSede.value);
+              console.log('Nombre seleccionado:', selectedSede.label);
+              try {
                 setLoading(true);
                 showLoadingModal();
-                await TriggerUpdateProfessional(
-                  data?.id,
+                try {
+                  await updateSedeProfesional(data?.id_professional, selectedSede.value);
+                  await runActionImportDispo(
+                    data?.id_professional
+                  );
+                  messageApi.open({
+                    type: "success",
+                    content: "Actualizado correctamente",
+                  });
+                  const registros = await getConsultaProfessionals(
+                    data?.numero_documento
+                  );
+                  setLoading(false);
+                  hideLoadingModal();
+                  history.push({
+                    pathname: `/detail-professional/${data?.id_professional}`,
+                    state: { detail: registros },
+                  });
+                } catch (error) {
+                  console.log("error: ", error);
+                  await messageApi.open({
+                    type: "error",
+                    content:
+                      error.response?.data?.message ||
+                      "Error: Actualización Fallida Revise Numero de Documento",
+                  });
+                  const registros = await getConsultaProfessionals(
+                    data?.numero_documento
+                  );
+                  setLoading(false);
+                  hideLoadingModal();
+                  history.push({
+                    pathname: `/detail-professional/${data?.id_professional}`,
+                    state: { detail: registros },
+                  });
+                }
+
+              } catch (error) {
+                Swal.showValidationMessage(`
+                    Request failed: ${error}
+                  `);
+              }
+            }else if(boolConfirm){
+              try {
+                setLoading(true);
+                showLoadingModal();
+                await updateSedeProfesional(data?.id_professional, "");
+                await runActionImportDispo(
                   data?.id_professional
                 );
                 messageApi.open({
@@ -260,98 +334,12 @@ const UserInformation = () => {
                   pathname: `/detail-professional/${data?.id_professional}`,
                   state: { detail: registros },
                 });
-
-              } else if (result.isDismissed) {
-                setLoading(true);
-                showLoadingModal();
-
-                await updateGeneralProfessional(
-                  data?.id
-                );
-                messageApi.open({
-                  type: "success",
-                  content: "Actualizado correctamente",
-                });
-
-                const sedesResp = await getSedesProfessional(data?.id_professional);
-
-                let boolConfirm = false;
-
-                setLoading(false);
-                hideLoadingModal();
-
-                const selectedValue = await Swal.fire({
-                  title: "Importacion Cupos",
-                  input: "select",
-                  inputPlaceholder: "Seleccione una Sede",
-                  inputOptions: sedesResp.reduce((acc, sede) => {
-                    acc[sede.value] = sede.label;
-                    return acc;
-                  }, {}),
-                  showCancelButton: true,
-                  confirmButtonText: "Importar",
-                  showLoaderOnConfirm: true,
-                }).then((result) => {
-                  if (result.isConfirmed) {
-                    boolConfirm = true;
-                    console.log("Es confirmado " + result.value);
-                    return result.value;
-                  }
-                  Swal.close();
-                });
-                console.log(selectedValue);
-                if (selectedValue && boolConfirm) {
-                  const selectedSede = sedesResp.find((sede) => sede.value === selectedValue);
-                  console.log('ID seleccionado:', selectedSede.value);
-                  console.log('Nombre seleccionado:', selectedSede.label);
-                  try {
-                    setLoading(true);
-                    showLoadingModal();
-                    try {
-                      await updateSedeProfesional(data?.id_professional, selectedSede.value);
-                      await runActionImportDispo(
-                        data?.id_professional
-                      );
-                      messageApi.open({
-                        type: "success",
-                        content: "Actualizado correctamente",
-                      });
-                      const registros = await getConsultaProfessionals(
-                        data?.numero_documento
-                      );
-                      setLoading(false);
-                      hideLoadingModal();
-                      history.push({
-                        pathname: `/detail-professional/${data?.id_professional}`,
-                        state: { detail: registros },
-                      });
-                    } catch (error) {
-                      console.log("error: ", error);
-                      await messageApi.open({
-                        type: "error",
-                        content:
-                          error.response?.data?.message ||
-                          "Error: Actualización Fallida Revise Numero de Documento",
-                      });
-                      const registros = await getConsultaProfessionals(
-                        data?.numero_documento
-                      );
-                      setLoading(false);
-                      hideLoadingModal();
-                      history.push({
-                        pathname: `/detail-professional/${data?.id_professional}`,
-                        state: { detail: registros },
-                      });
-                    }
-
-                  } catch (error) {
-                    Swal.showValidationMessage(`
-                        Request failed: ${error}
-                      `);
-                  }
-                }
+              } catch (error) {
+                Swal.showValidationMessage(`
+                Request failed: ${error}
+              `);
               }
-            });
+            }
 
           };
           return (

@@ -2767,7 +2767,7 @@ export const getInfoFilterChangesRoutes = async (final_values) => {
   //console.log(values?.fecha?.format("YYYY/MM/DD"));
   const token = localStorage.getItem("token");
   console.log("token guardado", token);
-  let query = `SELECT name,Tipo_Accion_txt,Contrato_Plan_txt,Profesion_txt, Meses,Mover_yyy_de,Mover_Mes_de,Mover_yyy_a,Mover_Mes_a,Sede_txt,Respuesta,CreadoPor FROM Cambio_Ruta`;
+  let query = `SELECT name,Tipo_Accion_txt,Contrato_Plan_txt,Profesion_txt, Meses,Mover_yyy_de,Mover_Mes_de,Mover_yyy_a,Mover_Mes_a,Sede_txt,Respuesta,CreadoPor FROM Cambio_Ruta ORDER BY createdAt DESC`;
   try {
     if (final_values) {
       if (

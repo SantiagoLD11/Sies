@@ -71,6 +71,22 @@ export const ViewDetailPlans = ({
     console.log(date.getFullYear, dateString);
   };
 
+  const validPlan = async () => {
+    const resp = await countProgram(detailPlan);
+    if (resp == 0) {
+      await messageApi.open({
+        type: "error",
+        content:
+          "No existen Contratos Planes que coincidan con las caracteristicas del paciente.!",
+      });
+    } else if (resp != 0) {
+      await messageApi.open({
+        type: "success",
+        content: "La ruta de atención ha sido programada correctamente",
+      });
+    }
+  }
+
   useEffect(() => {
     if (detailPlans?.fecha_activacion) {
       const parsedDate = moment(
@@ -88,19 +104,7 @@ export const ViewDetailPlans = ({
     const resp = await validateQuotes(idPaciente);
     if (resp > 0) {
       await triggerProgram(detailPlan);
-      const resp = await countProgram(detailPlan);
-      if (resp == 0) {
-        await messageApi.open({
-          type: "error",
-          content:
-            "No existen Contratos Planes que coincidan con las caracteristicas del paciente.!",
-        });
-      } else if (resp != 0) {
-        await messageApi.open({
-          type: "success",
-          content: "La ruta de atención ha sido programada correctamente",
-        });
-      }
+      await validPlan();
       getData();
       setLoading(false);
     } else {
@@ -108,6 +112,24 @@ export const ViewDetailPlans = ({
       setIsOpenPopover(true);
     }
   };
+
+  const confirmPlan = async () => {
+    setLoading(true);
+    await actFechaActivacion(detailPlan, fechaMilisegundos);
+    const detailsPlans = await triggerProgram(detailPlan);
+    console.log(detailsPlans);
+    if (detailsPlans?.status === "fail") {
+      await messageApi.open({
+        type: "error",
+        content: detailsPlans?.message || "error",
+      });
+    } else if (detailsPlans?.status === "ok") {
+      await validPlan();
+    }
+    getData();
+    setIsOpenPopover(false);
+    setLoading(false);
+  }
 
   const renewPlan = async () => {
     const detailsPlans = await triggerRenewPlan(detailPlan);
@@ -194,7 +216,7 @@ export const ViewDetailPlans = ({
             {viewStatus[detailPlans?.Estado_txt]?.Programar ? (
               <>
                 <Modal
-                  title="Confirmar"
+                  title="Confirmacion"
                   open={isOpenPopover}
                   onCancel={() => setIsOpenPopover(false)}
                   footer={[
@@ -204,27 +226,7 @@ export const ViewDetailPlans = ({
                     <Button
                       loading={loading}
                       disabled={loading}
-                      onClick={async () => {
-                        setLoading(true);
-                        await actFechaActivacion(detailPlan, fechaMilisegundos);
-                        const detailsPlans = await triggerProgram(detailPlan);
-                        console.log(detailsPlans);
-                        if (detailsPlans?.status === "fail") {
-                          await messageApi.open({
-                            type: "error",
-                            content: detailsPlans?.message || "error",
-                          });
-                        } else if (detailsPlans?.status === "ok") {
-                          await messageApi.open({
-                            type: "success",
-                            content:
-                              "La ruta de atención ha sido programada correctamente",
-                          });
-                        }
-                        getData();
-                        setIsOpenPopover(false);
-                        setLoading(false);
-                      }}
+                      onClick={confirmPlan}
                       key="submit"
                       type="primary"
                     >
@@ -232,13 +234,14 @@ export const ViewDetailPlans = ({
                     </Button>,
                   ]}
                 >
-                  <p
-                    style={{ marginBottom: "20px" }}
-                  >{`La fecha de activación es ${moment(
-                    detailPlans?.fecha_activacion,
-                    "ddd MMM DD YYYY"
-                  ).format("YYYY-MM-DD")}
-                    , si es correcto oprime Confirmar.`}</p>
+                  <p style={{ marginBottom: "20px" }}>
+                    <strong>{`La fecha de activación es ${moment(
+                      detailPlans?.fecha_activacion,
+                      "ddd MMM DD YYYY"
+                    ).format("YYYY-MM-DD")}
+                     `}</strong>
+                    , si es correcto oprime Confirmar.
+                  </p>
                   <div style={{ display: "flex", flexDirection: "column" }}>
                     <label style={{ fontWeight: "bold", textAlign: "left" }}>
                       Fecha Activación:
@@ -550,11 +553,11 @@ export const ViewDetailPlans = ({
                 span={detailPlans.idEtAsistencial ? 12 : 24}
               >
                 <>
-                  <div style={{ 
-                      fontSize: "15px", 
-                      color: "#2d3d7d",
-                      fontWeight: "bold",
-                   }}>
+                  <div style={{
+                    fontSize: "15px",
+                    color: "#2d3d7d",
+                    fontWeight: "bold",
+                  }}>
                     Etiqueta Administrativa
                   </div>
                   <Divider />

@@ -262,19 +262,17 @@ export const GeneratingChanges = ({ modalVisible, SetModalVisible }) => {
             </Col>
             <Col style={{ width: "48%" }}>
               {itemsGeneratingChanges[type].meses1 ? (
-                <Form.Item label="Meses Atencion" name="meses"  rules={[{ required:true, message: 'Campo Obligatorio' }]}>
+                <Form.Item label="Mes Atencion" name="meses"  rules={[{ required:true, message: 'Campo Obligatorio' }]}>
                   <Select
-                    mode="multiple"
-                    placeholder="Seleccione meses"
+                    placeholder="Seleccione un mes"
                     style={{ width: "100%" }}
                     options={SelectMeses}
                   />
                 </Form.Item>
               ) : null}
               {itemsGeneratingChanges[type].mesesRenovacion ? (
-                <Form.Item label="Meses renovación" name="mesesRenovacion">
+                <Form.Item label="Mes renovación" name="mesesRenovacion">
                   <Select
-                    mode="multiple"
                     placeholder="Seleccione meses de renovación"
                     style={{ width: "100%" }}
                     options={SelectMeses}
@@ -403,10 +401,9 @@ export const GeneratingChanges = ({ modalVisible, SetModalVisible }) => {
                     </Form.Item>
                   ) : null}
                   {itemsGeneratingChanges[type].meses2 ? (
-                    <Form.Item label="Meses Atencion" name="meses" rules={[{ required:true, message: 'Campo Obligatorio' }]}>
+                    <Form.Item label="Mes Atencion" name="meses" rules={[{ required:true, message: 'Campo Obligatorio' }]}>
                       <Select
-                        mode="multiple"
-                        placeholder="Seleccione meses"
+                        placeholder="Seleccione un mes"
                         style={{ width: "100%" }}
                         options={SelectMeses}
                       />

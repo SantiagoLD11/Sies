@@ -347,7 +347,13 @@ const ReportAgendamiento = () => {
       ),
       dataIndex: "ultFechaPac",
       key: "ultFechaPac",
-      render: (text) => renderTextOrEmpty(text),
+      render: (text) => {
+        if (text && moment(text).isValid()) {
+          return <strong>{moment(text).format("DD/MM/YYYY HH:mm a")}</strong>;
+        } else {
+          return <strong>Sin Atencion</strong>;
+        }
+      },
     },
     {
       title: (
@@ -357,17 +363,13 @@ const ReportAgendamiento = () => {
       ),
       dataIndex: "ultFechaPacEspc",
       key: "ultFechaPacEspc",
-      render: (text) => renderTextOrEmpty(text),
-    },
-    {
-      title: (
-        <span style={{ backgroundColor: "#184F9D", color: "#fff" }}>
-          Soporte Inasistencia
-        </span>
-      ),
-      dataIndex: "inasisDesc",
-      key: "inasisDesc",
-      render: (text) => renderTextOrEmpty(text),
+      render: (text) => {
+        if (text && moment(text).isValid()) {
+          return <strong>{moment(text).format("DD/MM/YYYY HH:mm a")}</strong>;
+        } else {
+          return <strong>Sin Atencion</strong>;
+        }
+      },
     }
   ];
 
