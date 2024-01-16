@@ -17,6 +17,7 @@ import {
   message,
   Modal,
   Switch,
+  notification
 } from "antd";
 import {
   getListExamsRoutes,
@@ -29,15 +30,20 @@ import {
   validateQuotes,
   countProgram,
   getListPlanContractIds,
+  TriggerBeforeViewRoutes,
+  TriggerLaboratoriesViewRoutes,
+  getCareRoutes,
+  AlertTomoLaboratorios
 } from "../../appRedux/services";
 import { DefaultTimeLineItem } from "../timeline/DefaultTimeLineItem";
 import { GenerateQuotes } from "./GenerateQuotes";
 import { GenerateNoteAdmin } from "../Patient/GenerateNoteAdmin";
 import { SelectMeses } from "../../constants/Months";
 import { icons } from "../../constants/icons";
+import Swal from "sweetalert2";
+import { EyeOutlined, InfoCircleOutlined } from "@ant-design/icons";
 const { Panel } = Collapse;
 const { Text } = Typography;
-
 export const ViewDetailPlans = ({
   detailPlan,
   idPaciente,
@@ -47,6 +53,7 @@ export const ViewDetailPlans = ({
   getData,
   getInfo,
   getDataPlains,
+  setDataList,
   viewButton,
 }) => {
   console.log('detail');
@@ -65,12 +72,31 @@ export const ViewDetailPlans = ({
   const [filters, setfilters] = useState(null);
   const [loading, setLoading] = useState(false);
   const [isOpenPopover, setIsOpenPopover] = useState(false);
+  const [notificationApi, contextHolderNoti] = notification.useNotification();
   let final_values = null;
 
   const onChange = (date, dateString) => {
     console.log(date.getFullYear, dateString);
   };
+  const showLoadingModal = () => {
+    Swal.fire({
+      title: 'Cargando...',
+      text: 'Por favor, espera un momento..',
+      icon:'info',
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+      focusConfirm: false,
+      showConfirmButton: false, // Ocultar el botón de confirmación
+      showCloseButton:false,
+      didOpen: () => {
+        Swal.showLoading(); // Mostrar el ícono de carga
+      }
+    });
+  };
 
+  const hideLoadingModal = () => {
+    Swal.close(); // Cierra el modal de carga de SweetAlert2
+  };
   const validPlan = async () => {
     const resp = await countProgram(detailPlan);
     if (resp == 0) {
@@ -101,16 +127,39 @@ export const ViewDetailPlans = ({
 
   const program = async () => {
     setLoading(true);
+    showLoadingModal();
     const resp = await validateQuotes(idPaciente);
     if (resp > 0) {
       await triggerProgram(detailPlan);
       await validPlan();
       getData();
-      setLoading(false);
     } else {
-      setLoading(false);
       setIsOpenPopover(true);
     }
+    await TriggerBeforeViewRoutes(detailPlan);
+    await TriggerLaboratoriesViewRoutes(detailPlan);
+    const alert = await AlertTomoLaboratorios(detailPlan);
+    if (alert) {
+      console.log(alert);
+      if (alert.Tomo_Laboratorios == 1) {
+        notificationApi.open({
+          type: "info",
+          message: "Alerta",
+          description: `El paciente tomo los laboratorios. ${alert.Resultado_Laboratorio}`,
+        });
+      } else if (alert.Tomo_Laboratorios == 0) {
+        notificationApi.open({
+          type: "info",
+          message: "Alerta",
+          description: `El paciente no ha tomado los laboratorios!.`,
+          icon: <InfoCircleOutlined style={{ color: "#e0db03" }} />,
+        });
+      }
+    }
+    setLoading(false);
+    hideLoadingModal();
+    const updateList = await getCareRoutes(idPaciente);
+    setDataList(updateList);
   };
 
   const confirmPlan = async () => {
@@ -195,6 +244,7 @@ export const ViewDetailPlans = ({
   return (
     <>
       {contextHolder}
+      {contextHolderNoti}
       <Collapse>
         <Panel header="Información Ruta Atencion">
           <div

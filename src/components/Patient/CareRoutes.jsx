@@ -174,25 +174,27 @@ export const CareRoutes = ({ id, getInfo }) => {
               onClick={async () => {
                 setLoading(true);
                 showLoadingModal();
-                console.log("Sirve ver", data);
-                await TriggerBeforeViewRoutes(data.id);
-                await TriggerLaboratoriesViewRoutes(data.id);
-                const resp = await AlertTomoLaboratorios(data.id);
-                if (resp) {
-                  console.log(resp);
-                  if (resp.Tomo_Laboratorios == 1) {
-                    notificationApi.open({
-                      type: "info",
-                      message: "Alerta",
-                      description: `El paciente tomo los laboratorios. ${resp.Resultado_Laboratorio}`,
-                    });
-                  } else if (resp.Tomo_Laboratorios == 0) {
-                    notificationApi.open({
-                      type: "info",
-                      message: "Alerta",
-                      description: `El paciente no ha tomado los laboratorios!.`,
-                      icon: <InfoCircleOutlined style={{ color: "#e0db03" }} />,
-                    });
+                if(data.estado !== "Creado"){
+                  console.log("Sirve ver", data);
+                  await TriggerBeforeViewRoutes(data.id);
+                  await TriggerLaboratoriesViewRoutes(data.id);
+                  const resp = await AlertTomoLaboratorios(data.id);
+                  if (resp) {
+                    console.log(resp);
+                    if (resp.Tomo_Laboratorios == 1) {
+                      notificationApi.open({
+                        type: "info",
+                        message: "Alerta",
+                        description: `El paciente tomo los laboratorios. ${resp.Resultado_Laboratorio}`,
+                      });
+                    } else if (resp.Tomo_Laboratorios == 0) {
+                      notificationApi.open({
+                        type: "info",
+                        message: "Alerta",
+                        description: `El paciente no ha tomado los laboratorios!.`,
+                        icon: <InfoCircleOutlined style={{ color: "#e0db03" }} />,
+                      });
+                    }
                   }
                 }
                 setviewButton(true);
@@ -214,7 +216,7 @@ export const CareRoutes = ({ id, getInfo }) => {
       {contextHolderNoti}
       <Modal
         width={"1200px"}
-        title="Ruta atención"
+        title="Ruta Atención"
         open={openModalViewPlans}
         onCancel={close}
       >
@@ -227,6 +229,7 @@ export const CareRoutes = ({ id, getInfo }) => {
           getData={getDataPlains}
           getInfo={getInfo}
           getDataPlains={getDataPlains}
+          setDataList={setData}
           viewButton={viewButton}
         />
       </Modal>

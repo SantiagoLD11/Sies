@@ -277,8 +277,8 @@ export const GenerateQuotes = ({
       });
     }
     console.log("5 segundos");
-    //setTimeout(getPreferences, 2000);
-    getPreferences(objeto);
+    setTimeout(getPreferences(objeto), 3000);
+    //getPreferences(objeto);
   };
 
   const submitFin = async () => {
@@ -306,15 +306,20 @@ export const GenerateQuotes = ({
         const json = JSON.parse(resp);
         console.log(json);
         if (json.hasOwnProperty("error")) {
+          hideLoadingModal();
           const json2 = JSON.parse(json?.error?.message);
           if (json?.error.statusCode == 400) {
-            DesErrors.push(json2.DescError.toString());
+            DesErrors.push("Resp Gomedisys: " + json2.DescError.toString() + ` Cita: ${moment(
+              item.Fecha_Cita,
+              "YYYY-MM-DD HH:mm:ss"
+            ).format("DD/MM/YYYY HH:mm")}`);
           }
         }
       }
       if (DesErrors.length > 0) {
         setListErrors(DesErrors);
         setIsListErrors(true);
+        hideLoadingModal();
         console.log(DesErrors);
       } else {
         setLoading(false);
@@ -479,7 +484,7 @@ export const GenerateQuotes = ({
                 options={planes}
                 disabled
                 placeholder="Plan"
-                //value={planes[index]?.value}
+              //value={planes[index]?.value}
               />
             </Form.Item>
           </div>
@@ -523,7 +528,7 @@ export const GenerateQuotes = ({
               <Form.Item
                 label={`Profesional ${index + 1}`}
                 name={`Profesional_${index + 1}`}
-                //rules={[{ required: true, message: "Campo obligatorio" }]}
+              //rules={[{ required: true, message: "Campo obligatorio" }]}
               >
                 <Select
                   //onChange={handleChangeResultadoContacto}

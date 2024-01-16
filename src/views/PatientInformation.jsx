@@ -18,11 +18,13 @@ import {
   Select,
   Space,
   Spin,
+  Tooltip
 } from "antd";
 import Swal from "sweetalert2";
 import CreatePatient from "./CreatePatient";
 import { EditarPaciente } from "./EditarPaciente";
 import { useHistory } from "react-router-dom";
+import { EyeOutlined, InfoCircleOutlined,EditOutlined} from "@ant-design/icons";
 
 const PatientInformation = () => {
   const [form] = Form.useForm();
@@ -275,11 +277,13 @@ const PatientInformation = () => {
               }
             };
             return (
-              <i
-                style={{ cursor: "pointer" }}
-                className="icon icon-view"
+              <Tooltip title={"Ver"}>
+              <Button
                 onClick={view}
-              />
+              >
+                <EyeOutlined />
+              </Button>
+            </Tooltip>
             );
           },
         },
@@ -291,14 +295,16 @@ const PatientInformation = () => {
           width: "6%",
           render: (id) => {
             return (
-              <i
-                style={{ cursor: "pointer" }}
-                className="icon icon-edit"
+              <Tooltip title={"Editar"}>
+              <Button
                 onClick={() => {
                   setOpenModalPatient(true);
                   setPaciente(id);
                 }}
-              />
+              >
+                <EditOutlined />
+              </Button>
+            </Tooltip>
             );
           },
         },
@@ -345,7 +351,7 @@ const PatientInformation = () => {
           actions={[
             <Button
               key="Limpiar"
-              type="primary"
+              type="default"
               htmlType="submit"
               onClick={() => {
                 form.resetFields();

@@ -59,7 +59,7 @@ const ModalDisposition = ({ id, rango, setDataImported, numeroDocumento }) => {
         id,
         valuesDate.fecha_inicio,
         valuesDate.fecha_final,
-        1,
+        true,
         form.getFieldValue("fSede") == null || form.getFieldValue("fSede") == undefined ? "" : form.getFieldValue("fSede")
 
       );
