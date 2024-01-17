@@ -222,6 +222,10 @@ export const Quotes = ({ id, activeKey }) => {
         setOpen={setOpenModalViewQuotes}
         dataRow={dataQuotes}
         idPaciente={id}
+        setDataTablePm={null}
+        setListInfoPlans={null}
+        detailPlan={null}
+        idPm={null}
       />
       <Table
         columns={columns}

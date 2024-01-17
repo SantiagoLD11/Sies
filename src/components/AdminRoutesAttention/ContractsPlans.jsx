@@ -68,9 +68,13 @@ export const ContractsPlans = ({ activeKey }) => {
     setLoading(true);
     showLoadingModal();
     const resp = await getListContractsPlans();
+    setData(resp);
     setLoading(false);
     hideLoadingModal();
-    setData(resp);
+    getDataFilter();
+  };
+
+  const getDataFilter= async () => {
     const respu = await getListEstadio();
     setListEstadio(respu);
     const respue = await getListContrato();
@@ -79,13 +83,10 @@ export const ContractsPlans = ({ activeKey }) => {
     setListProfesion(respues);
     const respuest = await getListClaseExam();
     setListClaseExamen(respuest);
-
-
     const rEstados = await getListEstadosContratoPlan();
     setListEstados(rEstados);
     const rTpIngreso = await getListTipoIngreso();
     setListTipoIngreso(rTpIngreso);
-
     const rCnlAtencion = await getListCanalAtencion(null);
     setListCnlAtencion(rCnlAtencion);
     const rEtsAdmin = await getListEtiquetasAdmin(null);
@@ -94,7 +95,6 @@ export const ContractsPlans = ({ activeKey }) => {
     setListEtiquetasAsis(rEtiquetasAsis);
     const rGenero = await getlistSexoNacer();
     setListGenero(rGenero);
-
     const rSubPrograms = await getListSubProgramas(null);
     setListSubPrograma(rSubPrograms);
     const rSedes = await getListSede();
@@ -103,7 +103,7 @@ export const ContractsPlans = ({ activeKey }) => {
     setListClsBimTrim(rBimTrim);
     const rBomba = await getListBomba();
     setListClsBomba(rBomba);
-  };
+  }
 
   const inactivarContrato = async (id, Estado) => {
     if (Estado == 'Activo') {

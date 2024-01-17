@@ -112,7 +112,23 @@ export const GenerateNoteAdmin = ({
     key: item.title,
     //title: item.title,
   }));
-
+  const validateForm = async (formValid) => {
+    try {
+      // Use Ant Design Form's validateFields to validate the form fields
+      if(await formValid.validateFields()){
+        return true; // Form is valid
+      }else{
+        return false;
+      }
+    } catch (errorInfo) {
+      // Handle validation errors and show error messages
+  
+      // Show error messages to the user (you can customize this part)
+      console.log(`Form validation failed: ${errorInfo}`);
+  
+      return false; // Form is not valid
+    }
+  };
   const onChangeRadio = (e) => {
     console.log("radio checked", e.target.value);
     setRadio(e.target.value);
@@ -240,7 +256,8 @@ export const GenerateNoteAdmin = ({
   }, [current]);
 
   const onFinish = async () => {
-    if (radio === 1) {
+    const isValidForm1 = await validateForm(form);
+    if (radio === 1 && isValidForm1) {
       const values = form.getFieldsValue();
       const fechaActual = new Date();
       const fechaActualjson = {
@@ -293,7 +310,9 @@ export const GenerateNoteAdmin = ({
         });
       }
       close();
-    } else if (radio === 2) {
+    }
+    const isValidForm3 = await validateForm(form3);
+    if (radio === 2 && isValidForm3) {
       const values = form3.getFieldsValue();
       let value = {
         Etiqueta_seguimiento: dataForm2?.Etiqueta_seguimiento,

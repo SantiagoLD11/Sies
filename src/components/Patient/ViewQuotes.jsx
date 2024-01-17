@@ -18,6 +18,10 @@ export const ViewQuotes = ({
   setOpen,
   dataRow,
   idPaciente,
+  setDataTablePm,
+  setListInfoPlans,
+  detailPlan,
+  idPm,
   setOpenPopover,
   viewButton,
 }) => {
@@ -317,6 +321,10 @@ export const ViewQuotes = ({
               dataRow={dataRow}
               getInfo={getInfo}
               isCancel={isCancel}
+              setListInfoPlans={setListInfoPlans}
+              setDataTable={setDataTablePm}
+              detailPlan={detailPlan}
+              idPmPlan={idPm}
             />
             <Button
               style={{ width: "130px" }}

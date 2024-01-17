@@ -1263,7 +1263,7 @@ export const getListContractsPlans = async () => {
       `SELECT name,Primera_Vez,Estadio_txt,Sub_Programa,Meses,Profesion_txt,Clase_Examen_txt,Canales,Etiquetas_Asistenciales_txt,Etiquetas_Administrativas_txt,Sexo_al_Nacer_txt,Menor_de,Mayor_de,Duracion_1era_Visita,Duracion_Seguimiento,Estado_txt,id,Sedes_txt,Clasificacion_Bomba_txt,Clasificacion_BT_txt,Tipo_Ingreso_txt,Prerrequisito FROM Contrato_Plan ORDER BY createdAt DESC`
     );
     const { data } = await httpClient.get(
-      `/selectQuery?maxRows=1000000&query=${query}&sessionId=${token}&output=json`
+      `/selectQuery?maxRows=100000&query=${query}&sessionId=${token}&output=json`
     );
     if (data.length > 0) {
       console.log("información data", data);
@@ -3800,7 +3800,7 @@ export const getFlagsQuotes = async (id) => {
   const token = localStorage.getItem("token");
   try {
     let query = encodeURI(
-      `SELECT id, name, Estado_Txt FROM Consulta WHERE R18590121 = ${id}`
+      `SELECT id,name,Estado_Txt FROM Consulta WHERE R18590121 = ${id}`
     );
     const { data } = await httpClient.get(
       `/selectQuery?maxRows=1000000&query=${query}&sessionId=${token}&output=json`
@@ -3823,7 +3823,7 @@ export const getNotesAdminTable = async (id) => {
   const token = localStorage.getItem("token");
   try {
     let query = encodeURI(
-      `SELECT Fecha_Etiqueta,Tabla_Resultados FROM Notas_Administrativas WHERE Ids_Plan_Mensual_txt LIKE("%${id}%") ORDER BY Fecha_Etiqueta DESC`
+      `SELECT Fecha_Etiqueta,Tabla_Resultados,Secuencia,CreadoPor FROM Notas_Administrativas WHERE Ids_Plan_Mensual_txt LIKE("%${id}%") ORDER BY Fecha_Etiqueta DESC`
     );
     const { data } = await httpClient.get(
       `/selectQuery?maxRows=1000000&query=${query}&sessionId=${token}&output=json`
@@ -3833,6 +3833,8 @@ export const getNotesAdminTable = async (id) => {
         return {
           Fecha_Etiqueta: value[0],
           Tabla_Resultados: value[1],
+          CreadoPor: value[1],
+          Secuencia: value[1],
         };
       });
       return final_data;

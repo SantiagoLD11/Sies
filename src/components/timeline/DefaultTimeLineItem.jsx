@@ -33,6 +33,7 @@ export const DefaultTimeLineItem = ({
   timeLine,
   idPaciente,
   getData,
+  setListInfoPlans,
   viewButton,
   detailPlan,
   idPrograma,
@@ -48,6 +49,7 @@ export const DefaultTimeLineItem = ({
   const [dataTableNotes, setDataTableNotes] = useState(null);
   const [openPopover, setOpenPopover] = useState(false);
   const [openNotas, setOpenNotas] = useState(false);
+  const [idPm, setIdPm] = useState(false);
   const [openModalViewQuotes, setOpenModalViewQuotes] = useState(false);
   const [dataQuotes, setDataQuotes] = useState();
   const [resultadoName, setResultadoName] = useState("");
@@ -93,18 +95,17 @@ export const DefaultTimeLineItem = ({
 
   const columns = [
     {
-      title: "Nombre",
+      title: "Nro.Cita",
       key: "name",
       render: (text) => (
         <div
           onClick={() => {
             hide();
-            console.log("Sirve", text);
             setDataQuotes(text);
             setOpenModalViewQuotes(true);
           }}
         >
-          {text.name}
+          {<strong>{text.name}</strong>}
         </div>
       ),
     },
@@ -130,9 +131,19 @@ export const DefaultTimeLineItem = ({
 
   const columnsNotes = [
     {
-      title: "Fecha",
+      title: "Fecha Registro",
       key: "Fecha_Etiqueta",
-      render: (text) => moment(text.Fecha_Etiqueta).format("DD/MM/YYYY HH:mm"),
+      render: (text) => <strong>{moment(text.Fecha_Etiqueta).format("DD/MM/YYYY HH:mm")}</strong>,
+    },
+    {
+      title: "Nro. Nota",
+      key: "Secuencia",
+      render: (text) => text,
+    },
+    {
+      title: "Responsable",
+      key: "CreadoPor",
+      render: (text) => text,
     },
     {
       title: "Resultado",
@@ -194,7 +205,7 @@ export const DefaultTimeLineItem = ({
         <div className="gx-timeline-panel-header">
           <div className="gx-timeline-heading">
             <h4>
-              <span style={{fontWeight: 'bold'}}>{Meses[timeLine[0]?.Mes]}, {timeLine[0]?.Year}</span>
+              <span style={{fontWeight: 'bold',fontSize:"22px"}}>{Meses[timeLine[0]?.Mes]}, {timeLine[0]?.Year}</span>
               <Tooltip title="Agregar Pertinencia">
                 <Button
                   onClick={() => {
@@ -232,7 +243,7 @@ export const DefaultTimeLineItem = ({
               style={{
                 width: "100%",
                 fontWeight: "bold",
-                fontSize: "16px",
+                fontSize: "19px",
                 display: "flex",
                 justifyContent: "space-between",
                 alignItems: "center",
@@ -312,16 +323,19 @@ export const DefaultTimeLineItem = ({
             </p>
             <p style={{ width: "50%" }}>
               <span style={{ fontWeight: "bold" }}>Estado: </span>
+              <Tooltip title="Ver Historico Citas">
               <Tag
                 color={tagStatus2[item.Pendiente][item.Disentido]?.color}
                 onClick={async () => {
                   handleOpenChange(true);
                   const flagsQuotes = await getFlagsQuotes(item.Id);
+                  setIdPm(item.Id);
                   setDataTable(flagsQuotes);
                 }}
               >
                 {tagStatus2[item.Pendiente][item.Disentido]?.text}
               </Tag>
+              </Tooltip>
             </p>
             <Divider />
           </div>
@@ -388,6 +402,10 @@ export const DefaultTimeLineItem = ({
           setOpen={setOpenModalViewQuotes}
           dataRow={dataQuotes}
           idPaciente={idPaciente}
+          setDataTable={setDataTable}
+          setListInfoPlans={setListInfoPlans}
+          detailPlan={detailPlan}
+          idPm={idPm}
           setOpenPopover={setOpenPopover}
           viewButton={viewButton}
         />

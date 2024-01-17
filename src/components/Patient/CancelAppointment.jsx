@@ -5,6 +5,8 @@ import {
   getListMotivoCancel,
   triggerCancelarCita,
   triggerReagendarCita,
+  getFlagsQuotes,
+  getInfPlans,
 } from "../../appRedux/services";
 const { TextArea } = Input;
 
@@ -14,6 +16,10 @@ export const CancelAppointment = ({
   dataRow,
   getInfo,
   isCancel,
+  setListInfoPlans,
+  setDataTable,
+  detailPlan,
+  idPmPlan,
 }) => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
@@ -29,37 +35,62 @@ export const CancelAppointment = ({
     setIsModalCancel(false);
     form.resetFields();
   };
-
+  const validateForm = async () => {
+    try {
+      // Use Ant Design Form's validateFields to validate the form fields
+      if(await form.validateFields()){
+        return true; // Form is valid
+      }else{
+        return false;
+      }
+    } catch (errorInfo) {
+      // Handle validation errors and show error messages
+  
+      // Show error messages to the user (you can customize this part)
+      console.log(`Form validation failed: ${errorInfo}`);
+  
+      return false; // Form is not valid
+    }
+  };
   const handleOk = async () => {
-    const values = form.getFieldsValue();
-    const json = {
-      idCita: dataRow?.id,
-      Motivo: values?.motivo,
-      TexA: values?.observacion,
-    };
-    setLoading(true);
-    const resp = await cancelarCita(json);
-    if (resp.status == "ok") {
-      await messageApi.open({
-        type: "success",
-        content: isCancel
-          ? "Cita cancelada exitosamente"
-          : "Cita reagendada exitosamente",
-      });
-    } else {
-      await messageApi.open({
-        type: "error",
-        content: "error",
-      });
+    const isValid = validateForm();
+    if(isValid){
+      const values = form.getFieldsValue();
+      const json = {
+        idCita: dataRow?.id,
+        Motivo: values?.motivo,
+        TexA: values?.observacion,
+      };
+      setLoading(true);
+      const resp = await cancelarCita(json);
+      if (resp.status == "ok") {
+        await messageApi.open({
+          type: "success",
+          content: isCancel
+            ? "Cita cancelada exitosamente"
+            : "Cita reagendada exitosamente",
+        });
+      } else {
+        await messageApi.open({
+          type: "error",
+          content: "error",
+        });
+      }
+      if (isCancel) {
+        await triggerCancelarCita(json.idCita);
+      } else {
+        await triggerReagendarCita(json.idCita);
+      }
+      if(idPmPlan){
+        console.log(idPmPlan);
+        //const flagsQuotes = await getFlagsQuotes(idPmPlan);
+       // setDataTable(flagsQuotes);
+        const infPlans = await getInfPlans(detailPlan);
+      }
+      setLoading(false);
+      setIsModalCancel(false);
+      getInfo();
     }
-    if (isCancel) {
-      await triggerCancelarCita(json.idCita);
-    } else {
-      await triggerReagendarCita(json.idCita);
-    }
-    setLoading(false);
-    setIsModalCancel(false);
-    getInfo();
   };
 
   return (

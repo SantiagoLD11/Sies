@@ -33,7 +33,7 @@ import {
   TriggerBeforeViewRoutes,
   TriggerLaboratoriesViewRoutes,
   getCareRoutes,
-  AlertTomoLaboratorios
+  AlertTomoLaboratorios,
 } from "../../appRedux/services";
 import { DefaultTimeLineItem } from "../timeline/DefaultTimeLineItem";
 import { GenerateQuotes } from "./GenerateQuotes";
@@ -125,17 +125,7 @@ export const ViewDetailPlans = ({
     }
   }, [detailPlans]);
 
-  const program = async () => {
-    setLoading(true);
-    showLoadingModal();
-    const resp = await validateQuotes(idPaciente);
-    if (resp > 0) {
-      await triggerProgram(detailPlan);
-      await validPlan();
-      getData();
-    } else {
-      setIsOpenPopover(true);
-    }
+  const triggersPlan= async () => {
     await TriggerBeforeViewRoutes(detailPlan);
     await TriggerLaboratoriesViewRoutes(detailPlan);
     const alert = await AlertTomoLaboratorios(detailPlan);
@@ -156,6 +146,21 @@ export const ViewDetailPlans = ({
         });
       }
     }
+  }
+  const program = async () => {
+    setLoading(true);
+    showLoadingModal();
+    const resp = await validateQuotes(idPaciente);
+    if (resp > 0) {
+      await triggerProgram(detailPlan);
+      await validPlan();
+      getData();
+      triggersPlan();
+    } else {
+      setLoading(false);
+      hideLoadingModal();
+      setIsOpenPopover(true);
+    }
     setLoading(false);
     hideLoadingModal();
     const updateList = await getCareRoutes(idPaciente);
@@ -164,6 +169,7 @@ export const ViewDetailPlans = ({
 
   const confirmPlan = async () => {
     setLoading(true);
+    showLoadingModal();
     await actFechaActivacion(detailPlan, fechaMilisegundos);
     const detailsPlans = await triggerProgram(detailPlan);
     console.log(detailsPlans);
@@ -175,7 +181,9 @@ export const ViewDetailPlans = ({
     } else if (detailsPlans?.status === "ok") {
       await validPlan();
     }
+    triggersPlan();
     getData();
+    hideLoadingModal();
     setIsOpenPopover(false);
     setLoading(false);
   }
@@ -193,7 +201,6 @@ export const ViewDetailPlans = ({
         content: "La ruta de atención ha sido renovada correctamente",
       });
     }
-    console.log("ave que es lo que e: ", detailsPlans);
     getData();
   };
 
@@ -246,7 +253,7 @@ export const ViewDetailPlans = ({
       {contextHolder}
       {contextHolderNoti}
       <Collapse>
-        <Panel header="Información Ruta Atencion">
+        <Panel header={<strong>Información Ruta Atencion</strong>}>
           <div
             style={{
               display: "flex",
@@ -352,6 +359,7 @@ export const ViewDetailPlans = ({
             <GenerateQuotes
               openModalGenerateQuotes={openModalGenerateQuotes}
               setOpenModalGenerateQuotes={setOpenModalGenerateQuotes}
+              setListInfoPlans={setListInfoPlans}
               detailPlan={detailPlan}
               idPaciente={idPaciente}
             />
@@ -636,7 +644,7 @@ export const ViewDetailPlans = ({
           </Row>
 
         </Panel>
-        <Panel header="Filtros">
+        <Panel header={<strong>Filtros</strong>}>
           <Form
             onFinish={onSubmit}
             form={form2}
@@ -753,6 +761,7 @@ export const ViewDetailPlans = ({
             timeLine={timeLine}
             idPaciente={idPaciente}
             getData={getData}
+            setListInfoPlans={setListInfoPlans}
             viewButton={viewButton}
             detailPlan={detailPlan}
             idPrograma={detailPlans.idPrograma}

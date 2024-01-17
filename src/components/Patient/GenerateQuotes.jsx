@@ -39,6 +39,7 @@ import {
   validateIntegration,
   showLoadingModal,
   hideLoadingModal,
+  getInfPlans,
 } from "../../appRedux/services";
 import moment from "moment";
 import "../../styles/global/customGlobal.css";
@@ -50,6 +51,7 @@ export const GenerateQuotes = ({
   openModalGenerateQuotes,
   setOpenModalGenerateQuotes,
   idPaciente,
+  setListInfoPlans,
 }) => {
   const [form] = Form.useForm();
   const [form2] = Form.useForm();
@@ -90,6 +92,9 @@ export const GenerateQuotes = ({
   };
 
   useEffect(async () => {
+    setSelectedItems([]);
+    form.resetFields();
+    form2.resetFields();
     const resp = await getAtributesGenerateNote(idPaciente);
     console.log(Number(resp.id_Etiqueta_Amin_Actual));
     setAtribEtiquetas(resp);
@@ -191,7 +196,7 @@ export const GenerateQuotes = ({
         api.warning({
           message: `${element.Plan_Mensual_txt}`,
           description: `${element.Resultado}`,
-          duration: 30000,
+          duration: 20000,
         });
       }
     } else {
@@ -202,7 +207,7 @@ export const GenerateQuotes = ({
         api.info({
           message: `${element.Plan_Mensual_txt}`,
           description: `${element.Resultado}`,
-          duration: 30000,
+          duration: 20000,
         });
       }
       setData(resp);
@@ -281,8 +286,44 @@ export const GenerateQuotes = ({
     //getPreferences(objeto);
   };
 
+  const validateForm = async () => {
+    try {
+      // Use Ant Design Form's validateFields to validate the form fields
+      if(await form.validateFields()){
+        return true; // Form is valid
+      }else{
+        return false;
+      }
+    } catch (errorInfo) {
+      // Handle validation errors and show error messages
+  
+      // Show error messages to the user (you can customize this part)
+      console.log(`Form validation failed: ${errorInfo}`);
+  
+      return false; // Form is not valid
+    }
+  };
+
+  const validateForm2 = async () => {
+    try {
+      // Use Ant Design Form's validateFields to validate the form fields
+      if(await form2.validateFields()){
+        return true; // Form is valid
+      }else{
+        return false;
+      }
+    } catch (errorInfo) {
+      // Handle validation errors and show error messages
+  
+      // Show error messages to the user (you can customize this part)
+      console.log(`Form validation failed: ${errorInfo}`);
+  
+      return false; // Form is not valid
+    }
+  };
   const submitFin = async () => {
-    if (current === 0) {
+    const isValid = await validateForm();
+    if (current === 0 && isValid) {
       setLoading(true);
       showLoadingModal();
       const mes = form.getFieldValue("mes");
@@ -328,6 +369,8 @@ export const GenerateQuotes = ({
       }
     } else if (current === 2) {
       const values = form2.getFieldsValue();
+      const isValid = await validateForm2();
+      if(isValid){
       let value = {
         Etiqueta_seguimiento: values?.tag,
         Resultado_contacto: undefined,
@@ -378,10 +421,15 @@ export const GenerateQuotes = ({
       setLoading(false);
       hideLoadingModal();
       setOpenModalGenerateQuotes(false);
+      const dataPm = await getInfPlans(detailPlan);
+      setListInfoPlans(dataPm);
       setCurrent(0);
       form.resetFields();
+      form2.resetFields();
+      setSelectedItems([]);
       setData([]);
     }
+  }
   };
 
   const onChange = async (date, dateString) => {
@@ -644,7 +692,7 @@ export const GenerateQuotes = ({
         </Modal>
         <Modal
           width="550px"
-          title="Alerta!!"
+          title="Error en  la Integracion!!"
           open={isListErrors} // Asegúrate de tener una variable de estado para controlar la visibilidad del modal
           onOk={continueListErrors}
           footer={[
@@ -790,15 +838,16 @@ export const GenerateQuotes = ({
                           <div
                             style={{ display: "flex", flexDirection: "column" }}
                           >
-                            <p>{item?.nameExam}</p>
+                            <strong><p>{item?.nameExam}</p></strong>
                             <p>{item?.Canal_Atencion_txt}</p>
-                            <p>{item?.Profesional_txt}</p>
-                            <p>
+                            <strong><p>{item?.Profesional_txt}</p></strong>
+                            <div style={{ textAlign: 'right', fontSize: '14px' }}> <p>Hora:
                               {moment(
                                 item?.Fecha_Cita,
                                 "YYYY-MM-DD HH:mm:ss"
-                              ).format("DD/MM/YYYY HH:mm")}
+                              ).format("hh:mm A")}
                             </p>
+                            </div>
                           </div>
                         </Row>
                       </List.Item>
